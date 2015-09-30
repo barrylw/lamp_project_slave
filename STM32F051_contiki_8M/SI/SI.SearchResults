@@ -1,0 +1,14 @@
+---- PrintEvent Matches (13 in 1 files) ----
+Hal_uart.c (app):ST_EVENT_CONTROL PrintEvent = {0xFF, 0};
+Hal_uart.c (app):  {&PrintEvent, NULL},
+Hal_uart.c (app):          case 0://PrintEvent
+Hal_uart.c (app):            PrintEvent.timeToExecute = hal_GetSystickCounter() + PRINT_TOTAL_TIMEOUT;
+Hal_uart.c (app):            PrintEvent.timeToExecute = hal_GetSystickCounter() + PRINT_TOTAL_TIMEOUT;
+Hal_uart.c (app):            PrintEvent.timeToExecute = hal_GetSystickCounter() + PRINT_TOTAL_TIMEOUT;
+Hal_uart.c (app):  PrintEvent.startoption = END;
+Hal_uart.c (app):    if (PrintEvent.startoption != WAIT)
+Hal_uart.c (app):      //PrintEvent.startoption = WAIT;
+Hal_uart.c (app):      //PrintEvent.timeToExecute = hal_GetSystickCounter() + PRINT_TOTAL_TIMEOUT;
+Hal_uart.c (app):    PrintEvent.startoption = END;
+Hal_uart.c (app):        PrintEvent.startoption = WAIT;
+Hal_uart.c (app):        PrintEvent.timeToExecute = hal_GetSystickCounter() + PRINT_TOTAL_TIMEOUT;
