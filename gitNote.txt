@@ -1,0 +1,72 @@
+git@github.com:barrylw/lamp_project_slave.git
+
+$ git config --global user.name "Your Name"
+$ git config --global user.email "email@example.com"
+
+
+
+$ ssh-keygen -t rsa -C "248998114@163.com" // 创建SSH Key，
+
+点“Add SSH Key”，填上任意Title，在Key文本框里粘贴id_rsa.pub文件的内容
+
+
+首次使用时
+$ git remote add origin git@github.com:michaelliao/learngit.git //添加远程库
+或者
+git clone git@github.com:barrylw/lamp_project_slave.git
+
+git add 
+
+git commit -m "信息"
+
+
+由于远程库是空的，我们第一次推送master分支时，加上了-u参数，Git不但会把本地的master分支内容推送的远程新的master分还会把本地的master分支和远程的master分支关联起来，在以后的推送或者拉取时就可以简化命令。
+
+git push -u origin master
+
+以后 
+
+git push origin master
+
+git status 命令可以让我们时刻掌握仓库当前的状态
+
+git diff顾名思义就是查看difference
+
+git log
+
+git log --pretty=oneline
+
+git 版本回退
+首先，Git必须知道当前版本是哪个版本，在Git中，用HEAD表示当前版本，上一个版本就是HEAD^，上上一个版本就是HEAD^^，当然往上100个版本写100个^比较容易数不过来，所以写成HEAD~100。
+
+$ git reset --hard HEAD^ 退回上一个版本
+
+$ git reset --hard 3628164 // 3628164...表示版本的ID
+
+
+git reflog用来记录你的每一次命令,可以用这个来查找已经被回滚掉的版本ID，前提是你有回滚前的 git log 窗口
+
+
+add之前，可以用 git checkout -- file 取消工作区修改， git checkout 其实是用版本库里的版本替换工作区的版本，无论工作区是修改还是删除，都可以“一键还原”。
+
+
+commit之前，可以 git reset HEAD file 可以把暂存区的修改撤销掉（unstage），重新放回工作区，再 git checkout -- file 取消工作区修改
+
+
+分支在实际中有什么用呢？假设你准备开发一个新功能，但是需要两周才能完成，第一周你写了50%的代码，如果立刻提交，由于代码还没写完，不完整的代码库会导致别人不能干活了。如果等代码全部写完再一次提交，又存在丢失每天进度的巨大风险。
+现在有了分支，就不用怕了。你创建了一个属于你自己的分支，别人看不到，还继续在原来的分支上正常工作，而你在自己的分支上干活，想提交就提交，直到开发完毕后，再一次性合并到原来的分支上，这样，既安全，又不影响别人工作。
+
+ 我最常说的关于git使用的一个经验就是：
+
+    不要用git pull，用git fetch和git merge代替它。 
+
+git pull的问题是它把过程的细节都隐藏了起来，以至于你不用去了解git中各种类型分支的区别和使用方法。
+当然，多数时候这是没问题的，但一旦代码有问题，你很难找到出错的地方。看起来git pull的用法会使你吃惊，简单看一下git的使用文档应该就能说服你。
+
+将下载（fetch）和合并（merge）放到一个命令里的另外一个弊端是，你的本地工作目录在未经确认的情况下就会被远程分支更新。当然，除非你关闭所有的安全选项，
+否则git pull在你本地工作目录还不至于造成不可挽回的损失，但很多时候我们宁愿做的慢一些，也不愿意返工重来。 
+
+将 .gitignore 文件提交到版本库后，如果新增 .gitignore文件中配置的文件，则在git status时 working directory 是干净的；但是如果对已经提交的文件，任何变化都会被检测到。 认为这是合理的。
+
+
+
