@@ -182,7 +182,7 @@ PROCESS_THREAD(cfs_test_process, ev, data)
 }
 #endif
 
-extern char oledPrintf[50];
+
 
 int main()
 {

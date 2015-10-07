@@ -250,11 +250,6 @@ PROCESS_THREAD(hal_long_send, ev, data)
 }
 
 
-
-
-
-
-
 #if 0
 #define FREQUENCY_TABEL_COUNT              10
 #define MAX_CHANNEL_COUNT                  20

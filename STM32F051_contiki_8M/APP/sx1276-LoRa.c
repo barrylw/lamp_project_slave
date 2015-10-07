@@ -18,15 +18,16 @@
  *
  * Last modified by Miguel Luis on Jun 19 2013
  */
-#include <string.h>
+
 #include <math.h>
-#include "radio.h"
+#include "hal_uart.h"
 #include "hal_radio.h"
 #include "sx1276-Fsk.h"
 #include "sx1276-LoRaMisc.h"
 #include "sx1276-LoRa.h"
 #include "hal_timer.h"
 #include "etimer.h"
+
 
 //#include "hal_fsk_sen.h"
 /*!

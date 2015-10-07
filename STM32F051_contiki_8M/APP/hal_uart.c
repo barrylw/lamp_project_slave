@@ -50,8 +50,6 @@ const uint8_t COM_RX_AF[COMn] = {RBL_COM1_RX_AF, RBL_COM2_RX_AF};
 const uint16_t COM_RX_BUFFER_SIZE[COMn] = {RBL_COM1_RX_SIZE, RBL_COM2_RX_SIZE};
 ST_PRINT_CTRL g_Print;
 u8 g_DebugRxBuffer[RBL_COM2_RX_SIZE];
-//static  int uart_debug_rx_finish = 2;
-//static  int PrintEvent_state = END;
 struct etimer timer_debug_uart_tx; 
 #endif
 
