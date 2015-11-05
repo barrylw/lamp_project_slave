@@ -85,9 +85,12 @@ void InitHardware(void)
   hal_InitRCC();
   hal_InitNVIC();
   hal_InitLED();
+
   hal_InitUART();
   hal_InitTIMER();
-  //hal_Init_Flash();
+  hal_Init_Flash();
+
+  
   //hal_InitWDG();
   //GDflash_init();
   hal_InitRF();
@@ -205,8 +208,6 @@ void PHY_DATA_Indication(u8 *psduLength, u8 *psdu, u8 *ppduLinkQuality)
     {
         psdu[i] = g_RF_LoRa.rf_DataBuffer[i];
     }
-
-    *ppduLinkQuality = hal_get_equal_RxPacketRssi();
 }
 
 

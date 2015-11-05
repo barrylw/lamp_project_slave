@@ -1,5 +1,4 @@
 #include "hal_flash.h"
-#include "common.h"
 #include "stm32f0xx_flash.h"
 
 /**
@@ -59,7 +58,7 @@ uint32_t FLASH_If_Write(__IO uint32_t* FlashAddress, uint32_t* Data ,uint16_t Da
   return (0);
 }
 
-uint32_t FLASH_Write_chars( uint32_t* FlashAddress, uint8_t* Data ,uint16_t DataLength)
+uint32_t FLASH_Write_chars( uint32_t FlashAddress, uint8_t* Data ,uint16_t DataLength)
 {
   uint16_t temp;
   
@@ -69,10 +68,10 @@ uint32_t FLASH_Write_chars( uint32_t* FlashAddress, uint8_t* Data ,uint16_t Data
     {
        temp = (u16)(Data[i*2] + Data[i*2+1] *256);
 
-       if (FLASH_ProgramHalfWord(*FlashAddress, temp) == FLASH_COMPLETE)
+       if (FLASH_ProgramHalfWord(FlashAddress, temp) == FLASH_COMPLETE)
        {
            /* Check the written value */
-          if (*(u16*)*FlashAddress != temp)
+          if (*(u16*)FlashAddress != temp)
           {
              /* Flash content doesn't match SRAM content */
              //return(2);
@@ -86,7 +85,7 @@ uint32_t FLASH_Write_chars( uint32_t* FlashAddress, uint8_t* Data ,uint16_t Data
          return FLASH_ERASE_ERROR;
        }
 
-       *FlashAddress += 2;
+       FlashAddress += 2;
     }
 
     if (DataLength % 2 == 0)
@@ -98,10 +97,10 @@ uint32_t FLASH_Write_chars( uint32_t* FlashAddress, uint8_t* Data ,uint16_t Data
     {
         temp = (u16)(Data[DataLength -1]);
 
-        if (FLASH_ProgramHalfWord(*FlashAddress, temp) == FLASH_COMPLETE)
+        if (FLASH_ProgramHalfWord(FlashAddress, temp) == FLASH_COMPLETE)
         {
             /* Check the written value */
-            if (*(u16*)*FlashAddress != temp)
+            if (*(u16*)FlashAddress != temp)
             {
                 /* Flash content doesn't match SRAM content */
                  __enable_irq();
@@ -152,7 +151,7 @@ uint32_t FLASH_Write_16BITS( uint32_t* FlashAddress, uint16_t* Data ,uint16_t Da
 
 uint32_t FLASH_Write_Params(u8 params, u8 length, u8 * dataBuf)
 {
-    /* 参数区划分一个flash区域 */
+  /* 参数区划分一个flash区域 */
   return 0;
 }
 

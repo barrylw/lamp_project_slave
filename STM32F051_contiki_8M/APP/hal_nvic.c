@@ -41,13 +41,14 @@ void hal_InitNVIC(void)
   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   
-#if 0
+
   /* Enable EXTI Line1 Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = EXTI0_1_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPriority = 1;
-  //NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   
+ #if 0 
   /* Enable  EXTI2_3_IRQn Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = EXTI2_3_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPriority = 1;
@@ -76,19 +77,27 @@ void hal_InitNVIC(void)
   /* Enable USART1 Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = USART1_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPriority = 3;
-  //NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   
   /* Enable USART2 Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = USART2_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPriority = 4;
-  //NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
   NVIC_Init(&NVIC_InitStructure);
   
-  /*Enable DMA1 Channel4 (USART2 TX) Interrupt */
+  /*Enable DMA1 Channel4 (DEBUG COM TX) Interrupt */
   NVIC_InitStructure.NVIC_IRQChannel = DMA1_Channel4_5_IRQn;
   NVIC_InitStructure.NVIC_IRQChannelPriority = 5;
-  //NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+  NVIC_Init(&NVIC_InitStructure);
+ 
+   NVIC_InitStructure.NVIC_IRQChannel = TIM14_IRQn;
+   NVIC_InitStructure.NVIC_IRQChannelPriority = 4;
+   NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+   NVIC_Init(&NVIC_InitStructure);
+  
+  
   NVIC_Init(&NVIC_InitStructure);
 }
 

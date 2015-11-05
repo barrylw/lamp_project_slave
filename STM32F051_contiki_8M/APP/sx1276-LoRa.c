@@ -18,16 +18,17 @@
  *
  * Last modified by Miguel Luis on Jun 19 2013
  */
-
+#include <string.h>
 #include <math.h>
-#include "hal_uart.h"
+#include "radio.h"
 #include "hal_radio.h"
+#include "hal_uart.h"
 #include "sx1276-Fsk.h"
 #include "sx1276-LoRaMisc.h"
 #include "sx1276-LoRa.h"
 #include "hal_timer.h"
 #include "etimer.h"
-
+#include "gpio_per.h"
 
 //#include "hal_fsk_sen.h"
 /*!
@@ -241,7 +242,7 @@ tLoRaSettings LoRaSettings =
     true,                                   // CrcOn [0: OFF, 1: ON]
     false,                                  // ImplicitHeaderOn [0: OFF, 1: ON]
     false,                                  // RxSingleOn [0: Continuous, 1 Single]
-    false,                                   // FreqHopOn [0: OFF, 1: ON]
+    true,                                   // FreqHopOn [0: OFF, 1: ON]
     7,                                      // HopPeriod Hops every frequency hopping period symbols
     800,                                    // TxPacketTimeout
     800,                                    // RxPacketTimeout
@@ -261,7 +262,7 @@ static double RxPacketRssiValue;
 
 st_GDOx_Config g_GDOx_map_conf;
 static uint32_t g_wokeUpPreambleLength;
- uint8_t g_hopChannel = 0;
+ uint8_t g_hopChannel = 3;
 
 #define HOP_CHANNELS           50
 
@@ -331,6 +332,11 @@ void SX1276_lora_init(bool lora)
 
       SX1276LoRaSetOpMode( RFLR_OPMODE_STANDBY );
 
+      SX1276LR->RegIrqFlagsMask |= RFLR_IRQFLAGS_ALL_MASK;
+  
+      SX1276Write( REG_LR_IRQFLAGS, SX1276LR->RegIrqFlagsMask);
+      
+      /*
       g_GDOx_map_conf.GDO0Config = DIO0_RxDone;
       g_GDOx_map_conf.GDO1Config = DIO1_RxTimeout;
       g_GDOx_map_conf.GDO2Config = DIO2_FhssCC;
@@ -338,8 +344,8 @@ void SX1276_lora_init(bool lora)
       g_GDOx_map_conf.GDO4Config = DIO4_CadDetected;
       g_GDOx_map_conf.GDO5Config = DIO5_ModeReady;
       config_GDOx_Map(g_GDOx_map_conf);
-
-      //SX1276ReadBuffer( REG_LR_OPMODE, SX1276Regs + 1, 0x70 - 1 );
+      SX1276ReadBuffer( REG_LR_OPMODE, SX1276Regs + 1, 0x70 - 1 );
+      */
       
       SX1276LoRaInit();
     }
@@ -491,6 +497,7 @@ uint32_t SX1276LoRaGetTxTimeOut(void)
   return timeOut;
 }
 
+#if 0
 /*****************************************************************************
  Prototype    : SX1276LoRaSetDefaults
  Description  : none
@@ -505,6 +512,7 @@ void SX1276LoRaSetDefaults( void )
     /* REMARK: See SX1276 datasheet for modified default values */
     SX1276Read( REG_LR_VERSION, &SX1276LR->RegVersion );
 }
+#endif
 
 /*****************************************************************************
  Prototype    : SX1276LoRaSetOpMode
@@ -690,51 +698,22 @@ int8_t getPacketSnr(void)
 double get_RxPacketRssi(void)
 {
     double RxPacketRssi;
+    double temp_offset;
 
     SX1276Read( REG_LR_PKTRSSIVALUE, &SX1276LR->RegPktRssiValue );
 
-    if( LoRaSettings.RFFrequency < 860000000 )  // LF
-    {    
-        if( RxPacketSnrEstimate < 0 )
-        {
-            RxPacketRssi = RSSI_OFFSET_LF + ( ( double )SX1276LR->RegPktRssiValue ) + RxPacketSnrEstimate;
-        }
-        else
-        {
-            RxPacketRssi = RSSI_OFFSET_LF + ( 1.0666 * ( ( double )SX1276LR->RegPktRssiValue ) );
-        }
+    temp_offset = (( LoRaSettings.RFFrequency < 860000000 ) ? RSSI_OFFSET_LF : RSSI_OFFSET_HF);
+
+    if( RxPacketSnrEstimate < 0 )
+    {
+        RxPacketRssi = temp_offset + ( ( double )SX1276LR->RegPktRssiValue ) + RxPacketSnrEstimate;
     }
-    else  // HF
-    {    
-        if( RxPacketSnrEstimate < 0 )
-        {
-            RxPacketRssi = RSSI_OFFSET_HF + ( ( double )SX1276LR->RegPktRssiValue ) + RxPacketSnrEstimate;
-        }
-        else
-        {    
-            RxPacketRssi = RSSI_OFFSET_HF + ( 1.0666 * ( ( double )SX1276LR->RegPktRssiValue ) );
-        }
+    else
+    {
+        RxPacketRssi = temp_offset + ( 1.0666 * ( ( double )SX1276LR->RegPktRssiValue ) );
     }
 
     return RxPacketRssi;
-}
-
-/*****************************************************************************
- Prototype    : SX1276LoRaSetRFState
- Description  : none
- Input        : tRFLRStates state  
- Output       : None
- Return Value : 
- Date         : 2014/3/15
- Author       : Barry
-*****************************************************************************/
-u8 hal_get_equal_RxPacketRssi(void)
-{
-    u8 rssi = (u8)SX1276LoRaGetPacketRssi();
-
-    rssi = (~rssi + 1);
-    
-    return rssi;
 }
 
 /*****************************************************************************
@@ -776,7 +755,7 @@ void SX1276LoRaSetRFState( u8 state )
 *****************************************************************************/
 void SX1276LoRaInit( void ) 
 {
-    SX1276LoRaSetDefaults( );
+    //SX1276LoRaSetDefaults( );
     
     SX1276ReadBuffer( REG_LR_OPMODE, SX1276Regs + 1, 0x70 - 1 );
     
@@ -870,86 +849,36 @@ void SX1276StartSleep(void)
 *****************************************************************************/
 void receiveRxData(bool spiDMA)
 {
-  #ifdef  SPI_DMA_FIFO
-  if (spiDMA)
-  {
-    if( LoRaSettings.RxSingleOn == true )
-    {
-       SX1276LR->RegFifoAddrPtr = SX1276LR->RegFifoRxBaseAddr;
-       SX1276Write( REG_LR_FIFOADDRPTR, SX1276LR->RegFifoAddrPtr );
-       
-       if( LoRaSettings.ImplicitHeaderOn == true )
-       {
-        g_RF_LoRa.rf_RxPacketSize = SX1276LR->RegPayloadLength;
- 
-        hal_sRF_readFIFO_DMA(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_RxPacketSize);  
+     if( LoRaSettings.RxSingleOn == true ) // Rx single mode
+     {
+         SX1276LR->RegFifoAddrPtr = SX1276LR->RegFifoRxBaseAddr;
+         SX1276Write( REG_LR_FIFOADDRPTR, SX1276LR->RegFifoAddrPtr );
+     }
+     else  // Rx continuous mode
+     {
+        SX1276Read( REG_LR_FIFORXCURRENTADDR, &SX1276LR->RegFifoRxCurrentAddr );
+        SX1276LR->RegFifoAddrPtr = SX1276LR->RegFifoRxCurrentAddr;
+     }
 
-       }
-      else
-       {
+     if (LoRaSettings.ImplicitHeaderOn == false )
+     {
         SX1276Read( REG_LR_NBRXBYTES, &SX1276LR->RegNbRxBytes );
         g_RF_LoRa.rf_RxPacketSize = SX1276LR->RegNbRxBytes;
-        hal_sRF_readFIFO_DMA(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_RxPacketSize); 
-
-       }
+     }
+     else
+     {
+        g_RF_LoRa.rf_RxPacketSize = SX1276LR->RegPayloadLength;  
+     }
+     
+    #ifdef  SPI_DMA_FIFO
+    if (spiDMA))
+    {
+      hal_sRF_readFIFO_DMA(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_RxPacketSize); 
     }
-    else
-    {
-       SX1276Read( REG_LR_FIFORXCURRENTADDR, &SX1276LR->RegFifoRxCurrentAddr );
-
-      if( LoRaSettings.ImplicitHeaderOn == true )
-      {
-          g_RF_LoRa.rf_RxPacketSize = SX1276LR->RegPayloadLength;
-      }
-      else
-      {
-          SX1276Read( REG_LR_NBRXBYTES, &SX1276LR->RegNbRxBytes );
-          g_RF_LoRa.rf_RxPacketSize = SX1276LR->RegNbRxBytes;
-      }
-      SX1276LR->RegFifoAddrPtr = SX1276LR->RegFifoRxCurrentAddr;
-      SX1276Write( REG_LR_FIFOADDRPTR, SX1276LR->RegFifoAddrPtr );
-      hal_sRF_readFIFO_DMA(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_RxPacketSize);  
-    }  
-  }
-  else
-  #endif
-  {
-    if( LoRaSettings.RxSingleOn == true ) // Rx single mode
-    {
-      SX1276LR->RegFifoAddrPtr = SX1276LR->RegFifoRxBaseAddr;
-      SX1276Write( REG_LR_FIFOADDRPTR, SX1276LR->RegFifoAddrPtr );
-
-      if( LoRaSettings.ImplicitHeaderOn == true )
-      {
-          g_RF_LoRa.rf_RxPacketSize = SX1276LR->RegPayloadLength; 
-      }
-      else
-      {
-          SX1276Read( REG_LR_NBRXBYTES, &SX1276LR->RegNbRxBytes );
-          g_RF_LoRa.rf_RxPacketSize = SX1276LR->RegNbRxBytes; 
-      }
+    #else 
       SX1276ReadFifo( g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_RxPacketSize );
-    }
-    else // Rx continuous mode
-    {
-      SX1276Read( REG_LR_FIFORXCURRENTADDR, &SX1276LR->RegFifoRxCurrentAddr );
-
-      if( LoRaSettings.ImplicitHeaderOn == true )
-      {
-          g_RF_LoRa.rf_RxPacketSize = SX1276LR->RegPayloadLength;  
-      }
-      else
-      {
-          SX1276Read( REG_LR_NBRXBYTES, &SX1276LR->RegNbRxBytes );
-          g_RF_LoRa.rf_RxPacketSize = SX1276LR->RegNbRxBytes;
-      }
-      SX1276LR->RegFifoAddrPtr = SX1276LR->RegFifoRxCurrentAddr;
-      SX1276Write( REG_LR_FIFOADDRPTR, SX1276LR->RegFifoAddrPtr );
-      SX1276ReadFifo( g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_RxPacketSize);
-    }
-    RxEndProcess(true);
-  } 
-
+      RxEndProcess(true);
+    #endif
 }
 
 /*****************************************************************************
@@ -963,44 +892,36 @@ void receiveRxData(bool spiDMA)
 *****************************************************************************/
 void RxEndProcess(bool dataValid)
 {
-  /* if rx data success */
-
+    g_RF_LoRa.rf_state = RFLR_STATE_RX_DONE;
+    g_RF_LoRa.rf_DataBufferValid = dataValid;
+    g_RF_LoRa.rf_HeaderValid = false;
+    process_post(&hal_RF_process, PROCESS_EVENT_MSG, (void *)(&g_RF_LoRa.rf_state));
+   
+  /*
   if (LoRaSettings.RxSingleOn == true )
   {
-    g_RF_LoRa.rf_state = RFLR_STATE_RX_DONE;
+    g_RF_LoRa.rf_state = RFLR_STATE_RX_DONE; // 单次接收，完成后不设置为再接收 
   }
   else
   {
     g_RF_LoRa.rf_state = RFLR_STATE_RX_RUNNING;
-    sx1276RxFinishProcess();
-  }
-  g_RF_LoRa.rf_DataBufferValid = dataValid;
-  g_RF_LoRa.rf_HeaderValid = false; 
-  
-}
 
-/*****************************************************************************
- Prototype    : printRxEndInfo
- Description  : none
- Input        : void  
- Output       : None
- Return Value : 
- Date         : 2014/3/15
- Author       : Barry
-*****************************************************************************/
-void sx1276RxFinishProcess(void)
-{
-    //hal_sRF_InitSPI();
     hal_DIOx_ITConfig(0,ENABLE);
     hal_DIOx_ITConfig(3,ENABLE);
 
     if (LoRaSettings.FreqHopOn)
     {
-      /* we direct set to the start hop frequncy */
-      SX1276LoRaSetRFFrequency(HoppingFrequencies[g_hopChannel]);
-      hal_DIOx_ITConfig(2,ENABLE);
+        // we direct set to the start hop frequncy 
+        SX1276LoRaSetRFFrequency(HoppingFrequencies[g_hopChannel]);
+        hal_DIOx_ITConfig(2,ENABLE);
     }
+  }
+  
+  
+  */
 }
+
+
 
 /*****************************************************************************
  Prototype    : SX1276LoRa_CAD_Scan
@@ -1159,7 +1080,7 @@ void SX1276LoRa_WokeUpTx(u8 *PBuffer,u8 length)
   g_RF_LoRa.rf_wakeUpTx = true;
   SX1276LoRa_Send_Packet(PBuffer,length);
 }
-#endif
+
 
 /*****************************************************************************
  Prototype    : SX1276LoRa_NormalTx
@@ -1176,6 +1097,7 @@ void SX1276LoRa_NormalTx(u8 *PBuffer,u8 length)
   SX1276LoRaSetPreambleLength(NORMALSYMBOLSLENGTH);
   SX1276LoRa_Send_Packet(PBuffer,length);
 }
+#endif
 
 /*****************************************************************************
  Prototype    : SX1276LoRa_Receive_Packet
@@ -1259,24 +1181,14 @@ void SX1276LoRa_Receive_Packet(bool singleRx)
 
 
 #ifdef USE_LORA_MODE
-/*****************************************************************************
- Prototype    : EXTI4_15_IRQHandler
- Description  : EXTI11 for valid header
- Input        : void  
- Output       : None
- Return Value : 
- Date         : 2014/3/15
- Author       : Barry
-*****************************************************************************/
-void EXTI4_15_IRQHandler(void)
+void EXTI0_1_IRQHandler()
 {
-    /* tx done, rx done, cad done */
-    if(EXTI_GetITStatus(DIO0_IRQ) != RESET)
-    {
-         EXTI_ClearITPendingBit(DIO0_IRQ);
-         EXTI_ClearITPendingBit(DIO2_IRQ);
-         
-         switch ( g_RF_LoRa.rf_state )
+   if(EXTI_GetITStatus(DIO0_IRQ) != RESET)
+   {
+      EXTI_ClearITPendingBit(DIO0_IRQ);
+      EXTI_ClearITPendingBit(DIO2_IRQ);
+      
+       switch ( g_RF_LoRa.rf_state )
          {
             case  RFLR_STATE_TX_RUNNING:
             /* disable EXTI0&EXTI2, line interrupt */
@@ -1286,7 +1198,7 @@ void EXTI4_15_IRQHandler(void)
             /* clear Tx done flag */
             SX1276Write( REG_LR_IRQFLAGS, RFLR_IRQFLAGS_TXDONE);
             
-            etimer_stop(&timer_rf);
+            //etimer_stop(&timer_rf);
 
             /* set RF state to tx done */
             g_RF_LoRa.rf_state = RFLR_STATE_TX_DONE;
@@ -1308,26 +1220,20 @@ void EXTI4_15_IRQHandler(void)
 
             /* read Rx crc flag */
             SX1276Read( REG_LR_IRQFLAGS, &SX1276LR->RegIrqFlags );
+
+            RxPacketRssiValue   = get_RxPacketRssi();
+            RxPacketSnrEstimate = getPacketSnr();
             
             //crc error
             if( ( SX1276LR->RegIrqFlags & RFLR_IRQFLAGS_PAYLOADCRCERROR ) == RFLR_IRQFLAGS_PAYLOADCRCERROR )
             {
                 /* Clear playload CRC error Irq */
                 SX1276Write( REG_LR_IRQFLAGS, RFLR_IRQFLAGS_PAYLOADCRCERROR  );
-                RxPacketRssiValue   = get_RxPacketRssi();
-                RxPacketSnrEstimate = getPacketSnr();
                 RxEndProcess(false);
-                printf("rssi = %f\r\n",RxPacketRssiValue);
-                printf("snr = %d\r\n",SX1276LoRaGetPacketSnr());
-                printf("CRC error\r\n");
             }
             else// crc ok
             {
-                RxPacketRssiValue   = get_RxPacketRssi();
-                RxPacketSnrEstimate = getPacketSnr();
                 receiveRxData(g_RF_LoRa.spiFifo);
-                process_post(&hal_RF_process, PROCESS_EVENT_MSG, (void *)(&g_RF_LoRa.rf_state));
-              
             }
             break;
 
@@ -1346,7 +1252,20 @@ void EXTI4_15_IRQHandler(void)
             break;
        }
     }
-    
+}
+/*****************************************************************************
+ Prototype    : EXTI4_15_IRQHandler
+ Description  : EXTI11 for valid header
+ Input        : void  
+ Output       : None
+ Return Value : 
+ Date         : 2014/3/15
+ Author       : Barry
+*****************************************************************************/
+void EXTI4_15_IRQHandler(void)
+{
+  
+#if 0
     /* Rx timeOut */
     if (EXTI_GetITStatus(DIO1_IRQ) != RESET)
     {
@@ -1357,7 +1276,7 @@ void EXTI4_15_IRQHandler(void)
           /*单次接收preamble超时，看怎么处理*/
       }
     }
-    
+#endif
     
      /* FHSS */
    if (EXTI_GetITStatus(DIO2_IRQ) != RESET)
@@ -1411,119 +1330,24 @@ void EXTI4_15_IRQHandler(void)
         {
             g_RF_LoRa.rf_state = RFLR_STATE_RX_RECEIVEING;
             
-            //process_post(&hal_RF_process, PROCESS_EVENT_MSG, (void *)(&g_RF_LoRa.rf_state));
+            process_post(&hal_RF_process, PROCESS_EVENT_MSG, (void *)(&g_RF_LoRa.rf_state));
         }
         g_RF_LoRa.rf_HeaderValid = true;
     }
     
-}
-#endif
+   if(EXTI_GetITStatus(ZERO_DETECT_LINE) != RESET)
+   {
+     EXTI_ClearITPendingBit(ZERO_DETECT_LINE);
+   
+     TIM_Cmd(POWER_DOWN_TIMER, ENABLE);
+     TIM_SetCounter(POWER_DOWN_TIMER, 0 );
 
+     //process_post(&zero_detect_process, PROCESS_EVENT_MSG, NULL); // 此处是使用事件方式处理过零中断，现在改为定时器硬件中断方式
+   }
+   
 
-
-
-
-
-
-
-
-
-
-
-#if 0
-/*****************************************************************************
-*****************************************************************************/
-void printRxStartInfo(void)
-{
-  uint32_t fre;
-  uint8_t  chan;
-  SX1276Read( REG_LR_HOPCHANNEL, &chan );
-  fre = SX1276LoRaGetRFFrequency();
-  chan &= 0x3F;
-  printf("Rx BC: %d\r\nRx BF: %d\r\n",chan,fre);
 }
 
-void printRxEndInfo(void)
-{
-  uint8_t  chan;
-  uint32_t fre;
-  if (rxPrintValid) 
-  {
-    rxPrintValid = false;
-    SX1276Read( REG_LR_HOPCHANNEL, &chan );
-    chan &= 0x3F;
-    fre = SX1276LoRaGetRFFrequency();
-    printf("Rx EC: %d\r\nRx EF: %d\r\n",chan,fre);
-   // printf("CCchanle %d\r\n",channelCount);
-    channelCount =0;
-  }
-}
+#endif  //#ifdef USE_LORA_MODE
 
-void printTxStartInfo(void)
-{
-  uint32_t fre;
-  uint8_t chan;
-  SX1276Read( REG_LR_HOPCHANNEL, &chan );
-  fre = SX1276LoRaGetRFFrequency();
-  chan &= 0x3F;
-  printf("tx BC: %d\r\ntx BF: %d\r\n",chan,fre);
-}
-
-void printTxEndInfo(void)
-{
-  uint32_t fre;
-  uint8_t chan;
-  if (txPrintValid)
-  {
-    txPrintValid = false;
-    SX1276Read( REG_LR_HOPCHANNEL, &chan );
-    fre = SX1276LoRaGetRFFrequency();
-    chan &= 0x3F;
-    
-    printf("tx EC: %d\r\ntx EF: %d\r\n",chan,fre);
-    printf("CCchanle %d\r\n",channelCount);
-    channelCount =0;
-  }
-}
-
-void printRxData(void)
-{
-  if (g_RF_LoRa.rf_DataBufferValid)
-  { 
-    for (u8 i =0; i< g_RF_LoRa.rf_RxPacketSize+1; i++ )
-    {
-      if ((i % 50 == 0) && (i > 0))
-      {
-        printf("\r\n");
-      }
-      printf("%d ",g_RF_LoRa.rf_DataBuffer[i]);
-      
-    }
-    printf("packet RSSI: %f",RxPacketRssiValue);
-    printf("\r\n");
-  }
-  else
-  {
-    printf("rx invalid\r\n");
-  }
-}
-
-void printData(u8 *pBufer,u8 length)
-{
-   for (u8 i =0; i< length; i++ )
-    {
-      if ((i % 50 == 0) && (i > 0))
-      {
-        printf("\r\n");
-      }
-      printf("%d ",pBufer[i]);
-      
-    }
-     printf("\r\n");
-}
-#endif
-
-
-//#endif//SX1276_LORA
-//#endif//USE_SX1276_RADIO
 

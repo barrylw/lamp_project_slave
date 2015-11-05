@@ -104,13 +104,15 @@ typedef struct
 
 
 
-#if 0
+
 /* Exported functions ------------------------------------------------------- */
 
-void PHYTASK(void);
+
 void InitHardware(void);
 void InitPhyVariable(void);
 
+#if 0
+void PHYTASK(void);
 /*********************************
  MAC Layer Interface 
 **********************************/

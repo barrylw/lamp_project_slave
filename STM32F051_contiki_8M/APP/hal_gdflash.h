@@ -2,6 +2,8 @@
 #define __HAL_GDFLASH_H__
 #include "common.h"
 
+# if  0
+
 #define GDFLASH_SPI                     SPI1
 
 #define DGFLASH_SPI_PORT                GPIOA
@@ -24,11 +26,36 @@
 
 #define DGFLASH_SPI_SCK                 RCC_APB2Periph_SPI1
 
-
- /* Select sRF: Chip Select pin low */
+/* Select sRF: Chip Select pin low */
 #define DGFLASH_CS_LOW()                             GPIO_ResetBits(DGFLASH_SPI_PORT, GDFLASH_CS_PIN)
  /* Deselect sRF: Chip Select pin high */
 #define DGFLASH_CS_HIGH()                            GPIO_SetBits(DGFLASH_SPI_PORT, GDFLASH_CS_PIN)
+
+#endif
+
+#define GDFLASH_SPI                     SPI1
+
+#define GDFLASH_CS_PIN                  GPIO_Pin_5
+#define GDFLASH_CS_PORT                 GPIOB
+#define GDFLASH_CS_SCK                  RCC_AHBPeriph_GPIOB
+
+#define GDFLASH_SCK_PIN                 GPIO_Pin_15
+#define DGFLASH_SCK_PORT                GPIOA 
+#define DGFLASH_SCK_SCK                 RCC_AHBPeriph_GPIOA
+
+#define GDFLASH_MISO_PIN                GPIO_Pin_4  
+#define DGFLASH_MISO_PORT               GPIOB
+#define DGFLASH_MISO_SCK                RCC_AHBPeriph_GPIOB
+
+#define GDFLASH_MOSI_PIN                GPIO_Pin_3  
+#define DGFLASH_MOSI_PORT               GPIOB
+#define DGFLASH_MOSI_SCK                RCC_AHBPeriph_GPIOB
+
+/* Select sRF: Chip Select pin low */
+#define DGFLASH_CS_LOW()                             GPIO_ResetBits(GDFLASH_CS_PORT, GDFLASH_CS_PIN)
+ /* Deselect sRF: Chip Select pin high */
+#define DGFLASH_CS_HIGH()                            GPIO_SetBits(GDFLASH_CS_PORT, GDFLASH_CS_PIN)
+
 
 #define DGFLASH_DUMMY_BYTE                                0xAA
 

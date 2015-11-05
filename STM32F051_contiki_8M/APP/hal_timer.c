@@ -236,6 +236,11 @@ void hal_GetCurrentTime(void)
                 RTC_TimeStructure.RTC_Seconds);
 }
 
+void hal_GetCurrentTimeString(char * str)
+{
+  
+}
+
 /******************************************************************************/
 /*            Debug Command Function                        */
 /******************************************************************************/

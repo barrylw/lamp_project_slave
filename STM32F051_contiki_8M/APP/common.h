@@ -134,7 +134,7 @@ void Delayus(u8 cnt);
 //void hal_set_event(ST_EVENT_CONTROL * event, EN_EVENT_STARTOPTION state, u32 value);
 u8 *MemCpy(void *pDsc, void*pSrc, u16 len);
 void MemSet(void *pAddr, u8 value, u16 len);
-
+u8 getSum(u8 * buffer, u8 length);
 
 #endif /* __COMMON_H__ */
 

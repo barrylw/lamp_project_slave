@@ -20,13 +20,25 @@
 //LED GPIO
 #define LEDn 2
 
-#define RXD_LED_PIN            GPIO_Pin_0 //PA12 Left_Red
-#define RXD_LED_PORT           GPIOB
-#define RXD_LED_CLK            RCC_AHBPeriph_GPIOB
+/*
+#define RXD_LED_PIN            GPIO_Pin_13 //PA12 Left_Red
+#define RXD_LED_PORT           GPIOC
+#define RXD_LED_CLK            RCC_AHBPeriph_GPIOC
 
-#define TXD_LED_PIN            GPIO_Pin_1 //PA11 Right_Green
-#define TXD_LED_PORT           GPIOB
-#define TXD_LED_CLK            RCC_AHBPeriph_GPIOB
+#define TXD_LED_PIN            GPIO_Pin_14 //PA11 Right_Green
+#define TXD_LED_PORT           GPIOC
+#define TXD_LED_CLK            RCC_AHBPeriph_GPIOC
+*/
+
+
+#define RXD_LED_PIN            GPIO_Pin_0  
+#define RXD_LED_PORT           GPIOA
+#define RXD_LED_CLK            RCC_AHBPeriph_GPIOA
+
+#define TXD_LED_PIN            GPIO_Pin_15  
+#define TXD_LED_PORT           GPIOC
+#define TXD_LED_CLK            RCC_AHBPeriph_GPIOC
+
 
 /* Exported macro ------------------------------------------------------------*/
 

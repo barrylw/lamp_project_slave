@@ -175,6 +175,15 @@ void *w_memset(void *out, int value, size_t n)
   return out;
 }
 
+u8 getSum(u8 * buffer, u8 length)
+{
+  u8 sum = 0;
+  
+  for (u8 i = 0; i < length; i++)
+  {
+    sum += buffer[i];
+  }
 
-
+  return sum;
+}
 /******************* (C) COPYRIGHT 2013 Robulink Technology Ltd.*****END OF FILE****/

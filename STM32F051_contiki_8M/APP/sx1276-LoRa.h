@@ -888,7 +888,7 @@ void SX1276LoRaInit( void );
 /*!
  * \brief Sets the SX1276 to datasheet default values
  */
-void SX1276LoRaSetDefaults( void );
+//void SX1276LoRaSetDefaults( void );
 
 /*!
  * \brief Enables/Disables the LoRa modem
@@ -1009,7 +1009,6 @@ void printData(u8 *pBufer,u8 length);
 */
 
 void config_GDOx_Map(st_GDOx_Config GDOx_Map);
-void sx1276RxFinishProcess(void);
 int8_t getPacketSnr(void);
 double get_RxPacketRssi(void);
 
@@ -1027,6 +1026,25 @@ void SX1276LoRaStartTransmit(void);
 void SX1276_lora_init(bool);
 /* END:   Added by Barry, 2014/3/4 */
 #endif //__SX1276_LORA_H__
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,5 +1,5 @@
-#ifndef __FLASH_H__
-#define __FLASH_H__
+#ifndef __HAL_FLASH_H__
+#define __HAL_FLASH_H__
 
 #include "common.h"
 
@@ -7,6 +7,9 @@
 #define FLASH_APPLICATION_ADDRESS                      0x08001000
 #define FLASH_APPLICATION_BACK_ADDRESS                 0x08008000
 #define FLASH_PARAMETER_ADDRESS                        0x0800FC00
+#define FLASH_ELC_SAVE_ADDRESS                         0x0800F800
+#define FLASH_ELC_BACK_ADDRESS                         0x0800F400
+
 
 #define FLASH_API_PAGES                                4
 #define FLASH_APPLICATION_PAGES                        28
@@ -40,7 +43,7 @@ typedef enum
   FLASH_PARAM_ERROR = 4,
 }em_FLASH_Status;
 
-uint32_t FLASH_Write_chars( uint32_t* FlashAddress, uint8_t* Data ,uint16_t DataLength);
+uint32_t FLASH_Write_chars( uint32_t FlashAddress, uint8_t* Data ,uint16_t DataLength);
 uint32_t FLASH_Write_16BITS( uint32_t* FlashAddress, uint16_t* Data ,uint16_t DataLength);
 //uint32_t FLASH_Write_page(__IO uint32_t* FlashAddress, uint16_t* Data);
 void FLASH_Init(void);

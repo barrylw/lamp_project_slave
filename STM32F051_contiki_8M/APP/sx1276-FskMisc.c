@@ -462,6 +462,7 @@ int8_t SX1276FskGetRssiOffset( void )
 int8_t SX1276FskGetRawTemp( void )
 {
     int8_t temp = 0;
+#if 0
     uint8_t previousOpMode;
     uint32_t startTick;
     
@@ -499,7 +500,7 @@ int8_t SX1276FskGetRawTemp( void )
 
     // Reload previous Op Mode
     SX1276Write( REG_OPMODE, previousOpMode );
-
+#endif
     return temp;
 }
 

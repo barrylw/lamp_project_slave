@@ -11,6 +11,7 @@
 /* Includes ------------------------------------------------------------------*/
 #ifdef PRINTF_DEBUG
 
+#include "math.h"
 #include "common.h"
 #include "apl_debug.h"
 #include "apl.h"
@@ -22,11 +23,30 @@
 #include "hal_wdg.h"
 #include "sx1276-LoRaMisc.h"
 #include "sx1276-Fsk.h"
+#include "gpio_per.h"  
+#include "stdlib.h"
 
 extern u8 tedtbuf[];
 void set_reg(void);
 void start_longSend(void);
 void changeHopChannel(void);
+void read_params_flash(void);
+
+
+extern RN8209C_PARAM rn8209c_papameter;
+extern char *paralist[];
+extern char g_updateBuffer[];
+void Relay_close(void);
+void Relay_open(void);
+void debug_set_pwm(void);
+
+void read_volt(void);
+void read_current(void);
+void read_pow(void);
+void read_energy(void);
+void read_factor(void);
+void debug_save(void);
+void read_u_i_p(void);
 /** @addtogroup  APL Debug Command
   * @{
   */ 
@@ -42,7 +62,6 @@ static const ST_DEBUG_COMMAND CmdList[] =
   {"reset", SoftReset},
   {"settime", SetTime},
   {"gettime", GetTime},
-  
   {"senduart", SendUart},
   {"setpow",set_power},
   {"readupdate", ReadUpdateData},
@@ -53,8 +72,23 @@ static const ST_DEBUG_COMMAND CmdList[] =
   {"rx",receive_packet},
   {"contious",contious_mode_rx},
   {"radioreset",radio_reset},
-  {"longsend",start_longSend},
-  {"hopchannel",changeHopChannel}
+  {"hopchannel",changeHopChannel},
+  {"read8209c",read_8209c_reg},
+  {"sethfconst",set_8209c_hfconst},
+  {"set8209c",set_8209c_Reg},
+  {"setgain",cal_power_gain},
+  {"setangle",cal_power_angle},
+  {"setkx",set_8209c_Kx},
+  {"readuip",read_u_i_p},
+  {"readw",read_energy},
+  {"reada",read_param_all},
+  {"8209creset",reset_8029c},
+  {"flashread",read_params_flash},
+  {"relayclose",Relay_close},
+  {"relayopen",Relay_open},
+  {"pwm",debug_set_pwm},
+  {"factor",read_factor},
+  {"dbsave",debug_save}
 };
 
 extern u8 g_DebugRxBuffer[RBL_COM2_RX_SIZE];
@@ -380,8 +414,6 @@ void set_reg(void)
   SX1276Read(reg, &temp);
   
   printf("reg %x = %x\r\n",reg,temp);
-  
-  
 }
 
 void read_reg_all(void)
@@ -433,19 +465,9 @@ void contious_mode_rx(void)
   #endif
 }
 
-
 void radio_reset(void)
 {
   hal_InitRF();
-}
-
-void start_longSend(void)
-{
-  u8 length = 0;
- 
-  Getu8Parameter(&length, 1);
- 
-  process_start(&hal_long_send, (char*)(&length));
 }
 
 void changeHopChannel(void)
@@ -461,6 +483,282 @@ void changeHopChannel(void)
 
 
 
+void read_8209c_reg(void)
+{
+  u8 reg;
+  u32 dat = 0;
+  u8 buf[10] = {0};
+  
+  GetStringParameter((u8*)buf, 1);
+  
+  if ( (buf[0] == '0') && (buf[1] == 'x'))
+  {
+    reg = strtol((char*)buf,NULL,16);
+  }
+  else
+  {
+    reg = atoi((char*)buf);
+  }
+ 
+  read_8209c_regs( reg , &dat);
+#if 0
+   printf("reg %x = ",reg);
+   for (u8 i = 0; i < length; i++)
+   {
+      printf("%x ",(dat>>(8*(length -i-1)))&0xFF);
+   }
+   printf("\r\n");
+#endif 
+  printf("reg %x = 0x%x\r\n",reg, dat);
+}
+
+void set_8209c_Reg(void)
+{
+  u8 reg;
+  u8 buf[12];
+  u8 regbuf[10];
+  u32 dat;
+  
+  GetStringParameter(regbuf,    1);
+  GetStringParameter(buf,       2);
+  
+  if ( (regbuf[0] == '0') && (regbuf[1] == 'x'))
+  {
+    reg = strtol((char*)regbuf,NULL,16);
+  }
+  else
+  {
+    reg = atoi((char*)regbuf);
+  }
+  
+  if ( (buf[0] == '0') && (buf[1] == 'x'))
+  {
+    dat = strtol((char*)buf,NULL,16);
+  }
+  else
+  {
+   dat = atoi((char*)buf);
+  }
+  
+  config_8209c_reg(reg, dat);
+}
+
+void set_8209c_hfconst(void)
+{
+  u8 buf[2];
+  
+   u16 dat;
+ 
+  Getu16Parameter(&dat, 1);
+  
+  buf[0] = (u8)((dat>>8)&0xFF);
+  buf[1] = (u8)(dat & 0xFF);
+  
+  rn8209c_write_byte(CMDREG, WRITE_ENABLE);
+  
+  rn8209c_write(ADHFConst, buf, 2);
+  
+  rn8209c_write_byte(CMDREG, WRITE_DISABLE);
+  
+  rn8209c_papameter.HFConst = dat;
+}
+
+void cal_power_gain(void)
+{
+  u8 str[8];
+  float val;
+  int   valint;
+  GetStringParameter(str, 1);
+  val = atof((char*)str)/100;
+  val = (- val/(1 + val));
+  
+  if (val)
+  {
+    valint = (u16)(val*32768);
+  }
+  else
+  {
+    valint = (u16)(65536 + val*32768);
+  }
+  
+  str[0] = (valint >> 8) & 0xFF;
+  str[1] = valint & 0xFF;
+  
+  rn8209c_write_byte(CMDREG, WRITE_ENABLE);
+  
+  rn8209c_write(ADGPQA, str, 2);
+  
+  rn8209c_write_byte(CMDREG, WRITE_DISABLE);
+  
+  rn8209c_papameter.GPQA = valint;
+  
+}
+
+void cal_power_angle(void)
+{
+  u8 str[8];
+  float val;
+  float vals;
+  u8  valint;
+  GetStringParameter(str, 1);
+  val = atof((char*)str)/100;
+  vals = (asin(-val/1.732));
+  vals = vals/0.02*180/3.1415926;
+  
+  if (vals > 0)
+  {
+    valint = (u8)vals;
+  }
+  else
+  {
+    valint = (u8)(vals + 256);
+  }
+  
+  rn8209c_write_byte(CMDREG, WRITE_ENABLE);
+  
+  rn8209c_write_byte(ADPhsA, valint);
+  
+  rn8209c_write_byte(CMDREG, WRITE_DISABLE);
+  
+  rn8209c_papameter.PhsA = valint;
+}
+
+void set_8209c_Kx(void)
+{
+    u32 intVal;
+
+    read_8209c_regs(ADURMS,&intVal);
+    rn8209c_papameter.Ku  =  intVal;
+   
+    read_8209c_regs(ADIARMS,&intVal);
+    rn8209c_papameter.KIa =  intVal;
+    
+   // rn8209c_papameter.Kp = (float)(3221550000000*1000000/(4294967296*rn8209c_papameter.HFConst*rn8209c_papameter.EC));
+   
+    rn8209c_papameter.Kp  = 14.55530;
+    rn8209c_papameter.energyAPulse = 0;
+    rn8209c_papameter.energyA      = 0;
+    rn8209c_papameter.PFcount      = 0;
+    rn8209c_papameter.calibration  = 1;
+    
+    read_8209c_regs(ADPowerPA,&intVal);
+    if (intVal & 0x80000000)
+    {
+      intVal = (~intVal + 1);
+    }
+    rn8209c_papameter.PStart = (u16)(intVal*4.0/1000)/256;
+    config_8209c_reg(ADPStart, rn8209c_papameter.PStart);
+    
+    save_8209c_params();
+    power_down_protect();
+}
+
+void read_param_all(void)
+{
+  printf("hfconst %d\r\n,pstart %d\r\n,GPQA %d\r\n,phsAs %d\r\n,qphsal %d\r\n,Ku %d\r\n,Ki %d\r\n,Kp %f\r\n,PFCont %d\r\n,energyPulse %d\r\n,enegyDegree %d\r\n",
+          rn8209c_papameter.HFConst,
+          rn8209c_papameter.PStart,
+          rn8209c_papameter.GPQA,
+          rn8209c_papameter.PhsA,
+          rn8209c_papameter.QPhsCal,
+          rn8209c_papameter.Ku,
+          rn8209c_papameter.KIa,
+          rn8209c_papameter.Kp,
+          rn8209c_papameter.PFcount,
+          rn8209c_papameter.energyAPulse,
+          rn8209c_papameter.energyA
+          );
+}
+
+void reset_8029c(void)
+{
+  rn8209c_init();
+  config_8209c_reg(ADHFConst, rn8209c_papameter.HFConst);
+  
+  rn8209c_papameter.PStart =0;
+  rn8209c_papameter.GPQA = 0;
+  rn8209c_papameter.PhsA = 0;
+  rn8209c_papameter.QPhsCal = 0;
+  rn8209c_papameter.Ku = 0;
+  rn8209c_papameter.KIa = 0;
+  rn8209c_papameter.Kp = 0.0;
+  rn8209c_papameter.PFcount = 0;
+  rn8209c_papameter.energyAPulse =0;
+  rn8209c_papameter.energyA = 0;
+}
+
+void read_params_flash(void)
+{
+  read_params_area(FLASH_PARAMETER_ADDRESS);
+ 
+  printf("%s\r\n",g_updateBuffer);
+}
+
+void Relay_close(void)
+{
+  relay_close();
+}
+
+void Relay_open(void)
+{
+   relay_open();
+}
+
+void debug_set_pwm(void)
+{
+  u8 light;
+  Getu8Parameter(&light , 1);
+  
+  if (light == 0)
+  {
+     relay_open();
+  }
+  else
+  {
+    relay_close();
+    set_PWM(light);
+  }
+  printf("pwm =%d% \r\n", light);
+ 
+}
+
+
+/*
+void read_pow(void)
+{
+  u32 lightTime;
+  read_8209c_Pa();
+  lightTime = get_light_time();
+  printf("light_time = %d", lightTime);
+}
+*/
+
+void read_energy(void)
+{
+  u32 lightTime;
+  read_8209c_energyP();
+  lightTime = get_light_time();
+  printf("light_time = %d", lightTime);
+}
+
+void read_factor(void)
+{
+  u8 fact = read_pow_factor();
+  
+  printf("factor = %d%",fact);
+}
+
+void debug_save(void)
+{
+  save_elc_datas();
+  printf("ok");
+}
+
+void read_u_i_p(void)
+{
+  read_UIP();
+  printf("U = %d I = %d P = %d",rn8209c_papameter.Uv,rn8209c_papameter.Ia,rn8209c_papameter.Pa);
+}
 #endif //PRINTF_DEBUG
 
 /******************* (C) COPYRIGHT 2013 Robulink Technology Ltd.*****END OF FILE****/

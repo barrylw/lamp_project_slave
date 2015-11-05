@@ -1,8 +1,9 @@
-#include <stdint.h>   
+
+#include <stdint.h>  
 #include <stdio.h>   
-#include <clock.h>   
-#include <sys/process.h>   
-#include <sys/procinit.h>   
+#include <clock.h>  
+#include <sys/process.h> 
+#include <sys/procinit.h> 
 #include <etimer.h>   
 #include <sys/autostart.h>   
 #include "common.h"
@@ -15,9 +16,11 @@
 //#include "cfs-coffee-arch.h"
 #include "hal_uart.h"
 #include "hal_gdflash.h"
+#include "gpio_per.h"
+#include "stm32f0xx_tim.h"
 
-#include "oled.h"
-#include "bmp.h"
+
+
 
 u8 tedtbuf[150];
 
@@ -183,11 +186,8 @@ PROCESS_THREAD(cfs_test_process, ev, data)
 #endif
 
 
-
 int main()
 {
-
-  
   for (u8 i = 0; i < 150; i++)
   {
     tedtbuf[i] = i+1;
@@ -195,18 +195,25 @@ int main()
   
   InitVariable();
   InitHardware(); 
-  //clock_init();
-  //GDflash_test();
-  
-  //OLED_Init();			
-  //OLED_Clear();
-  
+
+  relay_gpio_init();
+  drop_down_timer_init();
+  //init_zero_detect();
+  //hal_ADC_Init();
+ 
+  rn8209c_init();
+  init_8209c_params();
+  hal_init_PWM();
+
   printf("start app\r\n");
   process_init();
   process_start(&etimer_process, NULL);
   process_start(&hal_urat_process, NULL);
   process_start(&hal_RF_process, NULL);
-  process_start(&hal_long_send, NULL);
+  process_start(&start_time_detect_process, NULL);
+  //process_start(&zero_detect_process, NULL);
+ 
+  //process_start(&hal_long_send, NULL);
   
   //autostart_start(autostart_processes); 
   //start_continuous_mode();
@@ -221,7 +228,6 @@ int main()
     while (process_run() > 0);
   }
 }
-
 
 
 

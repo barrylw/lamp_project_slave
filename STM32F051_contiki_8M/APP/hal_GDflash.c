@@ -13,6 +13,7 @@
 *****************************************************************************/
 void hal_Init_gdflash_pins(void)
 {
+#if 0
   GPIO_InitTypeDef GPIO_InitStructure;
   
   RCC_AHBPeriphClockCmd( GDFLASH_GPIO_CLK , ENABLE);
@@ -38,7 +39,9 @@ void hal_Init_gdflash_pins(void)
   GPIO_PinAFConfig(DGFLASH_SPI_PORT, DGFLASH_SPI_SCK_SOURCE,  DGFLASH_SPI_SCK_AF);
   GPIO_PinAFConfig(DGFLASH_SPI_PORT, DGFLASH_SPI_MISO_SOURCE, DGFLASH_SPI_MISO_AF);
   GPIO_PinAFConfig(DGFLASH_SPI_PORT,DGFLASH_SPI_MOSI_SOURCE,  DGFLASH_SPI_MOSI_AF);
- 
+#endif
+  
+  
 }
 
 
@@ -53,6 +56,7 @@ void hal_Init_gdflash_pins(void)
 *****************************************************************************/
 void hal_gdflash_SPI_Config(void)
 {
+#if 0
   SPI_InitTypeDef SPI_InitStructure;
  
   /*!< Deselect the RF: Chip Select high */
@@ -82,6 +86,7 @@ void hal_gdflash_SPI_Config(void)
  
   /*!< Enable the sRF_SPI  */
   SPI_Cmd(GDFLASH_SPI, ENABLE);
+#endif
 }
 
 void GDflash_init(void)

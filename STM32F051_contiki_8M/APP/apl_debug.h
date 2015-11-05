@@ -80,6 +80,14 @@ void send_packet(void);
 void receive_packet(void);
 void contious_mode_rx(void);
 void radio_reset(void);
+void read_8209c_reg(void);
+void set_8209c_hfconst(void);
+void set_8209c_Reg(void);
+void cal_power_gain(void);
+void cal_power_angle(void);
+void set_8209c_Kx(void);
+void read_param_all(void);
+void reset_8029c(void);
 #endif /* __APL_DEBUG_H__ */
 
 /******************* (C) COPYRIGHT 2013 Robulink Technology Ltd.*****END OF FILE****/

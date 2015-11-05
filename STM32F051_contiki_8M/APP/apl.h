@@ -96,6 +96,7 @@ typedef struct
 }
 ST_FRAME_645;
 
+
 /* Exported functions ------------------------------------------------------- */
 
 void APLTASK(void);
@@ -105,6 +106,10 @@ void apl_ProcessUartCmd(void);
 void ReadVersion(void);
 void SoftReset(void);
 void init_update(void);
+void read_params_area(u32 addr);
+bool find_params(u8 pos, void * val);
+void read_flash(u32 addr ,u8 * str,u16 len);
+u16 find_free_addr(u32 addr);
 #endif /* __APL_H__ */
 
 /******************* (C) COPYRIGHT 2013 Robulink Technology Ltd.*****END OF FILE****/

@@ -34,7 +34,7 @@
  * @brief Definition for COM1, connected to USART2
  */ 
 #define RBL_COM1                         USART2
-#define RBL_COM1_BAUD                    2400
+#define RBL_COM1_BAUD                    4800
 #define RBL_COM1_CLK                     RCC_APB1Periph_USART2
 #define RBL_COM1_TX_PIN                  GPIO_Pin_2
 #define RBL_COM1_TX_GPIO_PORT            GPIOA
@@ -73,30 +73,30 @@
 #define RBL_COM2_IRQHandler              USART1_IRQHandler
 
 #define RBL_COM2_DMA_CLK                 RCC_AHBPeriph_DMA1
-#define RBL_COM2_TX_DMA_CHANNEL          DMA1_Channel2
-#define RBL_COM2_TX_DMA_COMPLETE         DMA1_IT_TC2
-#define RBL_COM2_TX_DMA_ERROR            DMA1_IT_TE2
+#define RBL_COM2_TX_DMA_CHANNEL          DMA1_Channel4
+#define RBL_COM2_TX_DMA_COMPLETE         DMA1_IT_TC4
+#define RBL_COM2_TX_DMA_ERROR            DMA1_IT_TE4
 #define RBL_COM2_TDR_BASE                (USART1_BASE + 0x28)
-#define RBL_COM2_DMA_IRQHandler          DMA1_Channel2_3_IRQHandler
+#define RBL_COM2_DMA_IRQHandler          DMA1_Channel4_5_IRQHandler
 
 #else
 /**
  * @brief Definition for COM port1, connected to USART1
  */ 
 #define RBL_COM1                         USART1
-#define RBL_COM1_BAUD                    2400
+#define RBL_COM1_BAUD                    4800
 #define RBL_COM1_CLK                     RCC_APB2Periph_USART1
-#define RBL_COM1_TX_PIN                  GPIO_Pin_9
-#define RBL_COM1_TX_GPIO_PORT            GPIOA
-#define RBL_COM1_TX_GPIO_CLK             RCC_AHBPeriph_GPIOA
-#define RBL_COM1_TX_SOURCE               GPIO_PinSource9
-#define RBL_COM1_TX_AF                   GPIO_AF_1
+#define RBL_COM1_TX_PIN                  GPIO_Pin_6
+#define RBL_COM1_TX_GPIO_PORT            GPIOB
+#define RBL_COM1_TX_GPIO_CLK             RCC_AHBPeriph_GPIOB
+#define RBL_COM1_TX_SOURCE               GPIO_PinSource6
+#define RBL_COM1_TX_AF                   GPIO_AF_0
 
-#define RBL_COM1_RX_PIN                  GPIO_Pin_10
-#define RBL_COM1_RX_GPIO_PORT            GPIOA
-#define RBL_COM1_RX_GPIO_CLK             RCC_AHBPeriph_GPIOA
-#define RBL_COM1_RX_SOURCE               GPIO_PinSource10
-#define RBL_COM1_RX_AF                   GPIO_AF_1
+#define RBL_COM1_RX_PIN                  GPIO_Pin_7
+#define RBL_COM1_RX_GPIO_PORT            GPIOB
+#define RBL_COM1_RX_GPIO_CLK             RCC_AHBPeriph_GPIOB
+#define RBL_COM1_RX_SOURCE               GPIO_PinSource7
+#define RBL_COM1_RX_AF                   GPIO_AF_0
 
 #define RBL_COM1_IRQn                    USART1_IRQn
 #define RBL_COM1_IRQHandler              USART1_IRQHandler
@@ -130,7 +130,7 @@
 #define RBL_COM2_DMA_IRQHandler          DMA1_Channel4_5_IRQHandler
 #endif
    
-#define UART_BUFFER_SIZE   255
+#define UART_BUFFER_SIZE                 255
 #define RBL_COM1_TX_SIZE                 UART_BUFFER_SIZE
 #define RBL_COM1_RX_SIZE                 UART_BUFFER_SIZE
 #define RBL_COM2_RX_SIZE                 DEBUG_BUFFER_SIZE
@@ -159,7 +159,7 @@ typedef enum
   COM2 = 1,
 }COM_TypeDef;   
 
-#pragma pack(1)
+//#pragma pack(1)
 
 typedef struct
 {

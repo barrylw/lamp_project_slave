@@ -50,6 +50,8 @@ const uint8_t COM_RX_AF[COMn] = {RBL_COM1_RX_AF, RBL_COM2_RX_AF};
 const uint16_t COM_RX_BUFFER_SIZE[COMn] = {RBL_COM1_RX_SIZE, RBL_COM2_RX_SIZE};
 ST_PRINT_CTRL g_Print;
 u8 g_DebugRxBuffer[RBL_COM2_RX_SIZE];
+//static  int uart_debug_rx_finish = 2;
+//static  int PrintEvent_state = END;
 struct etimer timer_debug_uart_tx; 
 #endif
 
@@ -247,8 +249,7 @@ void hal_InitCOM(COM_TypeDef COM)
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
 
   
-#if SWAP_UART  //COM1:USART2表串口，COM2:USART1调试串口，
-  SYSCFG_DMAChannelRemapConfig(SYSCFG_DMARemap_USART1Rx | SYSCFG_DMARemap_USART1Tx, ENABLE);
+#if SWAP_UART  //COM1:USART2表串口，  COM2:USART1调试串口，
   
   /* Enable UART clock */
   if (COM == COM1)
@@ -258,14 +259,15 @@ void hal_InitCOM(COM_TypeDef COM)
   else
   {
     RCC_APB2PeriphClockCmd(COM_USART_CLK[COM], ENABLE);
+    SYSCFG_DMAChannelRemapConfig( SYSCFG_DMARemap_USART1Tx,  ENABLE);
   }
 #else
-  SYSCFG_DMAChannelRemapConfig(SYSCFG_DMARemap_USART1Rx | SYSCFG_DMARemap_USART1Tx, DISABLE);
   
   /* Enable UART clock */
   if (COM == COM1)
   {
     RCC_APB2PeriphClockCmd(COM_USART_CLK[COM], ENABLE);
+    SYSCFG_DMAChannelRemapConfig( SYSCFG_DMARemap_USART1Tx,  DISABLE);
   }
   else
   {
@@ -316,19 +318,18 @@ void hal_InitCOM(COM_TypeDef COM)
 
   /* USART configuration */
   USART_Init(COM_USART[COM], &USART_InitStructure);
-  
-  /* Enable the USART RXNE Interrupt */
-  USART_ITConfig(COM_USART[COM], USART_IT_RXNE , ENABLE);
-    
+
+   if (COM == COM2)
+   {
+      /* Enable the USART RXNE Interrupt */
+      USART_ITConfig(COM_USART[COM], USART_IT_RXNE , ENABLE);
+   }
+   
   /* Enable USART */
   USART_Cmd(COM_USART[COM], ENABLE);
-
+ 
   if (COM == COM2)
-  {
-#if SWAP_UART
-    SYSCFG_DMAChannelRemapConfig( SYSCFG_DMARemap_USART1Tx,  DISABLE);
-#endif
-      
+  {    
 #ifdef PRINTF_DEBUG
     /* Enable USART DMA TX request */
     USART_DMACmd(COM_USART[COM], USART_DMAReq_Tx, ENABLE);

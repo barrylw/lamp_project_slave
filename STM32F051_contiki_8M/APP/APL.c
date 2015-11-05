@@ -13,7 +13,9 @@
 #include "common.h"
 #include "apl.h"
 #include "hal_uart.h"
-
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 /** @addtogroup Application Layer
   * @{
   */ 
@@ -28,8 +30,27 @@ extern Manufacturer_Version phyVersion;
 extern const u16 CRC16_CCITT_Table[256];
 ST_FRAME_645 frame645_instance;
 ST_UPDATE update_instance;
-static u8 g_updateBuffer[1024] = {0};
+char g_updateBuffer[1024] = {0};
 void reset_update_params(void);
+
+char calibration[]             = "calibration:";
+char pstart[]              = "pstart:";
+char GPQA[]                = "GPQA:";
+char phsA[]                = "phsA:"; 
+char qphsal[]              = "qphsal:";
+char Ku[]                  = "Ku:";
+char Ki[]                  = "Ki:";
+char Kp[]                  = "Kp:";
+char PFCont[]              = "PFCont";
+char energyPulse[]         = "energyPulse:";
+char enegyDegree[]         = "enegyDegree:";
+
+
+
+char *paralist[] = {calibration,pstart,GPQA,phsA,qphsal,Ku,Ki,Kp,PFCont,energyPulse, enegyDegree};
+
+
+
   
 
 /* Private function prototypes -----------------------------------------------*/
@@ -44,7 +65,132 @@ __root const Manufacturer_Version aplVersion =
   {0x00, 0x01}//°æ±¾
 };
 
+void read_flash(u32 addr ,u8 * str, u16 len)
+{
+  for (u16 i = 0; i < len; i++)
+  {
+     str[i]  = *((char*)(addr +i));
+  }
+}
 
+
+
+
+void read_params_area(u32 addr)
+{
+  for (u16 i = 0; i < 1024; i++)
+  {
+     g_updateBuffer[i]  = *((char*)addr +i);
+     
+     if (g_updateBuffer[i] == 0xFF)
+     {
+       g_updateBuffer[i] = 0;
+       break;
+     }
+     
+  }
+}
+
+
+bool find_params(u8 pos, void * val)
+{
+  char *p = NULL;
+  
+  char valtemp[15] = {0};
+  
+  p = (char*)(strstr(g_updateBuffer, paralist[pos]));
+  
+  if (p ==NULL)
+  {
+    return false;
+  }
+  else
+  {
+    for (u8 i = 0;i < 15; i++)
+    {
+      if (*(p + strlen(paralist[pos]) + i)  != ';') 
+      {
+        valtemp[i] = *(p + strlen(paralist[pos]) + i);
+      }
+      else
+      {
+        break;
+      }
+    }
+   
+    if ( (pos == 5) || (pos == 6) || (pos == 10))
+    {
+       *((u32*)val) = (u32)(atoi(valtemp));
+    }
+    else if(pos == 7)
+    {
+      *((float*)val) = (atof(valtemp));
+    }
+    else
+    {
+      *((u16*)val) = (u16)(atoi(valtemp));
+    }
+    
+    return true;
+  }
+}
+
+/*
+void set_param(u8 pos, u16 val)
+{
+  char *p = NULL;
+  
+  char count = 0;
+  
+  u16 tempVal;
+  
+  u32 startADDR = FLASH_PARAMETER_ADDRESS;
+  
+  read_params_area();
+  
+  p = (char*)(strstr(g_updateBuffer, paralist[pos]));
+  
+  if (p ==NULL)
+  {
+    sprintf(g_updateBuffer,"%s%s%d;",g_updateBuffer,paralist[pos],val);
+
+    if (FLASH_ErasePage(startADDR) == FLASH_COMPLETE)
+    {
+        FLASH_Write_chars( &startADDR, (u8*)g_updateBuffer ,strlen(g_updateBuffer));
+    }
+  }
+  else
+  {
+    find_params(pos, &tempVal);
+    
+    if (tempVal == val)
+    {
+      return; 
+    }
+    
+    while(1)
+    {
+      count++;
+      if (*(p + strlen(paralist[pos]) + count)  == ';') 
+      {
+         break;
+      }
+    }
+    memcpy(p ,p + strlen(paralist[pos])+count+1,strlen(g_updateBuffer) - count);
+    sprintf(g_updateBuffer, "%s%s%d;",g_updateBuffer,paralist[pos],val);
+    
+    if (FLASH_ErasePage(startADDR) == FLASH_COMPLETE)
+    {
+      FLASH_Write_chars( &startADDR, (u8*)g_updateBuffer ,strlen(g_updateBuffer));
+    }
+  }
+  
+}
+*/
+
+
+
+#if 0
 u8 modify_update_flash_params(u8 params)
 {
   u32 startADDR = UPDATE_FLASH_PARAMETER_DDR;
@@ -301,17 +447,7 @@ void InitAplVariable(void)
 {
 }
 
-u8 getSum(u8 * buffer, u8 length)
-{
-  u8 sum = 0;
-  
-  for (u8 i = 0; i < length; i++)
-  {
-    sum += buffer[i];
-  }
 
-  return sum;
-}
 
 u8 get_update_packets(u16 totalBytes)
 {
@@ -521,7 +657,9 @@ void apl_ProcessUartCmd(void)
       }
    }
 }
-
+#endif
+void apl_ProcessUartCmd(void)
+{}
 /******************************************************************************/
 /*            Debug Command Function                        */
 /******************************************************************************/
