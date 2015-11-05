@@ -2,6 +2,7 @@ Debug/
 Release/
 settings/
 SI/
+STM32F051_contiki_8M/empty/
 *.dep
 *.ewd
 *.ewp
