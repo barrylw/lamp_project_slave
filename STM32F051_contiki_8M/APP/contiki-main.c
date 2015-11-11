@@ -18,7 +18,7 @@
 #include "hal_gdflash.h"
 #include "gpio_per.h"
 #include "stm32f0xx_tim.h"
-
+#include "NWK.h"
 
 
 
@@ -205,6 +205,7 @@ int main()
   init_8209c_params();
   hal_init_PWM();
 
+ 
   printf("start app\r\n");
   process_init();
   process_start(&etimer_process, NULL);

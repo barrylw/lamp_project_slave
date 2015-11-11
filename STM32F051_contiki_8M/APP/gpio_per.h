@@ -122,58 +122,57 @@ typedef enum
 
 
 //----------------------start RN8209  地址定义---------------------------------------------------// 
-#define         ADSYSCON        0x00 
-#define        	ADEMUCON        0x01 
-#define        	ADHFConst     	0x02 
-#define        	ADPStart      	0x03 
-#define        	ADDStart      	0x04 
-#define		ADGPQA        	0x05 
-#define        	ADGPQB        	0x06 
-#define        	ADPhsA        	0x07 
-#define        	ADPhsB        	0x08 
-#define	        ADQPHSCAL	0x09 
-#define		ADAPOSA 	0x0a 
-#define        	ADAPOSB 	0x0b 
-#define        	ADRPOSA 	0x0c 
-#define        	ADRPOSB 	0x0d 
-#define        	ADIARMSOS     	0x0e 
-#define        	ADIBRMSOS     	0x0f 
-#define        	ADIBGain      	0x10 
-#define		ADD2FPL       	0x11 
-#define        	ADD2FPH       	0x12 
-#define        	ADDCIAH       	0x13 
-#define        	ADDCIBH       	0x14 
-#define         ADDCUH	        0x15 
-#define         ADDCL   	0x16 
-#define         ADEMUCON2	0x17 
-#define	        ADPFCnt    	0x20 
-#define        	ADDFcnt    	0x21 
-#define        	ADIARMS       	0x22 
-#define        	ADIBRMS       	0x23 
-#define        	ADURMS        	0x24 
-#define		ADUFreq       	0x25 
-#define        	ADPowerPA     	0x26 
-#define        	ADPowerPB     	0x27 
-#define        	powerQ     	0x28
-#define         ADEnergyP  	0x29 
-#define         ADEnergyP2 	0x2a 
-#define         ADEnergyD  	0x2b 
-#define         ADEnergyD2    	0x2c 
-#define         ADEMUStatus   	0x2d 
-#define         ADSPL_IA      	0x30 
-#define         ADSPL_IB      	0x31 
-#define         ADSPL_U       	0x32 
-#define         ADIE  		0x40 
-#define         ADIF  		0x41 
-#define         ADRIF    	0x42 
-#define         ADSysStatus  	0x43 
-#define         ADRData      	0x44 
-#define         ADWData      	0x45 
-#define         ADDeviceID   	0x7f 
+#define ADSYSCON    0x00 
+#define ADEMUCON    0x01 
+#define ADHFConst   0x02 
+#define ADPStart    0x03 
+#define ADDStart    0x04 
+#define ADGPQA      0x05 
+#define ADGPQB      0x06 
+#define ADPhsA      0x07 
+#define ADPhsB      0x08 
+#define ADQPHSCAL   0x09 
+#define ADAPOSA     0x0a 
+#define ADAPOSB     0x0b 
+#define ADRPOSA     0x0c 
+#define ADRPOSB     0x0d 
+#define ADIARMSOS   0x0e 
+#define ADIBRMSOS   0x0f 
+#define ADIBGain    0x10 
+#define ADD2FPL     0x11 
+#define ADD2FPH     0x12 
+#define ADDCIAH     0x13 
+#define ADDCIBH     0x14 
+#define ADDCUH      0x15 
+#define ADDCL       0x16 
+#define ADEMUCON2   0x17 
+#define ADPFCnt     0x20 
+#define ADDFcnt     0x21 
+#define ADIARMS     0x22 
+#define ADIBRMS     0x23 
+#define ADURMS      0x24 
+#define ADUFreq     0x25 
+#define ADPowerPA   0x26 
+#define ADPowerPB   0x27 
+#define powerQ      0x28
+#define ADEnergyP   0x29 
+#define ADEnergyP2  0x2a 
+#define ADEnergyD   0x2b 
+#define ADEnergyD2  0x2c 
+#define ADEMUStatus 0x2d 
+#define ADSPL_IA    0x30 
+#define ADSPL_IB    0x31 
+#define ADSPL_U     0x32 
+#define ADIE        0x40 
+#define ADIF        0x41 
+#define ADRIF       0x42 
+#define ADSysStatus 0x43 
+#define ADRData     0x44 
+#define ADWData     0x45 
+#define ADDeviceID  0x7f 
 
 //----------------------end RN8209  地址定义-----------------------------------------------//
-#define         CMDREG   	0xEA
-
+#define         CMDREG          0xEA
 #define         WRITE_ENABLE    0xE5
 #define         WRITE_DISABLE   0xDC
 #define         SELECT_CHA      0x5A
@@ -186,26 +185,26 @@ typedef enum
 //---start 校表参数文件-------（可根据计量芯片更改） 
 typedef struct 
 {      
-      u16			HFConst;            //表常数项设置
-      u16			PStart;	            //启动设置
-      u16			GPQA;               //A有功增益校正   	
-      u16			PhsA;               //A有功角度校正           	   	
-      u16			QPhsCal;            //无功角度校正     	
-      u32		        Ku;                 //电压系数                                
-      u32		        KIa;		    //电流A系数			
-      float		        Kp;	            //功率系数					
-      u16                       PFcount;            //保存的能量积分，掉电时保存
-      u16                       Uv;                  //电压有效值
-      u32                       Ia;                  //电流有效值
-      u16                       Pa;                 //功率有效值
-      u32			ChkSum;             //校验和
-      u16                       calibration;        //是否校正
-      u32                       energyA;            //有功电量，单位度  
-      u16                       energyAPulse;       //电量余数，脉冲数
-      u16                       EC;
-      u8                        pwmValue;
-      u32                       lightTime;
-}RN8209C_PARAM;		                                
+      u16     HFConst;           //表常数项设置
+      u16     PStart ;           //启动设置
+      u16     GPQA;              //A有功增益校正 
+      u16     PhsA;              //A有功角度校正 
+      u16     QPhsCal;           //无功角度校正
+      u32     Ku;                //电压系数 
+      u32     KIa;               //电流A系数
+      float   Kp;               //功率系数
+      u16     PFcount;           //保存的能量积分，掉电时保存
+      u16     Uv;                //电压有效值
+      u32     Ia;                //电流有效值
+      u16     Pa;                //功率有效值
+      u32     ChkSum;            //校验和
+      u16     calibration;      //是否校正
+      u32    energyA;           //有功电量，单位度  
+      u16    energyAPulse;      //电量余数，脉冲数
+      u16    EC;
+      u8     pwmValue;
+      u32   lightTime;
+}RN8209C_PARAM;
 
 
 void init_zero_detect(void);

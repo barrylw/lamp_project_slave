@@ -262,7 +262,7 @@ static double RxPacketRssiValue;
 
 st_GDOx_Config g_GDOx_map_conf;
 static uint32_t g_wokeUpPreambleLength;
- uint8_t g_hopChannel = 3;
+ uint8_t g_hopChannel = 0;
 
 #define HOP_CHANNELS           50
 
@@ -1198,7 +1198,7 @@ void EXTI0_1_IRQHandler()
             /* clear Tx done flag */
             SX1276Write( REG_LR_IRQFLAGS, RFLR_IRQFLAGS_TXDONE);
             
-            //etimer_stop(&timer_rf);
+            etimer_stop(&timer_rf);
 
             /* set RF state to tx done */
             g_RF_LoRa.rf_state = RFLR_STATE_TX_DONE;

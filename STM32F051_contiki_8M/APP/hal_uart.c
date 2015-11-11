@@ -183,9 +183,7 @@ PROCESS_THREAD(hal_urat_process, ev, data)
   */
 void hal_InitUartVariable(void)
 {
-#ifdef PRINTF_DEBUG
   hal_InitPrintVariable();
-#endif
 }
 
 /**
@@ -285,7 +283,17 @@ void hal_InitCOM(COM_TypeDef COM)
   GPIO_InitStructure.GPIO_Pin = COM_TX_PIN[COM];
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+#if 0
+  if (COM == COM1)
+  {
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+  }
+  else
+#endif
+  {
+    GPIO_InitStructure.GPIO_OType = GPIO_OType_OD;
+  }
+  
   GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_UP;
   GPIO_Init(COM_TX_PORT[COM], &GPIO_InitStructure);
     

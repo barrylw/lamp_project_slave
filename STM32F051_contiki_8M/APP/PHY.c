@@ -41,67 +41,42 @@ __root const Manufacturer_Version phyVersion =
   {0x01, 0x01}//版本
 };
 
-//static u8 g_sRFCCAResult =0;
-//const static u8 aMaxPHYPayloadSize =   MAXPHYPAYLOADSIZE;
 
-
-PHY_Attr phy_attr = {
-
-  .phyTransmitPower         = HIGHEST_LEVEL,//16dBm
-  .phyCCAMode               = CCA_CS_ED,
-  .phyCurrentChannelGroup   = 0,
-  .phyRSSIThreshold         = RSSI_THRESHOLD,//-96dBm
-  };
-
+PHY_Attr phy_attr; 
 
 extern st_RF_LoRa_DypeDef g_RF_LoRa;
 
-
-
-//extern ST_EVENT_METHOD UartEvents[];
-//extern ST_EVENT_METHOD RFEvents[];
-
-/* Private function prototypes -----------------------------------------------*/
-/* Private functions ---------------------------------------------------------*/
-
-/**
-  * @brief  Handle physical layer task in the main loop.
-  * @param  None.
-  * @retval None.
-  */
-void PHYTASK(void)
-{
-  //hal_RunUartEvents(UartEvents);
-  //hal_RunRFEvents(RFEvents);
-}
-
-/**
-  * @brief  Initialize system hardware.
-  * @param  None.
-  * @retval None.
-  */
+/*****************************************************************************
+ Prototype    : InitHardware
+ Description  : 硬件初始化
+ Input        : void  
+ Output       : void
+ Return Value : 
+ Date         : 2015/11/10
+ Author       : Barry
+*****************************************************************************/
 void InitHardware(void)
 {
   hal_InitRCC();
   hal_InitNVIC();
   hal_InitLED();
-
   hal_InitUART();
   hal_InitTIMER();
   hal_Init_Flash();
-
-  
   //hal_InitWDG();
   //GDflash_init();
   hal_InitRF();
-  
 }
 
-/**
-  * @brief  Initialize global variable in the physical layer.
-  * @param  None.
-  * @retval None.
-  */
+/*****************************************************************************
+ Prototype    : InitPhyVariable
+ Description  : 初始化物理层参数
+ Input        : void  
+ Output       : void
+ Return Value : 
+ Date         : 2015/11/10
+ Author       : Barry
+*****************************************************************************/
 void InitPhyVariable(void)
 {
 #ifdef PRINTF_DEBUG
@@ -109,17 +84,11 @@ void InitPhyVariable(void)
 #endif
   hal_InitUartVariable();
   hal_InitTimerVariable();
-  //hal_InitRFVariable();
 }
-
-/******************************************************************************/
-/*           protocol stack primitive interface                        */
-/******************************************************************************/
-
 
 /*****************************************************************************
  Prototype    : PD_DATA_Request
- Description  : 
+ Description  : 上层的发送请求
  Input        : 
  Output       : None
  Return Value : None
@@ -130,30 +99,6 @@ void PD_DATA_Request(u16 psduLength, u8 *psdu, u8 channel)
 {
   hal_sRF_Transmit(psdu, psduLength, channel);
 }
-
-/*****************************************************************************
- Prototype    : MAC_CCA_Request
- Description  : 
- Input        : 
- Output       : None
- Return Value : None
- Date         : 2015/4/27
- Author       : Barry
-*****************************************************************************/
-#if 0
-void phy_cca_request(void);
-{
-  if (SX1276LoRaGetRFState() == RFLR_STATE_TX_RUNNING)
-  {
-     Mac_CCA_Confirm(PHY_TX_ON);
-  }
-  else
-  {
-    
-  }
-}
-#endif
-
 
 /*****************************************************************************
  Prototype    : get_CCA_result

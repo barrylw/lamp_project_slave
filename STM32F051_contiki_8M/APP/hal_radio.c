@@ -83,161 +83,9 @@ u8 cmp(u8 * buf1, u8* buf2, u8 length)
 }
 
 
-bool  analyze_645_packet(u8 * buf)
-{
-
-    if ( (buf[START_645_POINT] != 0x68) || (buf[START_645_POINT + 7] != 0x68) || (buf[ buf[DATA_LENGTH_645_POINT] + 11] != 0x16))
-    {
-        return false;
-    }
-    
-    return ( (getSum(buf, 10 + buf[DATA_LENGTH_645_POINT]) == buf[buf[DATA_LENGTH_645_POINT] + 10])  ?  true: false );
-}
 
 
-void apl_ProcessRadioCmd()
-{
-  u8 pwm_light;
-  u8 len_645;
-  u8 info_sourceadd[16];
-  u32 temp_light_time;
-  
-  /* 645 解析 */
-  if ((g_RF_LoRa.rf_DataBuffer[START_645_POINT] == 0x68) && (g_RF_LoRa.rf_DataBuffer[START_645_POINT + 7] == 0x68) && 
-       (g_RF_LoRa.rf_DataBuffer[ g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 11] == 0x16))
-  {
-     if (getSum(g_RF_LoRa.rf_DataBuffer, 10 + g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT]) == g_RF_LoRa.rf_DataBuffer[g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 10])
-     {
-       len_645 = g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 12;
-       MemCpy( info_sourceadd, &g_RF_LoRa.rf_DataBuffer[len_645],  18);
-       /* 下行帧 */
-       if ( (g_RF_LoRa.rf_DataBuffer[CONTROL_645_POINT] & 0x80) == 0)
-       {
-          if ( (cmp(local_addr, &g_RF_LoRa.rf_DataBuffer[ADDR_645_POINT] , 6) == 1) 
-              || (cmp(bordcast_addr, &g_RF_LoRa.rf_DataBuffer[ADDR_645_POINT] , 6) == 1) )
-          {
-              switch (g_RF_LoRa.rf_DataBuffer[CONTROL_645_POINT] & 0x1F)
-              {
-                  case 0x14:
-                    if ( (cmp(cmd_op_light, &g_RF_LoRa.rf_DataBuffer[DATA_MARK_645_POINT] , 4) == 1) )
-                    {
-                      pwm_light = g_RF_LoRa.rf_DataBuffer[DATA_PACKET_645_POINT] - 0x33;
-                      
-                      if ( pwm_light == 0)
-                      {
-                        relay_open();
-                        set_PWM(pwm_light);
-                      }
-                      else 
-                      {
-                        relay_close();
-                        set_PWM(pwm_light);
-                      }
-                      
-                      /*
-                      MemCpy( g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_DataBuffer,  8);
-                      */
-                       
-                      g_RF_LoRa.rf_DataBuffer[8]           = g_RF_LoRa.rf_DataBuffer[CONTROL_645_POINT] | 0x80;
-                      g_RF_LoRa.rf_DataBuffer[9]           = 0x04;
-                      MemCpy( &g_RF_LoRa.rf_DataBuffer[10], cmd_op_light,  4);
-                      g_RF_LoRa.rf_DataBuffer[ g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 10 ] = getSum(g_RF_LoRa.rf_DataBuffer, 10 + g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT]); 
-                      g_RF_LoRa.rf_DataBuffer[ g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 11] = 0x16;
-                      
-                      MemCpy( &g_RF_LoRa.rf_DataBuffer[ g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 12], info_sourceadd,  6); //信息域
-                      
-                      MemCpy( &g_RF_LoRa.rf_DataBuffer[ g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 18], info_sourceadd + 12,  6); //信息域
-                      
-                      MemCpy( &g_RF_LoRa.rf_DataBuffer[ g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 24], info_sourceadd + 6,  6); //信息域
-                      
-                      SX1276LoRa_Send_Packet(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 12 + 18);
-                      
-                    }
-                   
-                  break;
 
-                  case 0x11:
-                    if ((cmp(cmd_read_data, &g_RF_LoRa.rf_DataBuffer[DATA_MARK_645_POINT] , 4) == 1))
-                    {
-                        if ( (cmp(cmd_read_data, &g_RF_LoRa.rf_DataBuffer[DATA_MARK_645_POINT] , 4) == 1) )
-                        {
-                            /*
-                            MemCpy( g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_DataBuffer,  8);
-                            */
-                            g_RF_LoRa.rf_DataBuffer[8]           = g_RF_LoRa.rf_DataBuffer[CONTROL_645_POINT] | 0x80;
-                            g_RF_LoRa.rf_DataBuffer[9]           = 0x1c;
-                            MemCpy( &g_RF_LoRa.rf_DataBuffer[10], cmd_read_data,  4);
-                            
-                            g_RF_LoRa.rf_DataBuffer[14]          = rn8209c_papameter.pwmValue ; /*pwm value*/
-
-                            g_RF_LoRa.rf_DataBuffer[15]          = 0;
-                            g_RF_LoRa.rf_DataBuffer[16]          = 0;
-                            g_RF_LoRa.rf_DataBuffer[17]          = 0;         
-                            g_RF_LoRa.rf_DataBuffer[18]          = 0; //worning
-                            
-                            //read_8209c_U();
-                            g_RF_LoRa.rf_DataBuffer[19]          = (u8)(rn8209c_papameter.Uv & 0xFF);
-                            g_RF_LoRa.rf_DataBuffer[20]          = (u8)((rn8209c_papameter.Uv >>8) & 0xFF); //voltage
-                            
-                            //read_8209c_Ia();
-                            g_RF_LoRa.rf_DataBuffer[21]          = (u8)(rn8209c_papameter.Ia & 0xFF);
-                            g_RF_LoRa.rf_DataBuffer[22]          = (u8)((rn8209c_papameter.Ia >>8) & 0xFF); 
-                            g_RF_LoRa.rf_DataBuffer[23]          = (u8)((rn8209c_papameter.Ia >>16) & 0xFF);        
-                            g_RF_LoRa.rf_DataBuffer[24]          = (u8)((rn8209c_papameter.Ia >>24) & 0xFF); //current
-                            
-                            //read_8209c_Pa();
-                            g_RF_LoRa.rf_DataBuffer[25]          = (u8)(rn8209c_papameter.Pa & 0xFF); 
-                            g_RF_LoRa.rf_DataBuffer[26]          = (u8)((rn8209c_papameter.Pa >>8) & 0xFF); //power
-                            
-                            g_RF_LoRa.rf_DataBuffer[27]          = read_pow_factor(); //功率因数
-                            
-                            g_RF_LoRa.rf_DataBuffer[28]          = 0; 
-                            g_RF_LoRa.rf_DataBuffer[29]          = 0; //温度
-                            
-                            read_8209c_energyP();
-                            g_RF_LoRa.rf_DataBuffer[30]          = 0;
-                            g_RF_LoRa.rf_DataBuffer[31]          = 0;
-                            g_RF_LoRa.rf_DataBuffer[32]          = 0;         
-                            g_RF_LoRa.rf_DataBuffer[33]          = 0; //电量
-                            
-                            temp_light_time = get_light_time();
-                            g_RF_LoRa.rf_DataBuffer[34]          = (u8)(temp_light_time & 0xFF);;
-                            g_RF_LoRa.rf_DataBuffer[35]          = (u8)((temp_light_time >>8) & 0xFF);
-                            g_RF_LoRa.rf_DataBuffer[36]          = (u8)((temp_light_time >>16) & 0xFF);          
-                            g_RF_LoRa.rf_DataBuffer[37]          = (u8)((temp_light_time >>24) & 0xFF); //current //亮灯时长
-                            
-                            for (u16 i = 14; i <= 37; i++ )
-                            {
-                              g_RF_LoRa.rf_DataBuffer[i] += 0x33;
-                            }
-                            
-                            g_RF_LoRa.rf_DataBuffer[38]           = getSum(g_RF_LoRa.rf_DataBuffer, 10 + g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT]); //cs
-                            g_RF_LoRa.rf_DataBuffer[39]           = 0x16; //end
-                            
-                            MemCpy( &g_RF_LoRa.rf_DataBuffer[40], info_sourceadd,  6); //信息域
-                      
-                            MemCpy( &g_RF_LoRa.rf_DataBuffer[46], info_sourceadd + 12,  6); //信息域
-                      
-                            MemCpy( &g_RF_LoRa.rf_DataBuffer[52], info_sourceadd + 6,  6); //信息域
-                            
-                            SX1276LoRa_Send_Packet(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 12 + 18);
-                        }
-                     
-                    }
-                    
-                  break;
-
-                  default:
-                    
-                  break;
-              }
-          }
-         
-       }
-     }
-  }
-  
-}
 
 
 
@@ -268,21 +116,22 @@ PROCESS_THREAD(hal_RF_process, ev, data)
         }
         else  if (*((tRFLRStates*)data) == RFLR_STATE_RX_RECEIVEING) 
         {
-           etimer_set(&timer_rf, CLOCK_CONF_SECOND*2);                //超时时间还需要调整
+           etimer_set(&timer_rf, CLOCK_CONF_SECOND*2);                  //超时时间还需要调整
            printf("rx start\r\n");
         } 
         else if (*((tRFLRStates*)data) == RFLR_STATE_RX_DONE) 
         {
-           printf("rssi = %f  snr = %d ",SX1276LoRaGetPacketRssi(), SX1276LoRaGetPacketSnr());
+           printf("rssi = %f  snr = %d\r\n",SX1276LoRaGetPacketRssi(), SX1276LoRaGetPacketSnr());
          
           if (g_RF_LoRa.rf_DataBufferValid)
           {
              //etimer_stop(&timer_rf);                                 //此处如果不在中断函数中处理，就要在进程函数中处理
               hal_ToggleLED(TXD_LED);
               g_RF_LoRa.rf_DataBufferValid = false;
-              hal_DebugDMATx(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_RxPacketSize);
-             
-              //apl_ProcessRadioCmd();                                  //解析帧，传给应用层 
+              //hal_DebugDMATx(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_RxPacketSize);
+             #ifdef PRINTF_DEBUG
+              //apl_ProcessRadioCmd();                                 //解析帧，传给应用层 
+             #endif
           }
           else
           {
@@ -642,10 +491,7 @@ void GPIO_int_Config(void)
   /* Enable AFIO clock */
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_SYSCFG, ENABLE);
   
-  EXTI_ClearITPendingBit(DIO0_IRQ);
-  EXTI_ClearITPendingBit(DIO1_IRQ);
-  EXTI_ClearITPendingBit(DIO2_IRQ);
-  EXTI_ClearITPendingBit(DIO3_IRQ);
+  EXTI_ClearITPendingBit(DIO0_IRQ | DIO1_IRQ | DIO2_IRQ | DIO3_IRQ);
   
   /* Connect EXTI0 Line to PB.0 pin */
   SYSCFG_EXTILineConfig(sRF_DIOx_PORT_SOURCE, sRF_DIO0_PIN_SOURCE);
@@ -881,7 +727,7 @@ void hal_sRF_WriteRegister(u8 reg, u8 val)
 #endif
 
 
-
+#ifdef SPI_DMA_FIFO
 /*****************************************************************************
  Prototype    : hal_sRF_DMA_Read
  Description  : none
@@ -893,7 +739,6 @@ void hal_sRF_WriteRegister(u8 reg, u8 val)
  Date         : 2014/3/15
  Author       : Barry
 *****************************************************************************/
-#ifdef SPI_DMA_FIFO
 void hal_sRF_DMA_Read(u8 startReg, u8 *pBuffer, u8 length)
 {
   /* Allocate storage for CPU status register      */
@@ -940,7 +785,7 @@ void hal_sRF_DMA_Read(u8 startReg, u8 *pBuffer, u8 length)
     OS_EXIT_CRITICAL();
   }
 }
-#endif
+
 /*****************************************************************************
  Prototype    : hal_sRF_DMA_Write
  Description  : none
@@ -951,7 +796,6 @@ void hal_sRF_DMA_Read(u8 startReg, u8 *pBuffer, u8 length)
  Date         : 2014/3/15
  Author       : Barry
 *****************************************************************************/
-#ifdef SPI_DMA_FIFO
 void hal_sRF_DMA_Write(u8 *pBuffer, u8 length)
 {
   if (length > 0)
@@ -974,7 +818,6 @@ void hal_sRF_DMA_Write(u8 *pBuffer, u8 length)
     printf("length input error\r\n");
   }
 }
-#endif
 
 /*****************************************************************************
  Prototype    : hal_sRF_Config
@@ -987,7 +830,6 @@ void hal_sRF_DMA_Write(u8 *pBuffer, u8 length)
  Date         : 2014/3/15
  Author       : Barry
 *****************************************************************************/
-#ifdef SPI_DMA_FIFO
 void hal_sRF_Config(u8 startReg, u8 *pBuffer, u8 length)
 {
 
@@ -1003,7 +845,6 @@ void hal_sRF_Config(u8 startReg, u8 *pBuffer, u8 length)
     hal_sRF_DMA_Write(pBuffer, length + 1);
   }
 }
-#endif
 
 /*****************************************************************************
  Prototype    : hal_sRF_Read
@@ -1016,7 +857,6 @@ void hal_sRF_Config(u8 startReg, u8 *pBuffer, u8 length)
  Date         : 2014/3/15
  Author       : Barry
 *****************************************************************************/
-#ifdef SPI_DMA_FIFO
 void hal_sRF_Read(u8 startReg, u8 *pBuffer, u8 length)
 {
  
@@ -1026,7 +866,6 @@ void hal_sRF_Read(u8 startReg, u8 *pBuffer, u8 length)
     hal_sRF_DMA_Read(startReg,pBuffer,length);
   }
 }
-#endif
 
 /*****************************************************************************
  Prototype    : hal_sRF_readFIFO_DMA
@@ -1038,14 +877,13 @@ void hal_sRF_Read(u8 startReg, u8 *pBuffer, u8 length)
  Date         : 2014/3/21
  Author       : Barry
 *****************************************************************************/
-#ifdef SPI_DMA_FIFO
 void hal_sRF_readFIFO_DMA(u8 * pBuffer, u8 length)
 {
 
   hal_sRF_DMA_Read(0,pBuffer,length);
 
 }
-#endif
+
 /*****************************************************************************
  Prototype    : hal_sRF_writeFIFO_DMA
  Description  : none
@@ -1056,15 +894,17 @@ void hal_sRF_readFIFO_DMA(u8 * pBuffer, u8 length)
  Date         : 2014/3/21
  Author       : Barry
 *****************************************************************************/
-#ifdef SPI_DMA_FIFO
 void hal_sRF_writeFIFO_DMA(u8 * pBuffer, u8 length)
 {
   hal_sRF_Config(0,pBuffer,length);
 }
-  #endif
-/******************************************************************************/
-/*            STM32F10x Peripherals Interrupt Handlers                        */
-/******************************************************************************/
+
+
+
+/******************************************************************************
+*      STM32F10x Peripherals Interrupt Handlers   
+*
+/*****************************************************************************/
 
 
 /*****************************************************************************
@@ -1077,7 +917,6 @@ void hal_sRF_writeFIFO_DMA(u8 * pBuffer, u8 length)
     Author       : liwei
     Modification : Created function
 *****************************************************************************/
-#ifdef SPI_DMA_FIFO
 void sRF_SPI_DMA_IRQHandler(void)
 {
   if (DMA_GetITStatus(sRF_SPI_DMA_RX_COMPLETE) != RESET)
@@ -1170,11 +1009,6 @@ void hal_InitRF(void)
 #endif
   printf("reset RF\r\n");
 }
-
-
-
-
-
 
 /******************* (C) COPYRIGHT 2013 Robulink Technology Ltd.*****END OF FILE****/
 
