@@ -1504,5 +1504,5 @@ void SX1276FskSetRFState( uint8_t state );
 uint32_t SX1276FskProcess( void );
 
 void start_continuous_mode(void);
-
+void SX1276Fsk_long_send_no_Packet(void);
 #endif //__SX1276_FSK_H__

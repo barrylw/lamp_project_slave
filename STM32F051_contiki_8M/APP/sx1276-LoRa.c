@@ -871,7 +871,7 @@ void receiveRxData(bool spiDMA)
      }
      
     #ifdef  SPI_DMA_FIFO
-    if (spiDMA))
+    if (spiDMA)
     {
       hal_sRF_readFIFO_DMA(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_RxPacketSize); 
     }

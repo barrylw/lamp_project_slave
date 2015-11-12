@@ -34,7 +34,7 @@ tFskSettings FskSettings =
     492000000,      // RFFrequency
     10000,          // Bitrate
     20000,          // Fdev
-    14,             // Power
+    17,             // Power
     40000,          // RxBw
     150000,         // RxBwAfc
     true,           // CrcOn
@@ -482,6 +482,13 @@ void SX1276Fsk_Send_Packet(u8 *PBuffer,u8 length)
     g_fsk.states = RF_STATE_TX_RUNNING;
 
     SX1276FskSetOpMode( RF_OPMODE_TRANSMITTER );   
+}
+
+void SX1276Fsk_long_send_no_Packet(void)
+{
+  SX1276->RegFifoThresh = RF_FIFOTHRESH_TXSTARTCONDITION_FIFOTHRESH | TX_FIFO_THRESHOLD; // 24 bytes of data
+  SX1276Write( REG_FIFOTHRESH, SX1276->RegFifoThresh );
+  SX1276FskSetOpMode( RF_OPMODE_TRANSMITTER );   
 }
 
 

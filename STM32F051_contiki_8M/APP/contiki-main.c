@@ -19,7 +19,7 @@
 #include "gpio_per.h"
 #include "stm32f0xx_tim.h"
 #include "NWK.h"
-
+//#include "sx1276-Fsk.h"
 
 
 u8 tedtbuf[150];
@@ -186,6 +186,12 @@ PROCESS_THREAD(cfs_test_process, ev, data)
 #endif
 
 
+u8 test_phy_packet[] = {0x00, 0x00,0x22,0x12,0x34,0x03,0x0b,0x91,0x00,0x00,0x00,0x01,0x0b,0x91,0x00,0x00,0x00,0x02,
+    0x0b,0x91,0x00,0x00,0x00,0x03,0x0b,0x91,0x00,0x00,0x00,0x04,0x0b,0x91,0x00,0x00,0x00,0x05,0x01,0x02,0x03};
+
+st_NWK_frame testpp;
+
+
 int main()
 {
   for (u8 i = 0; i < 150; i++)
@@ -205,6 +211,8 @@ int main()
   init_8209c_params();
   hal_init_PWM();
 
+  //NWK_data_indication(test_phy_packet, sizeof(test_phy_packet), &testpp);
+
  
   printf("start app\r\n");
   process_init();
@@ -218,7 +226,7 @@ int main()
   
   //autostart_start(autostart_processes); 
   //start_continuous_mode();
-
+ //SX1276Fsk_long_send_no_Packet();
 
   while (1)
   {

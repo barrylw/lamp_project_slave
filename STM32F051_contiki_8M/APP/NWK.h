@@ -31,6 +31,9 @@
 #define ROUTE_MODE_MASK   0xc0
 */
 
+#define ADDR_AREA_LEN      36
+#define APL_AREA_LEN       (255 - ADDR_AREA_LEN - 7)
+
 
 enum
 {
@@ -38,9 +41,7 @@ enum
     EM_NWK_VERSION_POS    = 1,
     EM_NWK_NO_POS         = 2,
     EM_NWK_NID_POS        = 3,
-    EM_NWK_TX_RSSI_POS    = 5,
-    EM_NWK_RX_RSSI_POS    = 6,
-    EM_NWK_ADDR_AREA_POS  = 7,
+    EM_NWK_VAR            = 5,
 };
 
 typedef struct
@@ -81,8 +82,8 @@ typedef struct
 typedef struct 
 {
     ST_NWK_head   head;
-    u8 *          relay_list;              //中继列表地址，传送给APL
-    u8 *          frame_data_point;
+    u8            relay_list[ADDR_AREA_LEN];              //中继列表地址，传送给APL
+    u8            frame_data[APL_AREA_LEN];             //255
     u8            source_addr[6];
     u8            dest_addr[6];
     u8            source_addr_len;
