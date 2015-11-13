@@ -219,6 +219,15 @@ PROCESS_THREAD(hal_RF_process, ev, data)
 }
 #endif
 
+u8 * get_phy_ptr(void)
+{
+    #ifdef USE_LORA_MODE
+     return   g_RF_LoRa.rf_DataBuffer;
+    #else
+     return   g_fsk.buffer;
+    #endif
+}
+
 
 
 /*****************************************************************************

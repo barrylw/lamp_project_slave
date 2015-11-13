@@ -82,14 +82,11 @@ typedef struct
 typedef struct 
 {
     ST_NWK_head   head;
-    u8            relay_list[ADDR_AREA_LEN];              //中继列表地址，传送给APL
-    u8            frame_data[APL_AREA_LEN];             //255
-    u8            source_addr[6];
-    u8            dest_addr[6];
-    u8            source_addr_len;
-    u8            dest_addr_len;
-    u8            relay_addr_len; 
+    u8            addr_list[ADDR_AREA_LEN];              //中继列表地址，传送给APL
+    u8            frame_data[APL_AREA_LEN];              //255 
+    u8            addr_list_len; 
     u8            frame_data_length;
+    u8            addr_uint_len;
 }st_NWK_frame;
 
 typedef struct

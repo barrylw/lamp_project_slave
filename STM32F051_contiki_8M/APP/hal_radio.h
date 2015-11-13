@@ -236,6 +236,8 @@ void hal_san_channel(void);
 void hal_start_CSMA(void);
 
 void hal_sRF_readFIFO_DMA(u8 * pBuffer, u8 length);
+u8 * get_phy_ptr(void);
+
 /*!
  * DIO state read functions mapping
  */

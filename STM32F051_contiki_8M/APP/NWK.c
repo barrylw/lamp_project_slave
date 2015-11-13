@@ -4,8 +4,16 @@ static u16 LOCAL_NID = 0x3412;
 static u16 broadcast_addr = 0xFF;
 static NWK_PIB  nwk_pib;
 
+static u8 * nwk_frame;
+static u8   nwk_length;
+
+static st_NWK_frame nwk_frame_buf;
+st_NWK_frame * nwk_frame_ptr = &nwk_frame_buf;
+
+
+
 /*****************************************************************************
- Prototype    : compress_addr_list
+ Prototype    : compress_addr_list  尾部分段算法
  Description  : 压缩地址序列
  Input        : surcelist    以6字节为间隔的长地址序列
                 destlist     压缩后的地址序列  
@@ -14,30 +22,101 @@ static NWK_PIB  nwk_pib;
  Date         : 2014/11/12
  Author       : Barry
 *****************************************************************************/
-void compress_addr_list(u8 *surcelist, u8 s_len,  u8 * destlist)
+u8 compress_addr_list(u8 *surcelist, u8 s_len,  u8 * destlist)
 {
-    for (u8 i = 0; i < (s_len /6); i++)
+  u8 buf[6] = {0};
+    u8 * ptr =  destlist;
+
+    memcpy(ptr, surcelist, 6);
+
+    ptr += 6;
+    
+    for (u8 i = 0; i < (s_len - 6); i++)
     {
-        for (u8 j = 0; j < 6; j++)
-        {
-            
-        }
+       buf[i%6] = (surcelist[i] ^ surcelist[i + 6]) << 1;
+       
+       if (i%6 == 5)
+       {
+          buf[5] += 1;  
+
+          for (u8 j = 0; j < 6; j++)
+          {
+             if (buf[j] != 0)
+             {
+                *ptr = buf[j];
+                ptr++;
+             }
+          }
+       }
     }
+    
+    return (ptr - destlist);
 }
 
 /*****************************************************************************
- Prototype    : dempress_addr_list
+ Prototype    : dempress_addr_list    尾部分段解析法
  Description  : 解压缩地址序列
  Input        : surcelist   压缩后的地址序列  
                 destlist    以6字节为间隔的长地址序列 
+                s_len       被压缩序列长度
  Output       : None
  Return Value : 
  Date         : 2014/11/12
  Author       : Barry
 *****************************************************************************/
-void dempress_addr_list(u8 *surcelist, u8 * destlist)
+u8 dempress_addr_list(u8 *surcelist,  u8 * destlist, u8 count, u8 *s_len)
 {
+    u8 buf[6] = {0x00,0x00,0x00,0x00,0x00,0x00};
+    u8 buf_index = 0;
+    u8 last_end = 5;
+    u8 *ptr = destlist;
+    u8 temp;
+    
+    count += 1;
+    
+    memcpy(destlist, surcelist, 6);
+    ptr += 6;
 
+    for (u8 i = 0;; i++)
+    {
+        if ( (surcelist[i + 6] & 0x01) == 0x01 )
+        {
+            count--;
+
+            if (count == 0)
+            {
+                *s_len = i + 6 +1;
+                break;
+            }
+        }
+    }
+    
+
+    for (int i = 6; i < *s_len; i++)
+    {
+        if ( (surcelist[i] & 0x01) == 0x01 )
+        {
+            buf_index = 0;
+            for (u8 j = i; j > last_end; j--)
+            {
+                buf[6-1-buf_index] = surcelist[j];
+                buf[6-1-buf_index] >>= 1;
+                buf_index++;
+            }
+
+            for (u8 k = 0; k < 6; k++)
+            {
+                temp =  *(ptr -6);
+                *ptr = *(ptr -6) ^ buf[k];
+                ptr++;
+            }
+            
+            last_end = i;
+            memset(buf,0,6);
+        }
+    }
+    
+    return (ptr - destlist);
 }
 
 /***********************************************************
@@ -49,19 +128,23 @@ void dempress_addr_list(u8 *surcelist, u8 * destlist)
 3、判断是否使用缩位地址
 4、解析地址域
 5、获取参数，1 帧类型  
+注释: 此函数定义在APL层，由NWK层调用, 
+u8 * nwk_packet, u8 length 分别必须由 PHY_data_indication() 得来的数据赋值
+nwk_frame_ptr是全局变量，用来传递数据
 ************************************************************/
-void NWK_data_indication(u8 * phy_frame, u16 length, st_NWK_frame * nwk_frame_buf)
+void NWK_data_indication(u8 * nwk_packet, u8 length)
 {
     st_addr_area  addr_area;
     ST_NWK_head * nwk_head_ptr = 0;
     u8 *          current_ptr  = 0;
-    u8 addr_area_pos;
+    u8            addr_area_pos;
     u16 temp;
+    u8            compressed_list_len;
 
      /* 复制到NID为止 */
-     memcpy((u8*)(nwk_frame_buf), phy_frame, EM_NWK_VAR);
+     memcpy((u8*)(nwk_frame_ptr), nwk_packet, EM_NWK_VAR);
 
-     nwk_head_ptr = &(nwk_frame_buf->head);
+     nwk_head_ptr = &(nwk_frame_ptr->head);
      
      temp = (u16)(nwk_head_ptr->NID[0]) + nwk_head_ptr->NID[1]*256;
      
@@ -77,78 +160,63 @@ void NWK_data_indication(u8 * phy_frame, u16 length, st_NWK_frame * nwk_frame_bu
 
      addr_area_pos = (nwk_head_ptr->direction == 0)? EM_NWK_VAR:(EM_NWK_VAR + 2);
 
-     if (nwk_head_ptr->direction == 1)
+     if (nwk_head_ptr->direction == 1)//上行帧
      {
-        nwk_head_ptr->tx_RSSI = phy_frame[EM_NWK_VAR];
-        nwk_head_ptr->rx_RSSI = phy_frame[EM_NWK_VAR+1];
+        nwk_head_ptr->tx_RSSI = nwk_packet[EM_NWK_VAR];
+        nwk_head_ptr->rx_RSSI = nwk_packet[EM_NWK_VAR+1];
+        addr_area_pos = EM_NWK_VAR + 2;
+     }
+     else
+     {
+        addr_area_pos = EM_NWK_VAR;
      }
     
-    /*
-    缩位地址标识子域长度为1位，表示源地址、目的地址和中继地址是否使用缩位型式
 
-    缩位地址的算法描述如下：
-    （1）源地址保持不变；
-    （2）将后续的地址按字节与前一地址异或；
-    （3）异或后的单个字节左移1位，若后续有字节，本字节不变，否则加1；
-    （4）移位后高位为0的字节丢弃，从非0字节开始保存缩位后的结果。
-    */
+    if (nwk_head_ptr->route_type == ROUTE_SOURCE_MODE)//源路由
+    {
+        *(u8*)(&addr_area)    = nwk_packet[addr_area_pos];
 
-       if (nwk_head_ptr->compression_addr_enable  == 0)   //不使用缩位地址
-       {
-          nwk_frame_buf->source_addr_len = (nwk_head_ptr->source_addr_type == LONG_ADDR_TYPE)? 6:2;
-         
-          nwk_frame_buf->dest_addr_len   = (nwk_head_ptr->des_addr_type == LONG_ADDR_TYPE)? 6:2;
-
-         if ( addr_area.relay_level >  0) //中继地址列表存在
-         {
-           nwk_frame_buf->relay_addr_len  =  ((nwk_head_ptr->relay_addr_type == LONG_ADDR_TYPE)? 6:2) *  addr_area.relay_level; 
-         }
-         else
-         {
-           nwk_frame_buf->relay_addr_len = 0; 
-         }
-
-         nwk_frame_buf->frame_data_length = ;
-
-         if (nwk_head_ptr->route_type == ROUTE_SOURCE_MODE)//源路由
-         {
-          *(u8*)(&addr_area)    = phy_frame[addr_area_pos];
-          
-           current_ptr = phy_frame  + addr_area_pos + 1;
-           memcpy(nwk_frame_buf->source_addr, current_ptr, nwk_frame_buf->source_addr_len);
-           
-           current_ptr += nwk_frame_buf->source_addr_len;
-           memcpy(nwk_frame_buf->dest_addr, current_ptr, nwk_frame_buf->dest_addr_len );
-                       
-           current_ptr +=  nwk_frame_buf->dest_addr_len;
-           memcpy(nwk_frame_buf->relay_list, current_ptr,nwk_frame_buf->relay_addr_len);
-          
-           current_ptr += nwk_frame_buf->relay_addr_len;
-           memcpy(nwk_frame_buf->frame_data_point, current_ptr,nwk_frame_buf->relay_addr_len);
-         }
-         else //盲中继
-         {
-            current_ptr = phy_frame  + addr_area_pos + 4;
-            memcpy(nwk_frame_buf->source_addr, current_ptr, nwk_frame_buf->source_addr_len);
-
-            current_ptr += nwk_frame_buf->source_addr_len;
-            memcpy(nwk_frame_buf->dest_addr, current_ptr, nwk_frame_buf->dest_addr_len );
-            //忙中继参数
-         }
-    //}
-    
-    //else//使用缩位地址
-    //{
-    
-    //}
- 
+        current_ptr = nwk_packet + addr_area_pos + 1;
+        if (nwk_head_ptr->compression_addr_enable  == 1) //使用缩位地址
+        {
+            nwk_frame_ptr->addr_uint_len = 6;
+            nwk_frame_ptr->addr_list_len = dempress_addr_list(current_ptr, nwk_frame_ptr->addr_list, addr_area.relay_level, &compressed_list_len); 
+            current_ptr += compressed_list_len;
+        }
+        else
+        {
+            nwk_frame_ptr->addr_uint_len = (nwk_head_ptr->relay_addr_type == LONG_ADDR_TYPE)? 6:2;
+            nwk_frame_ptr->addr_list_len  =  nwk_frame_ptr->addr_uint_len *  (addr_area.relay_level+2);
+            memcpy(nwk_frame_ptr->addr_list, current_ptr, nwk_frame_ptr->addr_list_len );
+            current_ptr += nwk_frame_ptr->addr_list_len;
+        }
+        
+        nwk_frame_ptr->frame_data_length = length - nwk_frame_ptr->addr_list_len - (addr_area_pos + 1);
+        memcpy(nwk_frame_ptr->frame_data, current_ptr, nwk_frame_ptr->frame_data_length);
+    }
+    else //盲中继
+    {
+     
+        //忙中继参数
+    }
 }
 
 
+/**********************************
+由参数传递数据，PHY_data_indication定义在NWK层，
+但是由PHY层调用，PHY_data_indication定义中表明需要的数据由PHY层由参数提供
+*********************************/
+void PHY_data_indication(u8 * buf, u16 length)
+{
+    nwk_frame     = buf;
+    nwk_length    = length;
+}
 
+
+/*
 void NWK_data_request(void)
 {
 }
-
+*/
 
 
