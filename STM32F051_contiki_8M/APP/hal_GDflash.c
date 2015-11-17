@@ -13,10 +13,10 @@
 *****************************************************************************/
 void hal_Init_gdflash_pins(void)
 {
-#if 0
+
   GPIO_InitTypeDef GPIO_InitStructure;
   
-  RCC_AHBPeriphClockCmd( GDFLASH_GPIO_CLK , ENABLE);
+  RCC_AHBPeriphClockCmd( GDFLASH_CS_SCK | DGFLASH_SCK_SCK , ENABLE);
                        
    /*!< Configure sRF_CS_PIN pin: sRF CS pin */
   GPIO_InitStructure.GPIO_Pin = GDFLASH_CS_PIN;
@@ -24,7 +24,7 @@ void hal_Init_gdflash_pins(void)
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_Init(DGFLASH_SPI_PORT, &GPIO_InitStructure);
+  GPIO_Init(GDFLASH_CS_PORT, &GPIO_InitStructure);
   
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_AF;
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -32,16 +32,14 @@ void hal_Init_gdflash_pins(void)
   GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
 
   GPIO_InitStructure.GPIO_Pin = GDFLASH_SCK_PIN | GDFLASH_MISO_PIN | GDFLASH_MOSI_PIN;
-  GPIO_Init(DGFLASH_SPI_PORT, &GPIO_InitStructure);
+  GPIO_Init(DGFLASH_SCK_PORT, &GPIO_InitStructure);
   
   
    /* SPI pin mappings */
-  GPIO_PinAFConfig(DGFLASH_SPI_PORT, DGFLASH_SPI_SCK_SOURCE,  DGFLASH_SPI_SCK_AF);
-  GPIO_PinAFConfig(DGFLASH_SPI_PORT, DGFLASH_SPI_MISO_SOURCE, DGFLASH_SPI_MISO_AF);
-  GPIO_PinAFConfig(DGFLASH_SPI_PORT,DGFLASH_SPI_MOSI_SOURCE,  DGFLASH_SPI_MOSI_AF);
-#endif
-  
-  
+  GPIO_PinAFConfig(DGFLASH_SCK_PORT, DGFLASH_SPI_SCK_SOURCE,  DGFLASH_SPI_SCK_AF);
+  GPIO_PinAFConfig(DGFLASH_MISO_PORT, DGFLASH_SPI_MISO_SOURCE, DGFLASH_SPI_MISO_AF);
+  GPIO_PinAFConfig(DGFLASH_MOSI_PORT,DGFLASH_SPI_MOSI_SOURCE,  DGFLASH_SPI_MOSI_AF);
+
 }
 
 
@@ -56,7 +54,6 @@ void hal_Init_gdflash_pins(void)
 *****************************************************************************/
 void hal_gdflash_SPI_Config(void)
 {
-#if 0
   SPI_InitTypeDef SPI_InitStructure;
  
   /*!< Deselect the RF: Chip Select high */
@@ -86,7 +83,6 @@ void hal_gdflash_SPI_Config(void)
  
   /*!< Enable the sRF_SPI  */
   SPI_Cmd(GDFLASH_SPI, ENABLE);
-#endif
 }
 
 void GDflash_init(void)

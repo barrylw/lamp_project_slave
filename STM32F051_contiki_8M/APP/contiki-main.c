@@ -16,9 +16,9 @@
 //#include "cfs-coffee-arch.h"
 #include "hal_uart.h"
 #include "hal_gdflash.h"
-#include "gpio_per.h"
 #include "stm32f0xx_tim.h"
 #include "NWK.h"
+#include "gpio_per.h"
 //#include "sx1276-Fsk.h"
 
 
@@ -194,46 +194,42 @@ u8 decommpress_buf[18] = {0x00,0x01,0x02,0x03,0x04,0x05,0x20,0x21,0x60,0x61};
 u8 result_buf[18];  
 
 u8 len;
-st_NWK_frame testpp;
+u16 currentADC = 0;
 
 
 int main()
 {
-  for (u8 i = 0; i < 150; i++)
-  {
+    for (u8 i = 0; i < 150; i++)
+    {
     tedtbuf[i] = i+1;
-  }
-  
-  InitVariable();
-  InitHardware(); 
+    }
 
-  relay_gpio_init();
-  drop_down_timer_init();
-  //init_zero_detect();
-  //hal_ADC_Init();
- 
-  rn8209c_init();
-  init_8209c_params();
-  hal_init_PWM();
+    InitVariable();
+    InitHardware(); 
 
-  //NWK_data_indication(test_phy_packet, sizeof(test_phy_packet), &testpp);
-  //len = compress_addr_list(commpress_buf, 18,  result_buf);
-  len = dempress_addr_list(decommpress_buf,result_buf, 1);
- 
-  printf("start app\r\n");
-  process_init();
-  process_start(&etimer_process, NULL);
-  process_start(&hal_urat_process, NULL);
-  process_start(&hal_RF_process, NULL);
-  process_start(&start_time_detect_process, NULL);
-  //process_start(&zero_detect_process, NULL);
- 
-  //process_start(&hal_long_send, NULL);
-  
-  //autostart_start(autostart_processes); 
-  //start_continuous_mode();
- //SX1276Fsk_long_send_no_Packet();
+    relay_gpio_init();
+    rn8209c_init();
+    hal_init_PWM();
+    init_zero_detect();
+    hal_ADC_Init();
+   
 
+    //NWK_data_indication(test_phy_packet, sizeof(test_phy_packet), &testpp);
+    //len = compress_addr_list(commpress_buf, 18,  result_buf);
+    //len = dempress_addr_list(decommpress_buf,result_buf, 1);
+
+    printf("start app\r\n");
+    process_init();
+    process_start(&etimer_process, NULL);
+    process_start(&hal_urat_process, NULL);
+    process_start(&hal_RF_process, NULL);
+    process_start(&start_time_detect_process, NULL);
+    //process_start(&zero_detect_process, NULL);
+    //process_start(&hal_long_send, NULL);
+    //autostart_start(autostart_processes); 
+    //start_continuous_mode();
+    //SX1276Fsk_long_send_no_Packet();
+    
   while (1)
   {
     /*执行完所有needspoll为1的进程及处理完所有队列，详情见3.2*/

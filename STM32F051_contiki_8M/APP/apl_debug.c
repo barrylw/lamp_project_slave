@@ -47,6 +47,7 @@ void read_energy(void);
 void read_factor(void);
 void debug_save(void);
 void read_u_i_p(void);
+void read_adc(void);
 /** @addtogroup  APL Debug Command
   * @{
   */ 
@@ -64,7 +65,6 @@ static const ST_DEBUG_COMMAND CmdList[] =
   {"gettime", GetTime},
   {"senduart", SendUart},
   {"setpow",set_power},
-  {"readupdate", ReadUpdateData},
   {"readreg",get_reg},
   {"writereg",set_reg},
   {"readft",read_reg_all},
@@ -84,11 +84,12 @@ static const ST_DEBUG_COMMAND CmdList[] =
   {"reada",read_param_all},
   {"8209creset",reset_8029c},
   {"flashread",read_params_flash},
-  {"relayclose",Relay_close},
-  {"relayopen",Relay_open},
+  {"openlight",Relay_close},
+  {"closelight",Relay_open},
   {"pwm",debug_set_pwm},
   {"factor",read_factor},
-  {"dbsave",debug_save}
+  {"dbsave",debug_save},
+  {"adc",read_adc}
 };
 
 extern u8 g_DebugRxBuffer[RBL_COM2_RX_SIZE];
@@ -368,19 +369,7 @@ static u8 HexCharToInt8u(u8 hexChar)
   }
 }
 
-void ReadUpdateData(void)
-{
-  u8 tempBuf[UPDATE_FLASH_LENGTH+2];
-  
-  for (u8 i = 0; i < UPDATE_FLASH_LENGTH + 2; i++)
-  {
-    tempBuf[i] = *((u8*)(UPDATE_FLASH_PARAMETER_DDR + i ));
-  }
-  for (u8 i = 0; i < UPDATE_FLASH_LENGTH + 2; i++)
-  {
-    printf("%x ",  tempBuf[i]);
-  }
-}
+
 
 void set_power(void)
 {
@@ -694,6 +683,7 @@ void read_params_flash(void)
   printf("%s\r\n",g_updateBuffer);
 }
 
+
 void Relay_close(void)
 {
   relay_close();
@@ -703,6 +693,7 @@ void Relay_open(void)
 {
    relay_open();
 }
+
 
 void debug_set_pwm(void)
 {
@@ -758,6 +749,12 @@ void read_u_i_p(void)
 {
   read_UIP();
   printf("U = %d I = %d P = %d",rn8209c_papameter.Uv,rn8209c_papameter.Ia,rn8209c_papameter.Pa);
+}
+
+void read_adc(void)
+{
+    u16 adc = read_PWM_volt();
+    printf("adc = %d", adc);
 }
 #endif //PRINTF_DEBUG
 

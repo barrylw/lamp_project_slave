@@ -85,10 +85,6 @@ u8 cmp(u8 * buf1, u8* buf2, u8 length)
 
 
 
-
-
-
-
 /* 尽量将etimer 绑定在事件中，在事件中定义 */
 PROCESS(hal_RF_process, "radio_process ");
 
@@ -105,7 +101,7 @@ PROCESS_THREAD(hal_RF_process, ev, data)
     {
         if (*((tRFLRStates*)data) == RFLR_STATE_TX_RUNNING)   
         {
-            etimer_set(&timer_rf, CLOCK_CONF_SECOND*2);               //超时时间还需要调整
+            etimer_set(&timer_rf, CLOCK_CONF_SECOND*4);               //超时时间还需要调整
             printf("tx start\r\n");
         }
         else if (*((tRFLRStates*)data) == RFLR_STATE_TX_DONE)  
@@ -116,28 +112,32 @@ PROCESS_THREAD(hal_RF_process, ev, data)
         }
         else  if (*((tRFLRStates*)data) == RFLR_STATE_RX_RECEIVEING) 
         {
-           etimer_set(&timer_rf, CLOCK_CONF_SECOND*2);                  //超时时间还需要调整
+           etimer_set(&timer_rf, CLOCK_CONF_SECOND*4);                  //超时时间还需要调整
            printf("rx start\r\n");
         } 
+        else if (*((tRFLRStates*)data) == RFLR_STATE_RX_ERR)
+        {
+           SX1276LoRa_Receive_Packet(false); 
+           printf("CRC error\r\n");
+        }
         else if (*((tRFLRStates*)data) == RFLR_STATE_RX_DONE) 
         {
+           SX1276LoRa_Receive_Packet(false); 
+           
            printf("rssi = %f  snr = %d\r\n",SX1276LoRaGetPacketRssi(), SX1276LoRaGetPacketSnr());
+           
+           for (u8 i = 0; i < g_RF_LoRa.rf_RxPacketSize; i++)
+           {
+              printf("%X ",g_RF_LoRa.rf_DataBuffer[i]);
+           }
+           printf("\r\n");
          
           if (g_RF_LoRa.rf_DataBufferValid)
           {
-             //etimer_stop(&timer_rf);                                 //此处如果不在中断函数中处理，就要在进程函数中处理
+              //etimer_stop(&timer_rf);                                 //此处如果不在中断函数中处理，就要在进程函数中处理
               hal_ToggleLED(TXD_LED);
               g_RF_LoRa.rf_DataBufferValid = false;
-              //hal_DebugDMATx(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_RxPacketSize);
-             #ifdef PRINTF_DEBUG
-              //apl_ProcessRadioCmd();                                 //解析帧，传给应用层 
-             #endif
           }
-          else
-          {
-              printf("CRC error\r\n");
-          }
-          SX1276LoRa_Receive_Packet(false);
         }
     }
     else if (ev == PROCESS_EVENT_TIMER)
@@ -183,7 +183,7 @@ PROCESS_THREAD(hal_RF_process, ev, data)
         else  if (*((tRFStates*)data) == RF_STATE_RX_PREAMBLE) 
         {
             printf("rx start\r\n");
-            etimer_set(&timer_rf, CLOCK_CONF_SECOND*3);
+            etimer_set(&timer_rf, CLOCK_CONF_SECOND*4);
         }
         else if (*((tRFStates*)data) == RF_STATE_RX_DONE) 
         {
@@ -227,7 +227,6 @@ u8 * get_phy_ptr(void)
      return   g_fsk.buffer;
     #endif
 }
-
 
 
 /*****************************************************************************
@@ -911,9 +910,8 @@ void hal_sRF_writeFIFO_DMA(u8 * pBuffer, u8 length)
 
 
 /******************************************************************************
-*      STM32F10x Peripherals Interrupt Handlers   
-*
-/*****************************************************************************/
+    STM32F10x Peripherals Interrupt Handlers   
+*****************************************************************************/
 
 
 /*****************************************************************************

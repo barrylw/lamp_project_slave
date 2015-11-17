@@ -1,0 +1,43 @@
+打开 git bash
+1、git config --global user.name "your name"
+2、git config --global user.email "xx@163.com"
+
+新建版本库
+mkdir testgit    //在当前路径下创建一个目录
+cd testgit     
+git init                 //把当前目录初始化为git仓库
+
+
+git diff 文件名          //查看文件的修改
+
+版本回退
+git log                  //查看提交的版本号
+git log --pretty=oneline //已一行显示信息
+
+git checkout -- file      //在add之前，可以用git checkout取消工作区的修改，如果暂存区里缓存了此文件，则以暂存区的文件替换工作区
+                          //如果暂存区里没有缓存此文件，则以版本库里的版本替换工作区的版本
+
+git reset HEAD file       //add之后，commit之前，可以把暂存区的修改撤销掉（unstage），重新放回工作区
+
+git reset --hard HEAD^    //commit之前commit后的修改     
+git reset --hard HEAD~100  //回退到100个之前的版本
+git reset --hard 版本号    //回退到某个版本号的版本
+
+git reflog用来记录你的每一次命令,可以用这个来查找已经被回滚掉的版本ID，前提是你有回滚前的 git log 窗口
+
+理解工作区与暂存区的区别
+工作区就是电脑上看到的目录
+.git就是版本库 版本库最最要的就是 stage(暂存区)，还有git为我们自动创建的第一个分支master,以及指向第一个分支的指针HEAD
+
+git add 就是把工作区文件添加到暂存区
+git commit 提交更改，实际就是把暂存区的内容提交到当前分支上
+
+git 撤销修改和删除文件操作
+
+git remote add origin https://github.com/tugenhua0707/testgit.git //把本地仓库和远程仓库关联起来
+git clone git@github.com:barrylw/lamp_project_slave.git           //克隆本地仓库
+
+git分支的问题
+
+
+

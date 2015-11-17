@@ -99,11 +99,11 @@
         </option>
         <option>
           <name>OGChipSelectEditMenu</name>
-          <state>STM32F051x8	ST STM32F051x8</state>
+          <state>STM32F030x8	ST STM32F030x8</state>
         </option>
         <option>
           <name>GenLowLevelInterface</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>GEndianModeBE</name>
@@ -169,7 +169,7 @@
         <option>
           <name>CCDefines</name>
           <state>USE_STDPERIPH_DRIVER</state>
-          <state>STM32F051X8</state>
+          <state>STM32F030X8</state>
           <state>AUTOSTART_ENABLE</state>
           <state>PRINTF_DEBUG</state>
           <state>USE_LORA_MODE</state>
@@ -375,7 +375,7 @@
         </option>
         <option>
           <name>IccAllowVLA</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>IccCppDialect</name>
@@ -1917,6 +1917,9 @@
       <name>$PROJ_DIR$\APP\contiki-main.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\APP\gpio_per.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\APP\hal_falsh.c</name>
     </file>
     <file>
@@ -1947,7 +1950,7 @@
       <name>$PROJ_DIR$\APP\hal_wdg.c</name>
     </file>
     <file>
-      <name>$PROJ_DIR$\OLED\oled.c</name>
+      <name>$PROJ_DIR$\APP\NWK.c</name>
     </file>
     <file>
       <name>$PROJ_DIR$\APP\os_cpu_a.asm</name>

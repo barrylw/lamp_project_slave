@@ -1,0 +1,5 @@
+---- exit_process Matches (4 in 1 files) ----
+Process.c (e:\svnproject\street_lamp_slave\core\sys):exit_process(struct process *p, struct process *fromprocess)
+Process.c (e:\svnproject\street_lamp_slave\core\sys):  PRINTF("process: exit_process '%s'\n", PROCESS_NAME_STRING(p));
+Process.c (e:\svnproject\street_lamp_slave\core\sys):      exit_process(p, p);
+Process.c (e:\svnproject\street_lamp_slave\core\sys):  exit_process(p, PROCESS_CURRENT());

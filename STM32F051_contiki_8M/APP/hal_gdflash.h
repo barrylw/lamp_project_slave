@@ -24,7 +24,7 @@
 #define DGFLASH_SPI_MOSI_SOURCE         GPIO_PinSource7
 #define DGFLASH_SPI_MOSI_AF             GPIO_AF_0
 
-#define DGFLASH_SPI_SCK                 RCC_APB2Periph_SPI1
+
 
 /* Select sRF: Chip Select pin low */
 #define DGFLASH_CS_LOW()                             GPIO_ResetBits(DGFLASH_SPI_PORT, GDFLASH_CS_PIN)
@@ -34,22 +34,30 @@
 #endif
 
 #define GDFLASH_SPI                     SPI1
+#define DGFLASH_SPI_SCK                 RCC_APB2Periph_SPI1
 
-#define GDFLASH_CS_PIN                  GPIO_Pin_5
-#define GDFLASH_CS_PORT                 GPIOB
-#define GDFLASH_CS_SCK                  RCC_AHBPeriph_GPIOB
+#define GDFLASH_CS_PIN                  GPIO_Pin_15
+#define GDFLASH_CS_PORT                 GPIOA
+#define GDFLASH_CS_SCK                  RCC_AHBPeriph_GPIOA
 
-#define GDFLASH_SCK_PIN                 GPIO_Pin_15
-#define DGFLASH_SCK_PORT                GPIOA 
-#define DGFLASH_SCK_SCK                 RCC_AHBPeriph_GPIOA
+#define GDFLASH_SCK_PIN                 GPIO_Pin_3
+#define DGFLASH_SCK_PORT                GPIOB 
+#define DGFLASH_SCK_SCK                 RCC_AHBPeriph_GPIOB
+#define DGFLASH_SPI_SCK_SOURCE          GPIO_PinSource3
+#define DGFLASH_SPI_SCK_AF              GPIO_AF_0
 
 #define GDFLASH_MISO_PIN                GPIO_Pin_4  
 #define DGFLASH_MISO_PORT               GPIOB
 #define DGFLASH_MISO_SCK                RCC_AHBPeriph_GPIOB
+#define DGFLASH_SPI_MISO_SOURCE         GPIO_PinSource4
+#define DGFLASH_SPI_MISO_AF             GPIO_AF_0
 
-#define GDFLASH_MOSI_PIN                GPIO_Pin_3  
+#define GDFLASH_MOSI_PIN                GPIO_Pin_5  
 #define DGFLASH_MOSI_PORT               GPIOB
 #define DGFLASH_MOSI_SCK                RCC_AHBPeriph_GPIOB
+#define DGFLASH_SPI_MOSI_SOURCE         GPIO_PinSource5
+#define DGFLASH_SPI_MOSI_AF             GPIO_AF_0
+
 
 /* Select sRF: Chip Select pin low */
 #define DGFLASH_CS_LOW()                             GPIO_ResetBits(GDFLASH_CS_PORT, GDFLASH_CS_PIN)

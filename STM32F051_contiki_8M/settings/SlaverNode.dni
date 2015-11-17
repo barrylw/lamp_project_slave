@@ -9,7 +9,7 @@ TriggerName=main
 LimitSize=0
 ByteLimit=50
 [DebugChecksum]
-Checksum=1216939904
+Checksum=-158530779
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -51,23 +51,36 @@ MultiCoreRunAll=1
 Fmt0=st_RF_LoRa_DypeDef-rf_RxPacketSize	4	0
 [array_types]
 Fmt0=char[100]	5	0
-Fmt1=u8[100]	4	0
-Fmt2=u8[110]	5	0
-Fmt3=u8[20]	5	0
-Fmt4=u8[255]	3	0
-Fmt5=u8[2]	4	0
-Fmt6=u8[30]	4	0
-Fmt7=u8[34]	4	0
-Fmt8=u8[5]	4	0
-Fmt9=uint8_t[112]	4	0
+Fmt1=char[1024]	4	0
+Fmt2=u8[100]	4	0
+Fmt3=u8[110]	5	0
+Fmt4=u8[20]	4	0
+Fmt5=u8[255]	4	0
+Fmt6=u8[2]	4	0
+Fmt7=u8[30]	4	0
+Fmt8=u8[34]	4	0
+Fmt9=u8[3]	4	0
+Fmt10=u8[4]	4	0
+Fmt11=u8[5]	4	0
+Fmt12=u8[6]	4	0
+Fmt13=uint8_t[112]	4	0
 [watch_formats]
 Fmt0={W}0:EXTI_PinSourcex	4	0
 Fmt1={W}0:EXTI_PortSourceGPIOx	4	0
-Fmt2={W}0:irqLine	4	0
-Fmt3={W}0:temp	4	0
-Fmt4={W}0:tempRegValue	4	0
-Fmt5={W}0:tmp	4	0
-Fmt6={W}0:u	5	0
+Fmt2={W}0:checkAck	4	0
+Fmt3={W}0:checkSum	4	0
+Fmt4={W}0:dat	4	0
+Fmt5={W}0:g_updateBuffer	5	1
+Fmt6={W}0:irqLine	4	0
+Fmt7={W}0:reg	4	0
+Fmt8={W}0:temp	4	0
+Fmt9={W}0:tempRegValue	4	0
+Fmt10={W}0:tmp	4	0
+Fmt11={W}0:u	5	0
+Fmt12={W}0:valint	4	0
+[Trace2]
+Enabled=0
+ShowSource=0
 [SWOTraceWindow]
 PcSampling=0
 InterruptLogs=0
@@ -106,6 +119,10 @@ GraphEnabled=0
 ShowTimeLog=1
 ShowTimeSum=1
 SumSortOrder=0
+[Disassemble mode]
+mode=0
+[Breakpoints2]
+Count=0
 [Log file]
 LoggingEnabled=_ 0
 LogFile=_ ""
@@ -113,6 +130,15 @@ Category=_ 0
 [TermIOLog]
 LoggingEnabled=_ 0
 LogFile=_ ""
+[Aliases]
+A0=_ "D:\William\OneDrive\Project\Si4432 SlaverNode\APP\main.c" "D:\william接收文件\light\light_projectSi4432 SlaverNode\APP\main.c"
+A1=_ "D:\William\OneDrive\Project\Si4432 SlaverNode\LIB\CMSIS\CM0\DeviceSupport\ST\STM32F0xx\startup_stm32f030.s" ""
+A2=_ "F:\gitProjectdepository\STM32F051_contiki\LIB\CMSIS\CM0\DeviceSupport\ST\STM32F0xx\startup_stm32f030.s" ""
+A3=_ "G:\meterModule\STM32F051_contiki111\LIB\CMSIS\CM0\DeviceSupport\ST\STM32F0xx\startup_stm32f030.s" ""
+A4=_ "G:\meterModule\STM32F051_contiki111\core\sys\process.c" ""
+A5=_ "G:\meterModule\STM32F051_contiki_8M\APP\hal_led.h" ""
+Count=6
+SuppressDialog=1
 [CallStackLog]
 Enabled=0
 [PowerProbe]
@@ -125,16 +151,3 @@ Mode=3
 Graph=0
 Symbiont=0
 Exclusions=
-[Disassemble mode]
-mode=0
-[Breakpoints2]
-Count=0
-[Aliases]
-A0=_ "D:\William\OneDrive\Project\Si4432 SlaverNode\APP\main.c" "D:\william接收文件\light\light_projectSi4432 SlaverNode\APP\main.c"
-A1=_ "D:\William\OneDrive\Project\Si4432 SlaverNode\LIB\CMSIS\CM0\DeviceSupport\ST\STM32F0xx\startup_stm32f030.s" ""
-A2=_ "F:\gitProjectdepository\STM32F051_contiki\LIB\CMSIS\CM0\DeviceSupport\ST\STM32F0xx\startup_stm32f030.s" ""
-A3=_ "G:\meterModule\STM32F051_contiki111\LIB\CMSIS\CM0\DeviceSupport\ST\STM32F0xx\startup_stm32f030.s" ""
-A4=_ "G:\meterModule\STM32F051_contiki111\core\sys\process.c" ""
-A5=_ "G:\meterModule\STM32F051_contiki_8M\APP\hal_led.h" ""
-Count=6
-SuppressDialog=1

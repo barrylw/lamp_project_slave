@@ -31,9 +31,9 @@
 */
 
 
-#define RXD_LED_PIN            GPIO_Pin_0  
-#define RXD_LED_PORT           GPIOA
-#define RXD_LED_CLK            RCC_AHBPeriph_GPIOA
+#define RXD_LED_PIN            GPIO_Pin_14 
+#define RXD_LED_PORT           GPIOC
+#define RXD_LED_CLK            RCC_AHBPeriph_GPIOC
 
 #define TXD_LED_PIN            GPIO_Pin_15  
 #define TXD_LED_PORT           GPIOC

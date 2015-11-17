@@ -129,7 +129,7 @@ typedef struct
   * @}
   */ 
 
-/** @defgroup ADC_external_trigger_sources_for_channels_conversion
+/** @defgroup ADC_external_trigger_sources_for_channels_conversion  
   * @{
   */ 
 

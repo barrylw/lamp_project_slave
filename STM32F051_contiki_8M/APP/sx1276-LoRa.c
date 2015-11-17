@@ -1185,6 +1185,7 @@ void EXTI0_1_IRQHandler()
 {
    if(EXTI_GetITStatus(DIO0_IRQ) != RESET)
    {
+      hal_DIOx_ITConfig(all,DISABLE);
       EXTI_ClearITPendingBit(DIO0_IRQ);
       EXTI_ClearITPendingBit(DIO2_IRQ);
       
@@ -1211,7 +1212,7 @@ void EXTI0_1_IRQHandler()
 
             case  RFLR_STATE_RX_RECEIVEING:
             /* disable EXTI all, line interrupt */
-            hal_DIOx_ITConfig(all,DISABLE);
+           
             
             etimer_stop(&timer_rf);
             
@@ -1229,13 +1230,13 @@ void EXTI0_1_IRQHandler()
             {
                 /* Clear playload CRC error Irq */
                 SX1276Write( REG_LR_IRQFLAGS, RFLR_IRQFLAGS_PAYLOADCRCERROR  );
-                RxEndProcess(false);
+                g_RF_LoRa.rf_state = RFLR_STATE_RX_ERR;
+                process_post(&hal_RF_process, PROCESS_EVENT_MSG, (void *)(&g_RF_LoRa.rf_state));
             }
             else// crc ok
             {
                 receiveRxData(g_RF_LoRa.spiFifo);
             }
-            break;
 
             case  RFLR_STATE_CAD_RUNNING:
             /*  clear CADdone flag */
@@ -1252,6 +1253,11 @@ void EXTI0_1_IRQHandler()
             break;
        }
     }
+   
+   if(EXTI_GetITStatus(RELAY_DETECT_LINE) != RESET)
+   {
+     EXTI_ClearITPendingBit(RELAY_DETECT_LINE);
+   }
 }
 /*****************************************************************************
  Prototype    : EXTI4_15_IRQHandler
@@ -1344,8 +1350,6 @@ void EXTI4_15_IRQHandler(void)
 
      //process_post(&zero_detect_process, PROCESS_EVENT_MSG, NULL); // 此处是使用事件方式处理过零中断，现在改为定时器硬件中断方式
    }
-   
-
 }
 
 #endif  //#ifdef USE_LORA_MODE

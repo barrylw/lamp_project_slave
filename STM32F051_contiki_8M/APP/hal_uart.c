@@ -115,7 +115,7 @@ PROCESS_THREAD(hal_urat_process, ev, data)
          }
          else if (*((em_UART_state*)data) == UART_RX_FINISH)
          {
-           apl_ProcessUartCmd();
+           //apl_ProcessUartCmd();
          }
          #ifdef PRINTF_DEBUG
          else if ((*(em_UART_state*)data) ==  UART_DEBUG_TX_RUNNING)

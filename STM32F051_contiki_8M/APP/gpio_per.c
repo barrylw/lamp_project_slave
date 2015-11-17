@@ -68,6 +68,7 @@ read_PWM_volt()
 read_LED_state()
 */
 
+void drop_down_timer_init(void);
 
 /****************************************************************
 存在掉电马上恢复，单片机没有复位的情况，或者掉电检测错误的处理
@@ -136,7 +137,8 @@ PROCESS_THREAD(start_time_detect_process, ev, data)
      
    }
 
-   process_start(&period_save_data_process, NULL);
+   process_start(&period_save_data_process, NULL);// 保护时间到后，开启定时检查电量存储功能
+   drop_down_timer_init();                        // 保护时间到后，开启掉电保护功能
     
    PROCESS_END();
 }
@@ -184,7 +186,7 @@ PROCESS_THREAD(period_save_data_process, ev, data)
  Date         : 
  Author       : Barry
 *****************************************************************************/
-void drop_down_timer_init()
+void drop_down_timer_init(void)
 {
   TIM_TimeBaseInitTypeDef TIM_TimeBaseInitStruct;
   
@@ -194,7 +196,7 @@ void drop_down_timer_init()
   TIM_TimeBaseInitStruct.TIM_CounterMode        =  TIM_CounterMode_Up; 
   TIM_TimeBaseInitStruct.TIM_Prescaler          =   48000;
   TIM_TimeBaseInitStruct.TIM_Period             =   30; 
-  TIM_TimeBaseInitStruct.TIM_RepetitionCounter  =  0;
+  TIM_TimeBaseInitStruct.TIM_RepetitionCounter  =   0;
   TIM_TimeBaseInit(POWER_DOWN_TIMER, &TIM_TimeBaseInitStruct);
   
   TIM_ClearFlag(POWER_DOWN_TIMER,  TIM_FLAG_Update);
@@ -202,8 +204,6 @@ void drop_down_timer_init()
 }
 
 
-
-#if 0
 /*****************************************************************************
  Prototype    : save_8209c_params
  Description  : 保存校表数据，一般只在校表时保存一次，以后不再修改
@@ -260,10 +260,7 @@ void TIM14_IRQHandler(void)
       //3、设置禁止进行常规数据保存，因为有可能误判，在过零中断中使能
       //4、设置禁止掉电检测timer，因为有可能误判，在过零中断中使能
       
-      if (enable_save_elc)
-      {
-          power_down_protect();
-      }
+      power_down_protect();
       TIM_Cmd(POWER_DOWN_TIMER, DISABLE);
       process_post(&period_save_data_process, PROCESS_EVENT_EXIT, NULL);
       process_start(&start_time_detect_process, NULL);
@@ -279,7 +276,6 @@ void TIM14_IRQHandler(void)
  Date         : 
  Author       : Barry
 *****************************************************************************/
-
 void hal_ADC_Init(void)
 {
     GPIO_InitTypeDef GPIO_InitStructure;
@@ -307,7 +303,7 @@ void hal_ADC_Init(void)
     adcConfigInitStruct.ADC_DataAlign = ADC_DataAlign_Right;                  
     adcConfigInitStruct.ADC_ScanDirection = ADC_ScanDirection_Upward;   
     ADC_Init(LED_ADC, &adcConfigInitStruct);
-    ADC_ChannelConfig(LED_ADC,LED_ADC_CHANNEL,  ADC_SampleTime_7_5Cycles);
+    ADC_ChannelConfig(LED_ADC,LED_ADC_CHANNEL,  ADC_SampleTime_41_5Cycles);
     LED_ADC->CFGR1 |= ADC_CFGR1_AUTOFF; /* (2) */
 }
 
@@ -345,7 +341,7 @@ void init_zero_detect(void)
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure); 
 }
-#endif
+
 
 /*****************************************************************************
  Prototype    : hal_init_PWM
@@ -392,7 +388,11 @@ void hal_init_PWM(void)
   pwmConfigStructure.TIM_OCMode          =  TIM_OCMode_PWM1;
   pwmConfigStructure.TIM_OCPolarity      =  TIM_OCPolarity_High;
   pwmConfigStructure.TIM_OutputState     =  TIM_OutputState_Enable;
-  pwmConfigStructure.TIM_Pulse           =  LED_PWM_PERIOD_COUNT;
+  pwmConfigStructure.TIM_OutputNState    = TIM_OutputNState_Enable;
+  pwmConfigStructure.TIM_OCNPolarity     = TIM_OCNPolarity_High;
+  pwmConfigStructure.TIM_OCIdleState     = TIM_OCIdleState_Set;
+  pwmConfigStructure.TIM_OCNIdleState    = TIM_OCIdleState_Reset;
+  pwmConfigStructure.TIM_Pulse           = LED_PWM_PERIOD_COUNT;
   
   TIM_OC1Init(PWM1_TIMER, &pwmConfigStructure);
   TIM_OC1Init(PWM2_TIMER, &pwmConfigStructure);
@@ -424,15 +424,10 @@ void set_PWM(u8 PWMdiv)
 {
     u32 TIM_Pulse;
     
-    if (PWMdiv >100)
-    {
-      TIM_Pulse = 100;
-    }
+    rn8209c_papameter.pwmValue = (PWMdiv >100) ? 100: PWMdiv;
+    
+    TIM_Pulse =  (u32)(LED_PWM_PERIOD_COUNT* PWMdiv/100);
 
-    TIM_Pulse = ((PWMdiv == 0) ?  0 : (u32)(LED_PWM_PERIOD_COUNT* PWMdiv/100));
-
-    rn8209c_papameter.pwmValue = PWMdiv;
- 
     PWM1_TIMER->CCR1 = TIM_Pulse;
     PWM2_TIMER->CCR1 = TIM_Pulse;
 }
@@ -458,6 +453,8 @@ u16 read_PWM_volt(void)
 
     val = ADC_GetConversionValue(ADC1);
     
+    val = (u16)(3.3*val*1000/1024);
+    
     return val;
 }
 
@@ -479,7 +476,7 @@ void relay_gpio_init(void)
   /* relay detecet pin */
   GPIO_InitStructure.GPIO_Pin = RELAY_DETECT_PIN;
   GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_NOPULL;
+  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
   GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
   GPIO_Init(RELAY_DETECT_PORT, &GPIO_InitStructure);
   
@@ -489,7 +486,7 @@ void relay_gpio_init(void)
   GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
   GPIO_Init(RELAY_CONTROL_PORT, &GPIO_InitStructure);
   
-#if 0
+
   EXTI_InitTypeDef EXTI_InitStructure;
   EXTI_ClearITPendingBit(RELAY_DETECT_LINE);
   SYSCFG_EXTILineConfig(RELAY_DETECT_PORT_SOURCE, RELAY_DETECT_PIN_SOURCE);
@@ -499,7 +496,6 @@ void relay_gpio_init(void)
   EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising;
   EXTI_InitStructure.EXTI_LineCmd = ENABLE;
   EXTI_Init(&EXTI_InitStructure); 
-#endif
 }
 
 /*****************************************************************************
@@ -609,8 +605,7 @@ bool rn8209c_read(u8 reg, u8 *buf, u8 length)
 *****************************************************************************/
 void rn8209c_init(void)
 {
-  GPIO_InitTypeDef GPIO_InitStructure;
-
+  
   USART_Cmd(RBL_COM1, DISABLE);
   
   /*
@@ -628,6 +623,8 @@ void rn8209c_init(void)
   Delayms(20);
   
   hal_InitUART();
+  
+  init_8209c_params();
 }
 
 /*****************************************************************************

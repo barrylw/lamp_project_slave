@@ -2,17 +2,23 @@
 #include <sys/clock.h>
 #include <sys/cc.h>
 #include <sys/etimer.h>
+#include "gpio_per.h"   
 //#include <debug-uart.h>
 
 static volatile clock_time_t current_clock = 0;
 static volatile unsigned long current_seconds = 0;
 static unsigned int second_countdown = CLOCK_SECOND;
 extern u32 g_SystickCounter;
+static unsigned int  light_time = 0;
 
 void SysTick_Handler(void)
 {
   g_SystickCounter++;
   current_clock++;  
+  if (read_LED_state())
+  {
+    light_time++;
+  }
   if(etimer_pending()&& etimer_next_expiration_time()<= current_clock) 
   {  
     etimer_request_poll();  
@@ -40,6 +46,11 @@ void clock_init()
 clock_time_t clock_time(void)
 {
   return current_clock;
+}
+
+u32 read_light_time(void)
+{
+  return light_time;
 }
 
 #if 0

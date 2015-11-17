@@ -6,13 +6,7 @@
 #include "etimer.h"
 
 /* 继电器控制 */
-/*
-#define RELAY_CONTROL_PIN                     GPIO_Pin_8    
-#define RELAY_CONTROL_PORT                    GPIOB
-#define RELAY_CONTROL_SCK                     RCC_AHBPeriph_GPIOB
-*/
-
-#define RELAY_CONTROL_PIN                     GPIO_Pin_0    
+#define RELAY_CONTROL_PIN                     GPIO_Pin_1   
 #define RELAY_CONTROL_PORT                    GPIOB
 #define RELAY_CONTROL_SCK                     RCC_AHBPeriph_GPIOB
 
@@ -22,44 +16,26 @@
 #define open_light()                          relay_close()
 #define close_light()                         relay_open()
 
+
 /* 继电器检测 (检测有无过零脉冲) */
-/*
-#define RELAY_DETECT_PIN                      GPIO_Pin_9
+#define RELAY_DETECT_PIN                      GPIO_Pin_0
 #define RELAY_DETECT_PORT                     GPIOB
 #define RELAY_DETECT_SCK                      RCC_AHBPeriph_GPIOB
 
 #define RELAY_DETECT_PORT_SOURCE              EXTI_PortSourceGPIOB
-#define RELAY_DETECT_PIN_SOURCE               EXTI_PinSource9
-#define RELAY_DETECT_LINE                     EXTI_Line9
-*/
-
-#define RELAY_DETECT_PIN                      GPIO_Pin_1
-#define RELAY_DETECT_PORT                     GPIOB
-#define RELAY_DETECT_SCK                      RCC_AHBPeriph_GPIOB
-
-#define RELAY_DETECT_PORT_SOURCE              EXTI_PortSourceGPIOB
-#define RELAY_DETECT_PIN_SOURCE               EXTI_PinSource1
-#define RELAY_DETECT_LINE                     EXTI_Line1
+#define RELAY_DETECT_PIN_SOURCE               EXTI_PinSource0
+#define RELAY_DETECT_LINE                     EXTI_Line0
 
 
 /* 过零检测 (检测有无过零脉冲) */
-/*
-#define ZERO_DETECT_PIN                       GPIO_Pin_15
-#define ZERO_DETECT_PORT                      GPIOC
-#define ZERO_DETECT_SCK                       RCC_AHBPeriph_GPIOC
+#define ZERO_DETECT_PIN                       GPIO_Pin_8
+#define ZERO_DETECT_PORT                      GPIOA
+#define ZERO_DETECT_SCK                       RCC_AHBPeriph_GPIOA
 
-#define ZERO_DETECT_PORT_SOURCE               EXTI_PortSourceGPIOC
-#define ZERO_DETECT_PIN_SOURCE                EXTI_PinSource15
-#define ZERO_DETECT_LINE                      EXTI_Line15
-*/
+#define ZERO_DETECT_PORT_SOURCE               EXTI_PortSourceGPIOA
+#define ZERO_DETECT_PIN_SOURCE                EXTI_PinSource8
+#define ZERO_DETECT_LINE                      EXTI_Line8
 
-#define ZERO_DETECT_PIN                       GPIO_Pin_11
-#define ZERO_DETECT_PORT                      GPIOB
-#define ZERO_DETECT_SCK                       RCC_AHBPeriph_GPIOB
-
-#define ZERO_DETECT_PORT_SOURCE               EXTI_PortSourceGPIOB
-#define ZERO_DETECT_PIN_SOURCE                EXTI_PinSource11
-#define ZERO_DETECT_LINE                      EXTI_Line11
 
 /* led 调光电压ADC测量 */
 #define LED_ADC                               ADC1
@@ -102,6 +78,8 @@
 #define POWER_DOWN_TIMER                     TIM14
 #define POWER_DOWN_TIMER_SCK                 RCC_APB1Periph_TIM14
 
+
+/*掉电存储文件结构*/
 #define ELC_FLIE_LEN                         17
 #define ELC_FILE_TAIL_LEN                    4   //（1024%17）
 
@@ -117,7 +95,7 @@ typedef enum
   FLASH_ENERGY_POINT  = 5,
   FLASH_PFCOUNT_POINT = 9,
   FLASH_LIGHT_POINT   = 11,
-  FLASH_CRC_PINT      = 15,
+  FLASH_CRC_PINT      = 15
 }em_flash_st;
 
 
@@ -222,6 +200,7 @@ void rn8209c_init(void);
 void config_8209c_reg(u8 reg, u32 dat);
 void power_down_protect(void);
 void init_8209c_params(void);
+void hal_ADC_Init(void);
 void get_ADC_value(void);
 void set_PWM(u8 PWMdiv);
 u8 read_pow_factor(void);
