@@ -16,76 +16,37 @@
 #include "stm32f0xx.h"
 #include "hal_flash.h"
 
-#define TYPE_DATA           0x00
-#define TYPE_CMD            0x01
+#define APL_TYPE_DATA_TRANSPARENT   0x00
+#define APL_TYPE_DATA_OBJECT        0x01
+#define APL_TYPE_CMD                0x02
+#define APL_TYPE_CONFIRM            0x03
 
-#define LONG_ADDR_TYPE      0x00
-#define SHORT_ADDR_TYPE     0x01
-
-#define COMPRE_ADDR_ENABLE  0x01
-#define COMPRE_ADDR_DISABLE 0x00
-
-#define ROUTE_SOURCE_MODE   0x00
-#define ROUTE_AUTO_MODE     0x01
-
-#define RELAY_LEVEL_MASK    0xF0
-#define RELAY_SEARCH_MASK   0x0F
+#define APL_TRANSPORT_SINGLE        0x00
+#define APL_TRANSPORT_GROUP         0x01
+#define APL_TRANSPORT_BROADCAST     0x02
+#define APL_TRANSPORT_SAVED         0x03
 
 
-#define ADDR_AREA_LEN      36
-#define APL_AREA_LEN       (255 - ADDR_AREA_LEN - 7)
-
-enum
-{
-    EM_NWK_CONTROL_POS    = 0,
-    EM_NWK_VERSION_POS    = 1,
-    EM_NWK_NO_POS         = 2,
-    EM_NWK_NID_POS        = 3,
-    EM_NWK_VAR            = 5,
-};
-
- //从低地址开始填充
 typedef struct
 {
     u8 frame_type:2;
-    u8 source_addr_type:1;
-    u8 des_addr_type:1;
-    u8 relay_addr_type:1;
-    u8 compression_addr_enable:1;
-    u8 route_type:2;
-    u8 version:4;
-    u8 saved:3;
-    u8 direction:1;
-    u8 frame_number;
-    u8 NID[2];
-    u8 tx_RSSI;
-    u8 rx_RSSI;  
-    //指针自动转换到这里结束
-}ST_NWK_head;
+    u8 frame_tran_mod:2;
+    u8 frame_ack_mod:1;
+    u8 frame_safe:1;
+    u8 frame_ack_req:1;
+    u8 frame_ext_head_inication:1;
+}st_apl_ctrl;
 
-
-typedef struct 
-{
-    ST_NWK_head   head;
-    u8            addr_list[ADDR_AREA_LEN];              //中继列表地址，传送给APL
-    u8            frame_data[APL_AREA_LEN];              //255 
-    u8            addr_list_len; 
-    u8            frame_data_length;
-    u8            addr_uint_len;
-}st_NWK_frame;
 
 typedef struct
 {
-    u8   relay_level:4;
-    u8   relay_search:4;
-}st_addr_area;
-
-typedef struct
-{
-    u8 long_addr[6];
-    u8 short_addr[2];
-}st_addr;
-
+   st_apl_ctrl    ctrl;
+    u8            source_point;
+    u8            end_point;
+    u8            group_addr;
+    u8            frame_number;
+    u8            ext_head[3]; 
+}st_APL_frame;
 
 #if 0
 /**********************************************************************************************************************************************

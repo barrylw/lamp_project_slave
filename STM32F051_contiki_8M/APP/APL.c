@@ -13,6 +13,7 @@
 #include "common.h"
 #include "apl.h"
 #include "hal_uart.h"
+#include "NWK.h"
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -47,8 +48,14 @@ char enegyDegree[]         = "enegyDegree:";
 
 char *paralist[] = {calibration,pstart,GPQA,phsA,qphsal,Ku,Ki,Kp,PFCont,energyPulse, enegyDegree};
 
-static st_NWK_frame nwk_frame_buf;
-st_NWK_frame * nwk_frame_ptr = &nwk_frame_buf;
+
+static bool         apl_busy = false;
+static st_NWK_frame apl_nwk_inf;
+st_APL_frame        apl_frame;
+
+static u8           apl_buf[255];
+static u8           cur_tx_No = 0;
+static u8           cur_rx_No = 0;
 
 
 /* Private function prototypes -----------------------------------------------*/
@@ -156,96 +163,74 @@ bool find_params(u8 pos, void * val)
   }
 }
 
-#if 0
-/***********************************************************
-帧解析步骤:
-1、判断是上行帧还是下行帧
-1、判断NID是否正确
-2、判断版本是否正确
-3、判断是源路由还是盲中继
-3、判断是否使用缩位地址
-4、解析地址域
-5、获取参数，1 帧类型  
-注释: 此函数定义在APL层，由NWK层调用, 
-u8 * nwk_packet, u8 length 分别必须由 PHY_data_indication() 得来的数据赋值
-nwk_frame_ptr是全局变量，用来传递数据
-************************************************************/
-void NWK_data_indication(u8 * nwk_packet, u8 length)
+
+void APL_data_indication(st_NWK_frame *nwk_ptr, u8 *apl_frame_ptr)
 {
-    st_addr_area  addr_area;
-    ST_NWK_head * nwk_head_ptr = 0;
-    u8 *          current_ptr  = 0;
-    u8            addr_area_pos;
-    u16 temp;
-    u8            compressed_list_len;
-
-     /* 复制到NID为止 */
-     memcpy((u8*)(nwk_frame_ptr), nwk_packet, EM_NWK_VAR);
-
-     nwk_head_ptr = &(nwk_frame_ptr->head);
-     
-     temp = (u16)(nwk_head_ptr->NID[0]) + nwk_head_ptr->NID[1]*256;
-     
-     if ( (temp != LOCAL_NID) &&  (temp != broadcast_addr) )
-     {
-       return ;
-     }
-     
-     if (nwk_head_ptr->version != nwk_pib.current_version)
-     {
-       return ; /*发现网络中有节点版本不一致，不执行命令，上报版本错误*/
-     }
-
-     addr_area_pos = (nwk_head_ptr->direction == 0)? EM_NWK_VAR:(EM_NWK_VAR + 2);
-
-     if (nwk_head_ptr->direction == 1)//上行帧
-     {
-        nwk_head_ptr->tx_RSSI = nwk_packet[EM_NWK_VAR];
-        nwk_head_ptr->rx_RSSI = nwk_packet[EM_NWK_VAR+1];
-        addr_area_pos = EM_NWK_VAR + 2;
-     }
-     else
-     {
-        addr_area_pos = EM_NWK_VAR;
-     }
     
+    //apl不开辟缓存，当前帧没有处理完，不接受下一帧
+    (apl_busy == true)? return: (apl_busy = true);
+    
+    //复制网络层信息，准备应答用
+    memcpy(&apl_nwk_inf, nwk_ptr, sizeof(st_NWK_frame));
 
-    if (nwk_head_ptr->route_type == ROUTE_SOURCE_MODE)//源路由
+    //复制APL帧数据到APL层，释放下层去接收新数据
+    memcpy(apl_buf, apl_frame_ptr, apl_nwk_inf.frame_data_length);
+
+    //读取帧控制域
+    *((u8 *)&apl_frame) = apl_buf[0];
+
+    switch (apl_frame.frame_type)
     {
-        *(u8*)(&addr_area)    = nwk_packet[addr_area_pos];
-
-        current_ptr = nwk_packet + addr_area_pos + 1;
-        if (nwk_head_ptr->compression_addr_enable  == 1) //使用缩位地址
-        {
-            nwk_frame_ptr->addr_uint_len = 6;
-            nwk_frame_ptr->addr_list_len = dempress_addr_list(current_ptr, nwk_frame_ptr->addr_list, addr_area.relay_level, &compressed_list_len); 
-            current_ptr += compressed_list_len;
-        }
-        else
-        {
-            nwk_frame_ptr->addr_uint_len = (nwk_head_ptr->relay_addr_type == LONG_ADDR_TYPE)? 6:2;
-            nwk_frame_ptr->addr_list_len  =  nwk_frame_ptr->addr_uint_len *  (addr_area.relay_level+2);
-            memcpy(nwk_frame_ptr->addr_list, current_ptr, nwk_frame_ptr->addr_list_len );
-            current_ptr += nwk_frame_ptr->addr_list_len;
-        }
+        case APL_TYPE_DATA_TRANSPARENT:
+        //暂时不处理
+        break;
         
-        nwk_frame_ptr->frame_data_length = length - nwk_frame_ptr->addr_list_len - (addr_area_pos + 1);
-        memcpy(nwk_frame_ptr->frame_data, current_ptr, nwk_frame_ptr->frame_data_length);
+        case APL_TYPE_DATA_OBJECT:
+         apl_frame.frame_number =  *(apl_buf + (apl_frame.ctrl.frame_tran_mod == APL_TRANSPORT_GROUP)? 4:3);
+        
+            
+        break;
+        
+        case APL_TYPE_CMD:
+        break;
+        
+        case APL_TYPE_CONFIRM:
+        break;
+        
+        default:
+        break;
     }
-    else //盲中继
-    {
-     
-        //忙中继参数
-    }
-}
+
+     if (cur_rx_No == apl_frame.frame_number)
+     {
+        //接收到重复帧
+        return;
+     }
+    
+
+    
+    
+
+    //1、解析出帧序号是否是重复帧
+    //APl层重复帧概念，有发送方向一个目的地址发送相同的帧，重复帧，对于重复帧，不处理，
+    //重复帧与重传概念不一样，重传多次发送，帧序号不一样，发送时需要修改
+
+    
+    
+
+    
+  
+   
+
+    
 
 
-void analyse_APS_frame(st_NWK_frame * nwk_frame_ptr, )
-{
+
     
 }
 
-#endif
+
+
 
 #if 0
 u8 modify_update_flash_params(u8 params)

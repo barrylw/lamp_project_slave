@@ -60,31 +60,31 @@ extern u8 tedtbuf[];
 
 struct etimer timer_rf; 
 
-
+/*
 u8 local_addr[6]    = {0x0b, 0x9a, 0x09, 0x03, 0x00, 0x11};
 u8 bordcast_addr[6] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
 
 u8 cmd_op_light[4]  = {0x34, 0x33, 0x33, 0x93};
 u8 cmd_read_data[4] = {0x42, 0x33, 0x33, 0x94};
+*/
 
-/* 不同为0， 相同为1 */
-u8 cmp(u8 * buf1, u8* buf2, u8 length)
+
+/*****************************************************************************
+由参数传递数据，PHY_data_indication定义在NWK层，
+但是由PHY层调用，PHY_data_indication定义中表明需要的数据由PHY层由参数提供
+******************************************************************************/
+void PHY_data_indication(u8 * buf, u16 length)
 {
-  for (u8 i = 0; i < length; i++)
-  {
-     if ( (buf1[i] ^ buf2[i]) == 1)
-     {
-       /* 不同 */
-       return 0;
-     }
-  }
-    /* 相同 */
-   return 1;
+    //NWK_data_indication(buf, length);
 }
 
 
-
-
+/*****************************************************************************
+ Prototype    : hal_RF_process
+ Description  : 无线驱动进程
+ Date         : 2014/3/15
+ Author       : Barry
+*****************************************************************************/
 /* 尽量将etimer 绑定在事件中，在事件中定义 */
 PROCESS(hal_RF_process, "radio_process ");
 
@@ -101,12 +101,12 @@ PROCESS_THREAD(hal_RF_process, ev, data)
     {
         if (*((tRFLRStates*)data) == RFLR_STATE_TX_RUNNING)   
         {
-            etimer_set(&timer_rf, CLOCK_CONF_SECOND*4);               //超时时间还需要调整
+            etimer_set(&timer_rf, CLOCK_CONF_SECOND*4);                 //超时时间还需要调整
             printf("tx start\r\n");
         }
         else if (*((tRFLRStates*)data) == RFLR_STATE_TX_DONE)  
         {
-           //etimer_stop(&timer_rf);                                  //此处如果不在中断函数中处理，就要在进程函数中处理
+           //etimer_stop(&timer_rf);                                    //此处如果不在中断函数中处理，就要在进程函数中处理
            SX1276LoRa_Receive_Packet(false);
            printf("tx done\r\n");
         }
