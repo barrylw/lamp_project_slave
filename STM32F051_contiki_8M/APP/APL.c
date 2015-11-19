@@ -168,7 +168,12 @@ void APL_data_indication(st_NWK_frame *nwk_ptr, u8 *apl_frame_ptr)
 {
     
     //apl不开辟缓存，当前帧没有处理完，不接受下一帧
-    (apl_busy == true)? return: (apl_busy = true);
+    if (apl_busy == true)
+    {
+      return;
+    }
+    
+    apl_busy = true;
     
     //复制网络层信息，准备应答用
     memcpy(&apl_nwk_inf, nwk_ptr, sizeof(st_NWK_frame));
@@ -179,14 +184,14 @@ void APL_data_indication(st_NWK_frame *nwk_ptr, u8 *apl_frame_ptr)
     //读取帧控制域
     *((u8 *)&apl_frame) = apl_buf[0];
 
-    switch (apl_frame.frame_type)
+    switch (apl_frame.ctrl.frame_type)
     {
         case APL_TYPE_DATA_TRANSPARENT:
         //暂时不处理
         break;
         
         case APL_TYPE_DATA_OBJECT:
-         apl_frame.frame_number =  *(apl_buf + (apl_frame.ctrl.frame_tran_mod == APL_TRANSPORT_GROUP)? 4:3);
+         apl_frame.frame_number =  *(apl_buf + ((apl_frame.ctrl.frame_tran_mod == APL_TRANSPORT_GROUP)? 4:3));
         
             
         break;

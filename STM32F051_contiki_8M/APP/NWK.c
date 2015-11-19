@@ -1,6 +1,6 @@
 #include "NWK.h"
 
-static u8 LOCAL_NID[2] = {0x00,0x00};
+static u8 LOCAL_NID[2] = {0x12,0x34};
 static u8 broadcast_addr[2] = {0xFF,0xFF};
 
 static NWK_PIB  nwk_pib;
@@ -185,25 +185,65 @@ void NWK_data_indication(u8 * nwk_packet, u8 length)
      nwk_head_ptr = &(nwk_frame_ptr->head);
 
      
-     if ( (cmp_buf(nwk_head_ptr->NID, LOCAL_NID,2) || cmp_buf(nwk_head_ptr->NID, broadcast_addr,2))== false )
+     if ( (cmp_buf(nwk_head_ptr->NID, LOCAL_NID,2)== false) && (cmp_buf(nwk_head_ptr->NID, broadcast_addr,2)== false) )
      {
-      //重复帧
+       printf("NID error \r\n");//重复帧
        return;
      }
      
-     
+     /*
      if (nwk_head_ptr->version != nwk_pib.current_version)
      {
-       return ; /*发现网络中有节点版本不一致，不执行命令，上报版本错误*/
+       return ; //发现网络中有节点版本不一致，不执行命令，上报版本错误
      }
+     */
 
      if ( (nwk_head_ptr->frame_number == last_info.frame_number) && (nwk_head_ptr->direction == last_info.direction) )
      {
-        return; //重复帧
+         printf("repeat nwk packet\r\n");//重复帧
+        return;
      }
 
      last_info.frame_number = nwk_head_ptr->frame_number;
      last_info.direction    = nwk_head_ptr->direction;
+     
+     
+     /*
+    u8 frame_type:2;
+    u8 source_addr_type:1;
+    u8 des_addr_type:1;
+    u8 relay_addr_type:1;
+    u8 compression_addr_enable:1;
+    u8 route_type:2;
+    u8 version:4;
+    u8 saved:3;
+    u8 direction:1;
+    u8 frame_number;
+    u8 NID[2];
+    u8 tx_RSSI;
+    u8 rx_RSSI;  
+    st_addr_area   addr_area;
+}ST_NWK_head;
+     */
+     
+    printf("nwk packet type = %X\r\n", nwk_head_ptr->frame_type);
+    printf("nwk packet sour_addr type = %X\r\n", nwk_head_ptr->source_addr_type);
+    printf("nwk packet des_addr type = %X\r\n", nwk_head_ptr->des_addr_type);
+    printf("nwk packet cpre type = %X\r\n", nwk_head_ptr->compression_addr_enable);
+    printf("nwk packet route type = %X\r\n", nwk_head_ptr->route_type);
+    printf("nwk packet  version = %X\r\n", nwk_head_ptr->version);
+    printf("nwk packet direction = %X\r\n", nwk_head_ptr->direction);
+    printf("nwk packet number = %X\r\n", nwk_head_ptr->frame_number);
+    printf("nwk packet NID = %X%X\r\n", nwk_head_ptr->NID[0],nwk_head_ptr->NID[1]);
+    printf("nwk packet tx_RSSI = %X\r\n", nwk_head_ptr->tx_RSSI);
+    printf("nwk packet rx_RSSI = %X\r\n", nwk_head_ptr->rx_RSSI);
+    
+    
+  
+     
+     
+        
+     
      
      addr_area_pos = (nwk_head_ptr->direction == 0)? EM_NWK_VAR:(EM_NWK_VAR + 2);
 
@@ -230,6 +270,8 @@ void NWK_data_indication(u8 * nwk_packet, u8 length)
             nwk_frame_ptr->addr_uint_len = 6;
             nwk_frame_ptr->addr_list_len = dempress_addr_list(current_ptr, nwk_frame_ptr->addr_list, nwk_head_ptr->addr_area.relay_level, &compressed_list_len); 
             current_ptr += compressed_list_len;
+            nwk_frame_ptr->frame_data_length = length - compressed_list_len - (addr_area_pos + 1);
+            
         }
         else
         {
@@ -237,7 +279,26 @@ void NWK_data_indication(u8 * nwk_packet, u8 length)
             nwk_frame_ptr->addr_list_len  =  nwk_frame_ptr->addr_uint_len *  (nwk_head_ptr->addr_area.relay_level+2);
             memcpy(nwk_frame_ptr->addr_list, current_ptr, nwk_frame_ptr->addr_list_len ); //
             current_ptr += nwk_frame_ptr->addr_list_len;
+            nwk_frame_ptr->frame_data_length = length - nwk_frame_ptr->addr_list_len - (addr_area_pos + 1);
+            
         }
+        
+        printf("addr list: ");
+        for (u8 i = 0; i < nwk_frame_ptr->addr_list_len; i++)
+        {
+          printf("%X ",nwk_frame_ptr->addr_list[i]);
+        }
+        printf("\r\n");
+        
+        printf("data list: ");
+        for (u8 i = 0; i < nwk_frame_ptr->frame_data_length; i++)
+        {
+            printf("%X ",*current_ptr);
+            current_ptr++;
+        }
+         printf("\r\n");
+        
+        
 
         if (nwk_head_ptr->addr_area.relay_level == 0)//没有中继地址，直接判断目的地址
         {
