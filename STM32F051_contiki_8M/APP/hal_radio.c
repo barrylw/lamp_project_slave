@@ -60,13 +60,214 @@ extern u8 tedtbuf[];
 
 struct etimer timer_rf; 
 
-/*
 u8 local_addr[6]    = {0x0b, 0x9a, 0x09, 0x03, 0x00, 0x11};
-u8 bordcast_addr[6] = {0xFF,0xFF,0xFF,0xFF,0xFF,0xFF};
+u8 bordcast_addr[6] = {0x99, 0x99, 0x99, 0x99, 0x99, 0x99};
 
-u8 cmd_op_light[4]  = {0x34, 0x33, 0x33, 0x93};
-u8 cmd_read_data[4] = {0x42, 0x33, 0x33, 0x94};
-*/
+u8 cmd_op_light[4]  = {0x34, 0x33, 0x33, 0x93}; //写操作，开关，调光
+u8 cmd_read_data[4] = {0x42, 0x33, 0x33, 0x94}; //读数据，读所有数据
+u8 cmd_broadcast[4] = {0x34, 0x33, 0x33, 0x9c}; //广播控制
+
+/* 不同为0， 相同为1 */
+u8 cmp(u8 * buf1, u8* buf2, u8 length)
+{
+  for (u8 i = 0; i < length; i++)
+  {
+     if ( buf1[i] != buf2[i] )
+     {
+       /* 不同 */
+       return 0;
+     }
+  }
+    /* 相同 */
+   return 1;
+}
+
+
+void  analyze_645_packet(u8 * buf)
+{
+}
+
+
+void apl_ProcessRadioCmd()
+{
+  u8 pwm_light;
+  u8 len_645;
+  u8 info_sourceadd[18];
+  u32 temp_light_time;
+  
+  /* 645 解析 */
+  if ((g_RF_LoRa.rf_DataBuffer[START_645_POINT] == 0x68) && (g_RF_LoRa.rf_DataBuffer[START_645_POINT + 7] == 0x68) && 
+       (g_RF_LoRa.rf_DataBuffer[ g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 11] == 0x16))
+  {
+     if (getSum(g_RF_LoRa.rf_DataBuffer, 10 + g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT]) == g_RF_LoRa.rf_DataBuffer[g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 10])
+     {
+       len_645 = g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 12;
+       MemCpy( info_sourceadd, &g_RF_LoRa.rf_DataBuffer[len_645],  18);
+       /* 下行帧 */
+       if ( (g_RF_LoRa.rf_DataBuffer[CONTROL_645_POINT] & 0x80) == 0)
+       {
+          if ( (cmp(local_addr, &g_RF_LoRa.rf_DataBuffer[ADDR_645_POINT] , 6) == 1) 
+              || (cmp(bordcast_addr, &g_RF_LoRa.rf_DataBuffer[ADDR_645_POINT] , 6) == 1) )
+          {
+              switch (g_RF_LoRa.rf_DataBuffer[CONTROL_645_POINT] & 0x1F)
+              {
+                  case 0x14:  // 控制码 写数据，点控
+                    if ( (cmp(cmd_op_light, &g_RF_LoRa.rf_DataBuffer[DATA_MARK_645_POINT] , 4) == 1) )
+                    {
+                      pwm_light = g_RF_LoRa.rf_DataBuffer[DATA_PACKET_645_POINT] - 0x33;
+                      
+                      if ( pwm_light == 0)
+                      {
+                        close_light();
+                        set_PWM(pwm_light);
+                      }
+                      else 
+                      {
+                        open_light();
+                        set_PWM(pwm_light);
+                      }
+                      
+                      /*
+                      MemCpy( g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_DataBuffer,  8);
+                      */
+                       
+                      g_RF_LoRa.rf_DataBuffer[8]           = g_RF_LoRa.rf_DataBuffer[CONTROL_645_POINT] | 0x80;
+                      g_RF_LoRa.rf_DataBuffer[9]           = 0x04;
+                      MemCpy( &g_RF_LoRa.rf_DataBuffer[10], cmd_op_light,  4);
+                      g_RF_LoRa.rf_DataBuffer[ g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 10 ] = getSum(g_RF_LoRa.rf_DataBuffer, 10 + g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT]); 
+                      g_RF_LoRa.rf_DataBuffer[ g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 11] = 0x16;
+                      
+                      MemCpy( &g_RF_LoRa.rf_DataBuffer[ g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 12], info_sourceadd,  6);      //信息域
+                      
+                      MemCpy( &g_RF_LoRa.rf_DataBuffer[ g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 18], info_sourceadd + 12,  6); //信息域
+                      
+                      MemCpy( &g_RF_LoRa.rf_DataBuffer[ g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 24], info_sourceadd + 6,  6); //信息域
+                      
+                      SX1276LoRa_Send_Packet(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 12 + 18);
+                      
+                    }
+                    
+                    else  if ( (cmp(cmd_broadcast, &g_RF_LoRa.rf_DataBuffer[DATA_MARK_645_POINT] , 4) == 1) ) //群控
+                    {
+                        pwm_light = g_RF_LoRa.rf_DataBuffer[DATA_PACKET_645_POINT] - 0x33;
+
+                        if ( pwm_light == 0)
+                        {
+                          close_light();
+                          set_PWM(pwm_light);
+                        }
+                        else 
+                        {
+                          open_light();  
+                          set_PWM(pwm_light);
+                        }
+                    }
+                   
+                  break;
+
+                  case 0x11: // 控制码 读数据，点控
+                    if ((cmp(cmd_read_data, &g_RF_LoRa.rf_DataBuffer[DATA_MARK_645_POINT] , 4) == 1))
+                    {
+                        if ( (cmp(cmd_read_data, &g_RF_LoRa.rf_DataBuffer[DATA_MARK_645_POINT] , 4) == 1) )
+                        {
+                            /*
+                            MemCpy( g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_DataBuffer,  8);
+                            */
+                            g_RF_LoRa.rf_DataBuffer[8]           = g_RF_LoRa.rf_DataBuffer[CONTROL_645_POINT] | 0x80;
+                            g_RF_LoRa.rf_DataBuffer[9]           = 0x1c;
+                            MemCpy( &g_RF_LoRa.rf_DataBuffer[10], cmd_read_data,  4);
+                            
+                            g_RF_LoRa.rf_DataBuffer[14]          = rn8209c_papameter.pwmValue ; /*pwm value*/
+
+                            g_RF_LoRa.rf_DataBuffer[15]          = 0;
+                            g_RF_LoRa.rf_DataBuffer[16]          = 0;
+                            g_RF_LoRa.rf_DataBuffer[17]          = 0;         
+                            g_RF_LoRa.rf_DataBuffer[18]          = 0; //worning
+                            
+                           
+                            if (rn8209c_papameter.pwmValue == 0)
+                            {
+                                 rn8209c_papameter.Uv = 0;          //关灯，回复确认值
+                                 rn8209c_papameter.Ia = 0;   
+                                 rn8209c_papameter.Pa = 0;
+                                 
+                            }
+                            else
+                            {
+                                 Delayms(20);
+                                 read_UIP(); //亮灯，读计量
+                            }
+                            
+                            
+                            g_RF_LoRa.rf_DataBuffer[19]          = (u8)(rn8209c_papameter.Uv & 0xFF);
+                            g_RF_LoRa.rf_DataBuffer[20]          = (u8)((rn8209c_papameter.Uv >>8) & 0xFF); //voltage
+                            
+                            
+                            g_RF_LoRa.rf_DataBuffer[21]          = (u8)(rn8209c_papameter.Ia & 0xFF);
+                            g_RF_LoRa.rf_DataBuffer[22]          = (u8)((rn8209c_papameter.Ia >>8) & 0xFF); 
+                            g_RF_LoRa.rf_DataBuffer[23]          = (u8)((rn8209c_papameter.Ia >>16) & 0xFF);        
+                            g_RF_LoRa.rf_DataBuffer[24]          = (u8)((rn8209c_papameter.Ia >>24) & 0xFF); //current
+                            
+                           
+                            g_RF_LoRa.rf_DataBuffer[25]          = (u8)(rn8209c_papameter.Pa & 0xFF); 
+                            g_RF_LoRa.rf_DataBuffer[26]          = (u8)((rn8209c_papameter.Pa >>8) & 0xFF); //power
+                            
+                            if (rn8209c_papameter.pwmValue == 0)
+                            {
+                              g_RF_LoRa.rf_DataBuffer[27]        = 0;
+                            }
+                            else
+                            {
+                              g_RF_LoRa.rf_DataBuffer[27]        = read_pow_factor(); //功率因数
+                            }
+                            
+                            g_RF_LoRa.rf_DataBuffer[28]          = 0; 
+                            g_RF_LoRa.rf_DataBuffer[29]          = 0; //温度
+                            
+                            read_8209c_energyP();
+                            g_RF_LoRa.rf_DataBuffer[30]          = 0;
+                            g_RF_LoRa.rf_DataBuffer[31]          = 0;
+                            g_RF_LoRa.rf_DataBuffer[32]          = 0;         
+                            g_RF_LoRa.rf_DataBuffer[33]          = 0; //电量
+                            
+                            temp_light_time = get_light_time();
+                            g_RF_LoRa.rf_DataBuffer[34]          = (u8)(temp_light_time & 0xFF);;
+                            g_RF_LoRa.rf_DataBuffer[35]          = (u8)((temp_light_time >>8) & 0xFF);
+                            g_RF_LoRa.rf_DataBuffer[36]          = (u8)((temp_light_time >>16) & 0xFF);          
+                            g_RF_LoRa.rf_DataBuffer[37]          = (u8)((temp_light_time >>24) & 0xFF); //current //亮灯时长
+                            
+                            for (u16 i = 14; i <= 37; i++ )
+                            {
+                              g_RF_LoRa.rf_DataBuffer[i] += 0x33;
+                            }
+                            
+                            g_RF_LoRa.rf_DataBuffer[38]           = getSum(g_RF_LoRa.rf_DataBuffer, 10 + g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT]); //cs
+                            g_RF_LoRa.rf_DataBuffer[39]           = 0x16;                   //end
+                            
+                            MemCpy( &g_RF_LoRa.rf_DataBuffer[40], info_sourceadd,  6);      //信息域
+                      
+                            MemCpy( &g_RF_LoRa.rf_DataBuffer[46], info_sourceadd + 12,  6); //信息域
+                      
+                            MemCpy( &g_RF_LoRa.rf_DataBuffer[52], info_sourceadd + 6,  6);  //信息域
+                            
+                            SX1276LoRa_Send_Packet(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 12 + 18);
+                        }
+                    }
+                    
+                  break;
+
+                  default:
+                    
+                  break;
+              }
+          }
+         
+       }
+     }
+  }
+  
+}
+
 
 
 /*****************************************************************************
@@ -137,6 +338,7 @@ PROCESS_THREAD(hal_RF_process, ev, data)
               //etimer_stop(&timer_rf);                                 //此处如果不在中断函数中处理，就要在进程函数中处理
               hal_ToggleLED(TXD_LED);
               g_RF_LoRa.rf_DataBufferValid = false;
+              apl_ProcessRadioCmd();
           }
         }
     }

@@ -17,7 +17,7 @@
 #include "hal_uart.h"
 #include "hal_gdflash.h"
 #include "stm32f0xx_tim.h"
-#include "NWK.h"
+//#include "NWK.h"
 #include "gpio_per.h"
 //#include "sx1276-Fsk.h"
 
@@ -218,13 +218,12 @@ int main()
     InitHardware(); 
 
     relay_gpio_init();
-    rn8209c_init();
     hal_init_PWM();
     init_zero_detect();
     hal_ADC_Init();
    
 
-    NWK_data_indication(test_phy_packet, sizeof(test_phy_packet));
+    //NWK_data_indication(test_phy_packet, sizeof(test_phy_packet));
     //len = compress_addr_list(commpress_buf, 18,  result_buf);
     //len = dempress_addr_list(decommpress_buf,result_buf, 1);
 

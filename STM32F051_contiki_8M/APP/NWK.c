@@ -141,7 +141,15 @@ bool cmp_addr(u8 *buf, u8 len)
 {
     if (len == 2)
     {
-        return cmp_buf(buf,local_addr.short_addr,2);
+         if (cmp_buf(buf,local_addr.short_addr,2) == false)
+         {
+           return (cmp_buf(buf,broadcast_addr,2) == false)? false:true;
+         }
+         else
+         {
+           return true;
+         }
+        
     }
     else if (len == 6)
     {
@@ -170,7 +178,8 @@ void NWK_init(void)
 注释: 此函数定义在APL层，由NWK层调用, 
 u8 * nwk_packet, u8 length 分别必须由 PHY_data_indication() 得来的数据赋值
 nwk_frame_ptr是全局变量，用来传递数据
-中继地址列表 难道中继地址列表中，上下行的顺序是一样的
+中继地址列表上下行帧中搜索的指数不同
+网络层不判断重复帧
 ************************************************************/
 void NWK_data_indication(u8 * nwk_packet, u8 length)
 {
@@ -179,52 +188,26 @@ void NWK_data_indication(u8 * nwk_packet, u8 length)
     u8            addr_area_pos;
     u8            compressed_list_len;
 
-     /* 复制到NID为止 */
-     memcpy((u8*)(nwk_frame_ptr), nwk_packet, EM_NWK_VAR);
+    /* 复制到NID为止 */
+    memcpy((u8*)(nwk_frame_ptr), nwk_packet, EM_NWK_VAR);
 
-     nwk_head_ptr = &(nwk_frame_ptr->head);
+    nwk_head_ptr = &(nwk_frame_ptr->head);
 
-     
-     if ( (cmp_buf(nwk_head_ptr->NID, LOCAL_NID,2)== false) && (cmp_buf(nwk_head_ptr->NID, broadcast_addr,2)== false) )
-     {
-       printf("NID error \r\n");//重复帧
-       return;
-     }
-     
-     /*
-     if (nwk_head_ptr->version != nwk_pib.current_version)
-     {
-       return ; //发现网络中有节点版本不一致，不执行命令，上报版本错误
-     }
-     */
-
-     if ( (nwk_head_ptr->frame_number == last_info.frame_number) && (nwk_head_ptr->direction == last_info.direction) )
-     {
-         printf("repeat nwk packet\r\n");//重复帧
+    if ( (cmp_buf(nwk_head_ptr->NID, LOCAL_NID,2)== false) && (cmp_buf(nwk_head_ptr->NID, broadcast_addr,2)== false) )
+    {
+        printf("NID error \r\n");
         return;
-     }
+    }
 
-     last_info.frame_number = nwk_head_ptr->frame_number;
-     last_info.direction    = nwk_head_ptr->direction;
-     
-     
-     /*
-    u8 frame_type:2;
-    u8 source_addr_type:1;
-    u8 des_addr_type:1;
-    u8 relay_addr_type:1;
-    u8 compression_addr_enable:1;
-    u8 route_type:2;
-    u8 version:4;
-    u8 saved:3;
-    u8 direction:1;
-    u8 frame_number;
-    u8 NID[2];
-    u8 tx_RSSI;
-    u8 rx_RSSI;  
-    st_addr_area   addr_area;
-}ST_NWK_head;
-     */
+    /*
+    if (nwk_head_ptr->version != nwk_pib.current_version)
+    {
+        return ; //发现网络中有节点版本不一致，不执行命令，上报版本错误
+    }
+    */
+
+    last_info.frame_number = nwk_head_ptr->frame_number;
+    last_info.direction    = nwk_head_ptr->direction;
      
     printf("nwk packet type = %X\r\n", nwk_head_ptr->frame_type);
     printf("nwk packet sour_addr type = %X\r\n", nwk_head_ptr->source_addr_type);
@@ -238,14 +221,7 @@ void NWK_data_indication(u8 * nwk_packet, u8 length)
     printf("nwk packet tx_RSSI = %X\r\n", nwk_head_ptr->tx_RSSI);
     printf("nwk packet rx_RSSI = %X\r\n", nwk_head_ptr->rx_RSSI);
     
-    
-  
-     
-     
-        
-     
-     
-     addr_area_pos = (nwk_head_ptr->direction == 0)? EM_NWK_VAR:(EM_NWK_VAR + 2);
+    addr_area_pos = (nwk_head_ptr->direction == 0)? EM_NWK_VAR:(EM_NWK_VAR + 2);
 
      if (nwk_head_ptr->direction == 1)//上行帧
      {
@@ -262,25 +238,24 @@ void NWK_data_indication(u8 * nwk_packet, u8 length)
     if (nwk_head_ptr->route_type == ROUTE_SOURCE_MODE)//源路由
     {
         nwk_head_ptr->addr_area.relay_level   = nwk_packet[addr_area_pos] & 0x0F;
-        nwk_head_ptr->addr_area.relay_search  = (nwk_packet[addr_area_pos] >> 4) & 0x0F;
+        nwk_head_ptr->addr_area.relay_index  = (nwk_packet[addr_area_pos] >> 4) & 0x0F;
 
         current_ptr = nwk_packet + addr_area_pos + 1;
         if (nwk_head_ptr->compression_addr_enable  == 1) //使用缩位地址
         {
             nwk_frame_ptr->addr_uint_len = 6;
             nwk_frame_ptr->addr_list_len = dempress_addr_list(current_ptr, nwk_frame_ptr->addr_list, nwk_head_ptr->addr_area.relay_level, &compressed_list_len); 
-            current_ptr += compressed_list_len;
-            nwk_frame_ptr->frame_data_length = length - compressed_list_len - (addr_area_pos + 1);
+            current_ptr += compressed_list_len; //数据帧的指针
+            nwk_frame_ptr->frame_data_length = length - compressed_list_len - (addr_area_pos + 1);//数据帧的长度
             
         }
         else
         {
             nwk_frame_ptr->addr_uint_len = (nwk_head_ptr->relay_addr_type == LONG_ADDR_TYPE)? 6:2;
             nwk_frame_ptr->addr_list_len  =  nwk_frame_ptr->addr_uint_len *  (nwk_head_ptr->addr_area.relay_level+2);
-            memcpy(nwk_frame_ptr->addr_list, current_ptr, nwk_frame_ptr->addr_list_len ); //
-            current_ptr += nwk_frame_ptr->addr_list_len;
-            nwk_frame_ptr->frame_data_length = length - nwk_frame_ptr->addr_list_len - (addr_area_pos + 1);
-            
+            memcpy(nwk_frame_ptr->addr_list, current_ptr, nwk_frame_ptr->addr_list_len ); 
+            current_ptr += nwk_frame_ptr->addr_list_len; //数据帧的指针
+            nwk_frame_ptr->frame_data_length = length - nwk_frame_ptr->addr_list_len - (addr_area_pos + 1);//数据帧的长度
         }
         
         printf("addr list: ");
@@ -296,68 +271,142 @@ void NWK_data_indication(u8 * nwk_packet, u8 length)
             printf("%X ",*current_ptr);
             current_ptr++;
         }
-         printf("\r\n");
+        printf("\r\n");
         
-        
-
-        if (nwk_head_ptr->addr_area.relay_level == 0)//没有中继地址，直接判断目的地址
+#if 0
+        //网络层没有多播功能
+        //是否有中继地址，好判断数据帧的位置
+        if (nwk_head_ptr->addr_area.relay_level == 0)//没有中继地址
         {
-            if (cmp_addr(nwk_frame_ptr->addr_list + nwk_frame_ptr->addr_uint_len,  nwk_frame_ptr->addr_uint_len))
+            if (cmp_addr(nwk_frame_ptr->addr_list + nwk_frame_ptr->addr_uint_len,  nwk_frame_ptr->addr_uint_len))//比较目的地址
             {
-                 nwk_frame_ptr->frame_data_length = length - nwk_frame_ptr->addr_list_len - (addr_area_pos + 1);
-                 //current_ptr
-                 //APL_data_indication();
-                 //memcpy(nwk_frame_ptr->frame_data, current_ptr, nwk_frame_ptr->frame_data_length);
-                
-            }
+              //是目的地址，或者广播地址,上交到APS
+              APL_data_indication(nwk_frame_ptr , current_ptr); 
+            } 
             else
             {
-                return;//丢弃
+              //不是目的地址，或者广播地址,丢弃
             }
         }
-        else //有中继地址
+        else
         {
-            //处于中继转发
-            if (nwk_head_ptr->addr_area.relay_search < nwk_head_ptr->addr_area.relay_level)
+            if (nwk_head_ptr->direction == 0)//下行
             {
-                if (cmp_addr(nwk_frame_ptr->addr_list + (2 + nwk_head_ptr->addr_area.relay_search)*nwk_frame_ptr->addr_uint_len,  nwk_frame_ptr->addr_uint_len))
+                if (nwk_head_ptr->addr_area.relay_index < nwk_head_ptr->addr_area.relay_level)//表示此帧处于转发状态
                 {
-                    //修改中继索引直接转发
-                    if (nwk_head_ptr->direction == 1)//上行帧
+                    if (cmp_addr(nwk_frame_ptr->addr_list + (2 + nwk_head_ptr->addr_area.relay_index)*nwk_frame_ptr->addr_uint_len,  nwk_frame_ptr->addr_uint_len))
                     {
-                        nwk_head_ptr->addr_area.relay_search++;
-
+                      //本节点是中继地址，上传给APS
+                      APL_data_indication(nwk_frame_ptr , current_ptr); 
                     }
-                    else //下行帧
+                    else
                     {
-                        nwk_head_ptr->addr_area.relay_search--;
+                      //丢弃
                     }
                 }
-                else
+                else if (nwk_head_ptr->addr_area.relay_index == nwk_head_ptr->addr_area.relay_level)//表示此帧处于最后一级，应该查找目标地址
                 {
-                    return; //丢弃
-                }
-            } 
-            else if ( (nwk_head_ptr->addr_area.relay_search == 0) || (nwk_head_ptr->addr_area.relay_search == nwk_head_ptr->addr_area.relay_level))
-            {
-                if (cmp_addr(nwk_frame_ptr->addr_list + nwk_frame_ptr->addr_uint_len,  nwk_frame_ptr->addr_uint_len))
-                {
-                    nwk_frame_ptr->frame_data_length = length - nwk_frame_ptr->addr_list_len - (addr_area_pos + 1);
-                    //current_ptr
-                    //APL_data_indication();
-                }
-                else
-                {
-                    return;//丢弃
+                    if (cmp_addr(nwk_frame_ptr->addr_list + nwk_frame_ptr->addr_uint_len,  nwk_frame_ptr->addr_uint_len))
+                    {
+                      //本节点是目标地址，上传给APS
+                      APL_data_indication(nwk_frame_ptr , current_ptr); 
+                    } 
+                    else
+                    {
+                      //丢弃
+                    }
                 }
             }
+            else//上行
+            {
+               if (nwk_head_ptr->addr_area.relay_index  > 0)//表示此帧处于转发状态
+               {
+                   if (cmp_addr(nwk_frame_ptr->addr_list + (2 + nwk_head_ptr->addr_area.relay_index)*nwk_frame_ptr->addr_uint_len,  nwk_frame_ptr->addr_uint_len))
+                   {
+                      //本节点是中继地址，上传给APS
+                     APL_data_indication(nwk_frame_ptr , current_ptr); 
+                   }
+                   else
+                   {
+                     //丢弃
+                   }
+               }
+               else if (nwk_head_ptr->addr_area.relay_index  == 0 )//表示此帧处于最后一级，应该查找目标地址，其实这里可以去掉，上面已经比较了目的地址
+               {
+                   if (cmp_addr(nwk_frame_ptr->addr_list + nwk_frame_ptr->addr_uint_len,  nwk_frame_ptr->addr_uint_len))
+                   {
+                      //本节点是目标地址，上传给APS
+                     APL_data_indication(nwk_frame_ptr , current_ptr); 
+                   } 
+                   else
+                   {
+                      //丢弃
+                   }
+               }
+            }
+          }
+          #endif
+        
+           if (cmp_addr(nwk_frame_ptr->addr_list + nwk_frame_ptr->addr_uint_len,  nwk_frame_ptr->addr_uint_len))
+           {
+              //本节点是目标地址，上传给APS
+             APL_data_indication(nwk_frame_ptr , current_ptr); 
+           } 
+           else//判断是否是中继地址
+           {
+               if (nwk_head_ptr->addr_area.relay_level == 0)//没有中继地址
+               {
+                 return;//丢弃
+               }
+               else//有中继地址
+               {
+                  if (nwk_head_ptr->direction == 0)//下行
+                  {
+                     if (nwk_head_ptr->addr_area.relay_index < nwk_head_ptr->addr_area.relay_level)//表示此帧处于转发状态
+                     {
+                        if (cmp_addr(nwk_frame_ptr->addr_list + (2 + nwk_head_ptr->addr_area.relay_index)*nwk_frame_ptr->addr_uint_len,  nwk_frame_ptr->addr_uint_len))
+                        {
+                          //本节点是中继地址，中继转发 （网络层发，还是上传给APS）
+                          APL_data_indication(nwk_frame_ptr , current_ptr); 
+                        }
+                        else
+                        {
+                          return;//丢弃
+                        }
+                     }
+                     else
+                     {
+                       return;
+                     }
+                  }
+                  else //上行
+                  {
+                     if (nwk_head_ptr->addr_area.relay_index  > 0)//表示此帧处于转发状态
+                     {
+                         if (cmp_addr(nwk_frame_ptr->addr_list + (2 + nwk_head_ptr->addr_area.relay_index)*nwk_frame_ptr->addr_uint_len,  nwk_frame_ptr->addr_uint_len))
+                         {
+                            //本节点是中继地址，中继转发 （网络层发，还是上传给APS）
+                           APL_data_indication(nwk_frame_ptr , current_ptr); 
+                         }
+                         else
+                         {
+                           return;//丢弃
+                         }
+                     }
+                     else
+                     {
+                       return;
+                     }
+                  }
+               }
+           }
         }
-    } 
-    else //盲中继
-    {
+        else //盲中继
+        {
+         
+            //暂时不处理盲中继
+        }
      
-        //暂时不处理盲中继
-    }
 }
 
 

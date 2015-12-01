@@ -58,6 +58,25 @@ static u8           cur_tx_No = 0;
 static u8           cur_rx_No = 0;
 
 
+process_event_t PROCESS_EVENT_RECEIVED;
+
+PROCESS(apl_process, "aplication_process");
+PROCESS_THREAD(apl_process, ev, data)
+{
+       
+    PROCESS_BEGIN();
+    
+    while (1)
+    {
+        
+    }
+    
+    PROCESS_END();
+}
+
+
+
+
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -96,8 +115,9 @@ void read_flash(u32 addr ,u8 * str, u16 len)
  Date         : 2015/11/16
  Author       : Barry
 *****************************************************************************/
-void read_params_area(u32 addr)
+bool read_params_area(u32 addr)
 {
+#if 0
   for (u16 i = 0; i < 1024; i++)
   {
      g_updateBuffer[i]  = *((char*)addr +i);
@@ -109,6 +129,41 @@ void read_params_area(u32 addr)
      }
      
   }
+#endif
+  //校表数据存储的长度一般不超过100字节，所以读出200字节应该足够，节省时间，或者不用节省时间
+  
+  char end[4] = "end";
+  
+  char * p = NULL;
+  
+  u16 len;
+  
+  u16 crcVal;
+  
+  MemCpy(g_updateBuffer, (char*)addr,  1024);
+  
+  p = strstr(g_updateBuffer,end);
+  
+  if (p != NULL)
+  {
+    len = p - g_updateBuffer + 3;
+    crcVal = *(p+3)*256 + *(p+4);
+    if ( GetCRC16((u8*)g_updateBuffer,len) == crcVal)
+    {
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+    
+  }
+  else
+  {
+    return false;
+  }
+  
+  
 }
 
 /*****************************************************************************
@@ -163,10 +218,28 @@ bool find_params(u8 pos, void * val)
   }
 }
 
+/*****************************************************************************
+ Prototype    : APL_data_indication
+ Description  : 
+ Input        : None 
+ Output       : None
+ Return Value : 
+ Date         : 
+ Author       : Barry
+*****************************************************************************/
+
+/*****************************************************************************
+ Prototype    : APL_data_indication
+ Description  : APL参数解析
+ Input        :  
+ Output       : None
+ Return Value : 
+ Date         : 2015/11/16
+ Author       : Barry
+*****************************************************************************/
 
 void APL_data_indication(st_NWK_frame *nwk_ptr, u8 *apl_frame_ptr)
 {
-    
     //apl不开辟缓存，当前帧没有处理完，不接受下一帧
     if (apl_busy == true)
     {
@@ -174,7 +247,7 @@ void APL_data_indication(st_NWK_frame *nwk_ptr, u8 *apl_frame_ptr)
     }
     
     apl_busy = true;
-    
+
     //复制网络层信息，准备应答用
     memcpy(&apl_nwk_inf, nwk_ptr, sizeof(st_NWK_frame));
 
@@ -191,9 +264,33 @@ void APL_data_indication(st_NWK_frame *nwk_ptr, u8 *apl_frame_ptr)
         break;
         
         case APL_TYPE_DATA_OBJECT:
-         apl_frame.frame_number =  *(apl_buf + ((apl_frame.ctrl.frame_tran_mod == APL_TRANSPORT_GROUP)? 4:3));
-        
+         //解出端点信息，组地址信息，APS帧序号，扩展头信息，帧载荷信息
+         /***************************************************************************************
+          数据帧格式 
+          帧控制域   目标端点  组地址（可能不存在）   源端点   APS帧序号   扩展头（可能不存在）   帧载荷
+          ***************************************************************************************/
+          if ( (apl_frame.ctrl.frame_tran_mod == APL_TRANSPORT_SINGLE) || (apl_frame.ctrl.frame_tran_mod == APL_TRANSPORT_BROADCAST))//单播，没有组地址
+          {
+            if (apl_frame.ctrl.frame_ext_head_inication == 0)//单播，没有组地址，没有扩展头
+            {
+                apl_frame.source_point = apl_buf[1];
+                apl_frame.end_point    = apl_buf[2];
+                apl_frame.frame_number = apl_buf[3];
+                apl_frame.data         = &apl_buf[4];
+                //process_post(&hal_RF_process, PROCESS_EVENT_MSG, (void *)(&g_RF_LoRa.rf_state));
+            }
+            else
+            {
+                //单播，没有组地址，有扩展头
+                return;
+            }
             
+          }
+          else
+          {
+            //多播或广播，没有组地址，有扩展头
+            return;
+          }
         break;
         
         case APL_TYPE_CMD:
@@ -205,33 +302,6 @@ void APL_data_indication(st_NWK_frame *nwk_ptr, u8 *apl_frame_ptr)
         default:
         break;
     }
-
-     if (cur_rx_No == apl_frame.frame_number)
-     {
-        //接收到重复帧
-        return;
-     }
-    
-
-    
-    
-
-    //1、解析出帧序号是否是重复帧
-    //APl层重复帧概念，有发送方向一个目的地址发送相同的帧，重复帧，对于重复帧，不处理，
-    //重复帧与重传概念不一样，重传多次发送，帧序号不一样，发送时需要修改
-
-    
-    
-
-    
-  
-   
-
-    
-
-
-
-    
 }
 
 

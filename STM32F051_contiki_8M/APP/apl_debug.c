@@ -48,6 +48,7 @@ void read_factor(void);
 void debug_save(void);
 void read_u_i_p(void);
 void read_adc(void);
+void reset_8209c(void);
 /** @addtogroup  APL Debug Command
   * @{
   */ 
@@ -89,7 +90,8 @@ static const ST_DEBUG_COMMAND CmdList[] =
   {"pwm",debug_set_pwm},
   {"factor",read_factor},
   {"dbsave",debug_save},
-  {"adc",read_adc}
+  {"adc",read_adc},
+  {"8209creset",reset_8209c}
 };
 
 extern u8 g_DebugRxBuffer[RBL_COM2_RX_SIZE];
@@ -589,6 +591,8 @@ void cal_power_angle(void)
   float val;
   float vals;
   u8  valint;
+  u16  qphscal;
+  
   GetStringParameter(str, 1);
   val = atof((char*)str)/100;
   vals = (asin(-val/1.732));
@@ -610,6 +614,19 @@ void cal_power_angle(void)
   rn8209c_write_byte(CMDREG, WRITE_DISABLE);
   
   rn8209c_papameter.PhsA = valint;
+  
+  vals = 0.5774 * val;
+  
+  if (vals > 0)
+  {
+    qphscal = (u16)(vals * 32768);
+  }
+  else
+  {
+    qphscal =  (u16)(65536 + vals * 32768);
+  }
+  
+  config_8209c_reg(ADQPHSCAL , qphscal);
 }
 
 void set_8209c_Kx(void)
@@ -617,14 +634,13 @@ void set_8209c_Kx(void)
     u32 intVal;
 
     read_8209c_regs(ADURMS,&intVal);
-    rn8209c_papameter.Ku  =  intVal;
+    rn8209c_papameter.Ku  =  intVal;    // 直接保存寄存器值，到时候再计算 U = 220/rn8209c_papameter.Ku * reggValue；
    
     read_8209c_regs(ADIARMS,&intVal);
-    rn8209c_papameter.KIa =  intVal;
+    rn8209c_papameter.KIa =  intVal;    // 直接保存寄存器值，到时候再计算 I = 0.5/rn8209c_papameter.KIa * reggValue；
     
-   // rn8209c_papameter.Kp = (float)(3221550000000*1000000/(4294967296*rn8209c_papameter.HFConst*rn8209c_papameter.EC));
-   
-    rn8209c_papameter.Kp  = 14.55530;
+    rn8209c_papameter.Kp = (float)(3221550000000*1000000.0/(4294967296.0*rn8209c_papameter.HFConst*rn8209c_papameter.EC));//uW
+  
     rn8209c_papameter.energyAPulse = 0;
     rn8209c_papameter.energyA      = 0;
     rn8209c_papameter.PFcount      = 0;
@@ -638,8 +654,13 @@ void set_8209c_Kx(void)
     rn8209c_papameter.PStart = (u16)(intVal*4.0/1000)/256;
     config_8209c_reg(ADPStart, rn8209c_papameter.PStart);
     
+    read_8209c_regs(ADGPQA,&rn8209c_papameter.GPQA);
+    read_8209c_regs(ADPhsA,&rn8209c_papameter.PhsA );
+    
     save_8209c_params();
-    power_down_protect();
+    FLASH_ErasePage(FLASH_ELC_SAVE_ADDRESS);
+    
+    process_start(&start_time_detect_process, NULL);
 }
 
 void read_param_all(void)
@@ -729,7 +750,7 @@ void read_energy(void)
   u32 lightTime;
   read_8209c_energyP();
   lightTime = get_light_time();
-  printf("light_time = %d", lightTime);
+  printf("light_time = %d\r\n,pulse = %d\r\n,enagy = %d\r\n", lightTime, rn8209c_papameter.energyAPulse,rn8209c_papameter.energyA);
 }
 
 void read_factor(void)
@@ -755,6 +776,11 @@ void read_adc(void)
 {
     u16 adc = read_PWM_volt();
     printf("adc = %d", adc);
+}
+
+void reset_8209c(void)
+{
+  rn8209c_reset();
 }
 #endif //PRINTF_DEBUG
 

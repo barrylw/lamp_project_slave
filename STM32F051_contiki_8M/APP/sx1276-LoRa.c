@@ -232,17 +232,18 @@ tLoRaSettings LoRaSettings =
     #ifdef HIGH_FREQUENCY
     920000000,                             // RFFrequency
     #else
-    492000000,
+    //492000000,
+    492500000,
     #endif
     17,                                     // Power
-    6,                                      // SignalBw [0: 7.8kHz, 1: 10.4 kHz, 2: 15.6 kHz, 3: 20.8 kHz, 4: 31.2 kHz,
+    7,                                      // SignalBw [0: 7.8kHz, 1: 10.4 kHz, 2: 15.6 kHz, 3: 20.8 kHz, 4: 31.2 kHz,
                                             // 5: 41.6 kHz, 6: 62.5 kHz, 7: 125 kHz, 8: 250 kHz, 9: 500 kHz, other: Reserved]
     9,                                      // SpreadingFactor [6: 64, 7: 128, 8: 256, 9: 512, 10: 1024, 11: 2048, 12: 4096  chips]
     2,                                      // ErrorCoding [1: 4/5, 2: 4/6, 3: 4/7, 4: 4/8]
     true,                                   // CrcOn [0: OFF, 1: ON]
     false,                                  // ImplicitHeaderOn [0: OFF, 1: ON]
     false,                                  // RxSingleOn [0: Continuous, 1 Single]
-    true,                                   // FreqHopOn [0: OFF, 1: ON]
+    false,                                   // FreqHopOn [0: OFF, 1: ON]
     7,                                      // HopPeriod Hops every frequency hopping period symbols
     800,                                    // TxPacketTimeout
     800,                                    // RxPacketTimeout
@@ -297,7 +298,7 @@ void SX1276Reset( void )
 
   SX1276SetReset( RADIO_RESET_ON );
 
-  /* Wait 1ms */
+  /* Wait 2ms */
   startTick = hal_GetSystickCounter( );
   while(  hal_GetSystickCounter( ) < ( startTick + 2 ));
 
@@ -779,8 +780,8 @@ void SX1276LoRaInit( void )
     SX1276LoRaSetPayloadLength( LoRaSettings.PayloadLength );
 
     SX1276LoRaSetPreambleLength(LoRaSettings.PreambleLen);
-    
-    /* seted  true when a symble time over 16ms */
+    /*
+    // seted  true when a symble time over 16ms /
     if (SX1276LoRaGetSymbolTs(LoRaSettings.SignalBw, LoRaSettings.SpreadingFactor) >= 16)
     {
       SX1276LoRaSetLowDatarateOptimize(true);
@@ -790,16 +791,17 @@ void SX1276LoRaInit( void )
       SX1276LoRaSetLowDatarateOptimize(false);
     }
     
+    LoRaSettings.HopPeriod = SX1276LoRaInitHopPeriod();
+    */
     /* BEGIN: Added by Barry, 2014/3/5 */
     SX1276LoRaSetPAOutput( RFLR_PACONFIG_PASELECT_RFO );
     //SX1276LoRaSetPAOutput( RFLR_PACONFIG_PASELECT_PABOOST );
+    
     /* set max power 17DBm */
     SX1276LoRaSetPa20dBm( false );
     
     /* set power */
     SX1276LoRaSetRFPower( LoRaSettings.Power );
-
-    LoRaSettings.HopPeriod = SX1276LoRaInitHopPeriod();
 
     #ifdef USE_LOW_POWER_MODE
     SX1276LoRaSetWokeUpPreambleLenth();
@@ -1346,7 +1348,7 @@ void EXTI4_15_IRQHandler(void)
      EXTI_ClearITPendingBit(ZERO_DETECT_LINE);
    
      TIM_Cmd(POWER_DOWN_TIMER, ENABLE);
-     TIM_SetCounter(POWER_DOWN_TIMER, 0 );
+     TIM_SetCounter(POWER_DOWN_TIMER, 0);
 
      //process_post(&zero_detect_process, PROCESS_EVENT_MSG, NULL); // 此处是使用事件方式处理过零中断，现在改为定时器硬件中断方式
    }

@@ -54,7 +54,7 @@ enum
  typedef struct
  {
      u8   relay_level:4;
-     u8   relay_search:4;
+     u8   relay_index:4;
  }st_addr_area;
  
  typedef struct
@@ -97,8 +97,8 @@ typedef struct
     u8            addr_list[ADDR_AREA_LEN];              //地址列表，传送给APL
     u8            addr_uint_len;                         //地址的长度，长地址还是短地址
     u8            addr_list_len;                         //在网络帧中整个地址域的长度
-    u8            frame_data_length;
-    //u8            frame_data[APL_AREA_LEN];            //255 
+    u8            frame_data_length;         
+    //u8          frame_data[APL_AREA_LEN];            //255 
 }st_NWK_frame;
 
 

@@ -14,7 +14,7 @@
 #define IB_05     0.5
 
 #define SAFE_START_TIME      30000       //30S
-#define SAVE_DATA_PERIOD     600000      //10分钟
+#define SAVE_DATA_PERIOD     30000      //1分钟
 
 extern char g_updateBuffer[];
 extern char *paralist[];
@@ -27,16 +27,16 @@ PROCESS_NAME(period_save_data_process);
 
 RN8209C_PARAM rn8209c_papameter = 
 {
-      .HFConst      = 4026,              //表常数项设置
+      .HFConst      = 2484,              //表常数项设置
       .PStart       = 0,                 //启动设置
       .GPQA         = 0,                 //A有功增益校正
       .PhsA         = 0,                 //A有功角度校正 
       .QPhsCal      = 0,                 //无功角度校正
       .PFcount      = 0,                 //保存的能量积分，掉电时保存
       .energyAPulse = 0,                 //有功电量，电量小于一度电，以脉冲数表示   
-      .Ku           = 0,                 //电压系数  mv                              
-      .KIa          = 0,                 //电流A系数 ma
-      .Kp           = 0,                 //功率系数  mw
+      .Ku           = 0,                 //电压系数   mv                              
+      .KIa          = 0,                 //电流A系数  ma
+      .Kp           = 0.0,            //功率系数   uW ,手动计算结果，若修改参数，必须手动修改
       .Uv           = 0,                 //电压有效值
       .Ia           = 0,                 //电流有效值
       .Pa           = 0,                 //功率有效值
@@ -68,114 +68,116 @@ read_PWM_volt()
 read_LED_state()
 */
 
-void drop_down_timer_init(void);
+/***************
+计量需要保存的参数
+0、calibration     是否成功校准  1byte
+1、PStart          启动电流      2byte
+2、GPQA            有功功率校准  2byte
+3、PhsA            有功角度校准  1byte 
+4、QPhsCal         无功校准      2byte
+5、Ku              电压系数      3byte                                                   
+6、KIa             电流系数      3byte                     
+7、CRC16           校验          2byte
+多字节数据地位在地地址，高位在高地址
+***************/
+#define PARAM_CAL                0
+#define PARAM_PSTART             1
+#define PARAM_GPQA               2
+#define PARAM_PHSA               3
+#define PARAM_QPHCAL             4
+#define PARAM_KU                 5
+#define PARAM_KI                 6
+#define PARAM_CRC16              7
+
+#define CAL_LENGTH               1
+#define PSTART_LENGTH            2
+#define GPQA_LENGTH              2
+#define PHSA_LENGTH              1
+#define QPHCAL_LENGTH            2
+#define KU_LENGTH                3
+#define KI_LENGTH                3
+#define CRC16_LENGTH             2
+#define PARAM_LENGTH             (CAL_LENGTH + PSTART_LENGTH + GPQA_LENGTH + PHSA_LENGTH + QPHCAL_LENGTH + KU_LENGTH + KI_LENGTH + CRC16_LENGTH)
+
+
+#define CAL_STRAT_POS           0
+#define PSTART_START_POS        (CAL_STRAT_POS    + CAL_LENGTH)
+#define GPQA_START_POS          (PSTART_START_POS + PSTART_LENGTH)
+#define PHSA_START_POS          (GPQA_START_POS   + GPQA_LENGTH)
+#define QPHCAL_START_POS        (PHSA_START_POS   + PHSA_LENGTH)
+#define KU_START_POS            (QPHCAL_START_POS + QPHCAL_LENGTH)
+#define KI_START_POS            (KU_START_POS     + KU_START_POS)
+#define CRC16_START_POS         (KI_START_POS     + KI_LENGTH)
+
+u8 cal_param_index[8][2] = {
+                                {CAL_STRAT_POS,CAL_LENGTH},      {PSTART_START_POS,PSTART_LENGTH},
+                                {GPQA_START_POS,GPQA_LENGTH},    {PHSA_START_POS,PHSA_LENGTH},
+                                {QPHCAL_START_POS,QPHCAL_LENGTH},{KU_START_POS,KU_LENGTH},
+                                {CRC16_START_POS,KI_LENGTH},     {CRC16_START_POS,CRC16_LENGTH}
+                          };
+
+//查找参数
+//写入参数
+
+#if 0
+bool find_params(u8 pos, void * val)
+{
+    u8 param_pos;
+    u8 param_len;
+    u16 crcval;
+    
+    read_flash(FLASH_PARAMETER_ADDRESS, g_updateBuffer, PARAM_LENGTH);
+
+    crcval = GetCRC16(g_updateBuffer, PARAM_LENGTH - 2);
+
+    if (crcval != (g_updateBuffer[PARAM_LENGTH - 1])*256 + g_updateBuffer[PARAM_LENGTH - 2])
+    {
+        return false;
+    }
+
+  
+    if (pos > 7)
+    {
+        return false;
+    }
+
+    param_pos = cal_param_index[pos][0];
+    param_len = cal_param_index[pos][1];
+
+    if ((param_len != 1) || (param_len != 2) || (param_len != 3))
+    {
+        return false;
+    }
+
+    switch (param_len)
+    {
+        case 1:
+           *(u8*)val =  g_updateBuffer[param_pos];
+        break;
+
+        case 2:
+            *(u16*)val = (u16)g_updateBuffer[param_pos]  + (u16)g_updateBuffer[param_pos + 1]<<8;
+            
+        break;
+
+        case 3:
+            *(u32*)val = (u32)g_updateBuffer[param_pos]  + (u32)g_updateBuffer[param_pos + 1]<<8 + (u32)g_updateBuffer[param_pos + 2] <<16;
+        break;
+
+        default:
+        break;
+    } 
+
+    return true;
+}
+#endif
+
 
 /****************************************************************
 存在掉电马上恢复，单片机没有复位的情况，或者掉电检测错误的处理
 掉电检测成功后，kill 掉flash保存进程，启动安全时间检测进程，若进程检测成功，再使能flash处理，掉电检测功能
 contiki 由一个进程结束另一个进程
 ****************************************************************/
-
-
-/*****************************************************************************
- Prototype    : start_time_detect_process
- Description  : 上电保护进程，上电后在保护时间 SAFE_START_TIME 内，不允许操作flash，以及执行掉电保护功能
- Input        : None 
- Output       : None
- Return Value : 
- Date         : 
- Author       : Barry
-*****************************************************************************/
-PROCESS(start_time_detect_process, "safe_start");
-PROCESS_THREAD(start_time_detect_process, ev, data)
-{
-  static struct etimer start_etimer; 
-  
-  static u16 length;
-  
-  PROCESS_BEGIN();
-  
-  etimer_set(&start_etimer, SAFE_START_TIME);
-   
-   while (1)
-   {
-       PROCESS_WAIT_EVENT_UNTIL( (ev == PROCESS_EVENT_TIMER) && ((struct etimer *)data == &start_etimer));
-     
-       if (flash_ok == true)
-       {
-            length =   find_free_addr(FLASH_ELC_SAVE_ADDRESS);
-
-            if(  (length >= (1024 - ELC_FILE_TAIL_LEN))  )
-            {
-                read_8209c_energyP();
-                format_elc_data();
-
-                if (FLASH_ErasePage(FLASH_ELC_SAVE_ADDRESS) == FLASH_COMPLETE)
-                {
-                    FLASH_Write_chars( FLASH_ELC_SAVE_ADDRESS, (u8*)g_updateBuffer , ELC_FLIE_LEN);
-                }  
-             }
-             else if (length == 0)
-             {
-                read_8209c_energyP();
-                format_elc_data();
-                FLASH_Write_chars( FLASH_ELC_SAVE_ADDRESS, (u8*)g_updateBuffer , ELC_FLIE_LEN);
-             }
-       }
-       else
-       {
-            read_8209c_energyP();
-            format_elc_data();
-
-            if (FLASH_ErasePage(FLASH_ELC_SAVE_ADDRESS) == FLASH_COMPLETE)
-            {
-                FLASH_Write_chars( FLASH_ELC_SAVE_ADDRESS, (u8*)g_updateBuffer , ELC_FLIE_LEN);
-                flash_ok = true;
-            }  
-       }
-       break;
-     
-   }
-
-   process_start(&period_save_data_process, NULL);// 保护时间到后，开启定时检查电量存储功能
-   drop_down_timer_init();                        // 保护时间到后，开启掉电保护功能
-    
-   PROCESS_END();
-}
-
-/*****************************************************************************
- Prototype    : period_save_data_process
- Description  : 定时保存电量，亮灯时长
- Input        : None 
- Output       : None
- Return Value : 
- Date         : 
- Author       : Barry
-*****************************************************************************/
-PROCESS(period_save_data_process, " ");
-PROCESS_THREAD(period_save_data_process, ev, data)
-{
-    u32 tempPulse;
-    static struct etimer save_timer; 
-    PROCESS_BEGIN();
-
-    while(1)
-    {
-       etimer_set(&save_timer, SAVE_DATA_PERIOD);
-       PROCESS_WAIT_EVENT_UNTIL( (ev == PROCESS_EVENT_TIMER) && ((struct etimer *)data == &save_timer));
-       tempPulse = rn8209c_papameter.energyAPulse;  //保存读取前的脉冲数
-       read_8209c_energyP();
-
-       if ( (rn8209c_papameter.energyAPulse - tempPulse) > (rn8209c_papameter.EC/100) )
-       {
-          rn8209c_papameter.lightTime = get_light_time();
-          save_elc_datas();
-       } 
-    }
-
-    PROCESS_END();
-}
-
 
 /*****************************************************************************
  Prototype    : drop_down_timer_init
@@ -194,8 +196,8 @@ void drop_down_timer_init(void)
   
   TIM_TimeBaseInitStruct.TIM_ClockDivision      =  TIM_CKD_DIV4;
   TIM_TimeBaseInitStruct.TIM_CounterMode        =  TIM_CounterMode_Up; 
-  TIM_TimeBaseInitStruct.TIM_Prescaler          =   48000;
-  TIM_TimeBaseInitStruct.TIM_Period             =   30; 
+  TIM_TimeBaseInitStruct.TIM_Prescaler          =   48000;              // 定时周期1ms
+  TIM_TimeBaseInitStruct.TIM_Period             =   40;                 // 定时40ms
   TIM_TimeBaseInitStruct.TIM_RepetitionCounter  =   0;
   TIM_TimeBaseInit(POWER_DOWN_TIMER, &TIM_TimeBaseInitStruct);
   
@@ -203,6 +205,125 @@ void drop_down_timer_init(void)
   TIM_ITConfig(POWER_DOWN_TIMER, TIM_IT_Update,  ENABLE);
 }
 
+
+
+/*****************************************************************************
+ Prototype    : start_time_detect_process
+ Description  : 上电保护进程，上电后在保护时间 SAFE_START_TIME 内，不允许操作flash，以及执行掉电保护功能
+ Input        : None 
+ Output       : None
+ Return Value : 
+ Date         : 
+ Author       : Barry
+*****************************************************************************/
+PROCESS(start_time_detect_process, "safe_start");
+PROCESS_THREAD(start_time_detect_process, ev, data)
+{
+    static struct etimer start_etimer; 
+    
+    static u16 length;
+    
+    PROCESS_BEGIN();
+    
+    rn8209c_init();
+    
+    etimer_set(&start_etimer, SAFE_START_TIME);
+   
+   PROCESS_WAIT_EVENT_UNTIL( (ev == PROCESS_EVENT_TIMER) && ((struct etimer *)data == &start_etimer));
+   printf("protected time end\r\n");
+   
+   if (rn8209c_papameter.calibration == 1)
+   {
+       if (flash_ok == true)
+       {
+            printf("flash data ok\r\n");
+            
+            length =   find_free_addr(FLASH_ELC_SAVE_ADDRESS);
+
+            if(  (length >= (1024 - ELC_FILE_TAIL_LEN))  )
+            {
+                printf("flash  full  erase and write\r\n");
+                read_8209c_energyP();
+                format_elc_data();
+
+                if (FLASH_ErasePage(FLASH_ELC_SAVE_ADDRESS) == FLASH_COMPLETE)
+                {
+                    FLASH_Write_chars( FLASH_ELC_SAVE_ADDRESS, (u8*)g_updateBuffer , ELC_FLIE_LEN);
+                }  
+             }
+             else if (length == 0)
+             {
+                printf("flash  not full, write\r\n");
+                read_8209c_energyP();
+                format_elc_data();
+                FLASH_Write_chars( FLASH_ELC_SAVE_ADDRESS, (u8*)g_updateBuffer , ELC_FLIE_LEN);
+             }
+       }
+       else
+       {
+            printf("flash data err, erase and write new data\r\n");
+            read_8209c_energyP();
+            format_elc_data();
+
+            if (FLASH_ErasePage(FLASH_ELC_SAVE_ADDRESS) == FLASH_COMPLETE)
+            {
+                FLASH_Write_chars( FLASH_ELC_SAVE_ADDRESS, (u8*)g_updateBuffer , ELC_FLIE_LEN);
+                flash_ok = true;
+            }  
+       }
+       process_start(&period_save_data_process, NULL);// 保护时间到后，开启定时检查电量存储功能
+       drop_down_timer_init();                        // 保护时间到后，开启掉电保护功能
+   }
+    
+   PROCESS_END();
+}
+
+/*****************************************************************************
+ Prototype    : period_save_data_process
+ Description  : 定时保存电量，亮灯时长
+ Input        : None 
+ Output       : None
+ Return Value : 
+ Date         : 
+ Author       : Barry
+*****************************************************************************/
+PROCESS(period_save_data_process, " ");
+PROCESS_THREAD(period_save_data_process, ev, data)
+{
+    static u32 tempPulse;
+    static struct etimer save_timer; 
+    PROCESS_BEGIN();
+    
+    if (ev == PROCESS_EVENT_INIT)
+    {
+      printf("period save process start\r\n");
+      tempPulse = rn8209c_papameter.energyAPulse;  //保存当前脉冲数
+      printf("power on pulse = %d\r\n",tempPulse);
+    }
+
+    while(1)
+    {
+       etimer_set(&save_timer, SAVE_DATA_PERIOD);
+       PROCESS_WAIT_EVENT_UNTIL( (ev == PROCESS_EVENT_TIMER) && ((struct etimer *)data == &save_timer));
+       
+       get_light_time();
+       
+       read_8209c_energyP();
+ 
+       if ( (rn8209c_papameter.energyAPulse - tempPulse) >= (rn8209c_papameter.EC/100) )
+       {
+          save_elc_datas();
+          tempPulse = rn8209c_papameter.energyAPulse;
+          printf("save elc data finish\r\n");
+       } 
+       else
+       {
+         printf("not full the save condition\r\n");
+       }
+    }
+
+    PROCESS_END();
+}
 
 /*****************************************************************************
  Prototype    : save_8209c_params
@@ -259,8 +380,8 @@ void TIM14_IRQHandler(void)
       //2、判断是否到达数据保存保护时间
       //3、设置禁止进行常规数据保存，因为有可能误判，在过零中断中使能
       //4、设置禁止掉电检测timer，因为有可能误判，在过零中断中使能
-      
       power_down_protect();
+      printf("drop down, save ok\r\n");
       TIM_Cmd(POWER_DOWN_TIMER, DISABLE);
       process_post(&period_save_data_process, PROCESS_EVENT_EXIT, NULL);
       process_start(&start_time_detect_process, NULL);
@@ -594,6 +715,18 @@ bool rn8209c_read(u8 reg, u8 *buf, u8 length)
 
 }
 
+
+void rn8209c_reset(void)
+{
+    USART_Cmd(RBL_COM1, DISABLE);
+
+    GPIO_ResetBits(RBL_COM1_RX_GPIO_PORT, RBL_COM1_TX_PIN);
+    Delayms(25);
+    GPIO_SetBits(RBL_COM1_RX_GPIO_PORT, RBL_COM1_TX_PIN);
+    Delayms(20);
+
+    hal_InitUART();
+}
 /*****************************************************************************
  Prototype    : rn8209c_init
  Description  : 8209c初始化
@@ -605,24 +738,7 @@ bool rn8209c_read(u8 reg, u8 *buf, u8 length)
 *****************************************************************************/
 void rn8209c_init(void)
 {
-  
-  USART_Cmd(RBL_COM1, DISABLE);
-  
-  /*
-  GPIO_InitStructure.GPIO_Pin = RBL_COM1_TX_PIN;
-  GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-  GPIO_InitStructure.GPIO_PuPd  = GPIO_PuPd_UP;
-  GPIO_InitStructure.GPIO_Speed = GPIO_Speed_50MHz;
-  GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-  GPIO_Init(RBL_COM1_TX_GPIO_PORT, &GPIO_InitStructure);
-  */
- 
-  GPIO_ResetBits(RBL_COM1_RX_GPIO_PORT, RBL_COM1_TX_PIN);
-  Delayms(25);
-  GPIO_SetBits(RBL_COM1_RX_GPIO_PORT, RBL_COM1_TX_PIN);
-  Delayms(20);
-  
-  hal_InitUART();
+   rn8209c_reset();
   
   init_8209c_params();
 }
@@ -719,7 +835,7 @@ void config_8209c_reg(u8 reg, u32 dat)
  Date         : 
  Author       : Barry
 *****************************************************************************/
-u8 read_8209c_regs(u8 reg , u32* dat)
+u8 read_8209c_regs(u8 reg , void* dat)
 {
   u8 length;
   u8 buf[5] = {0};
@@ -733,13 +849,31 @@ u8 read_8209c_regs(u8 reg , u32* dat)
   
   if (rn8209c_read(reg, buf, length) == true)
   {
-    *((u32*)dat)  = (u32)(buf[0]*16777216 +buf[1]*65536 + buf[2]*256 + buf[3]);
-    return length;
+      if (length == 1)
+      {
+        *((u8*)dat) = buf[0];
+      }
+      else if (length == 2)
+      {
+        *((u16*)dat) = (u32)(buf[0]*256 +buf[1]);
+      }
+      else if (length == 3)
+      {
+        *((u32*)dat) = (u32)(buf[0]*65536 +buf[1]*256 + buf[2]);
+      }
+      else if (length == 4)
+      {
+        *((u32*)dat) = (u32)(buf[0]*16777216 +buf[1]*65536 + buf[2]*256 + buf[3]);
+      }
+      
+      return length;
   }
   else
   {
     return 0;
+   
   }
+  
 }
 
 /*****************************************************************************
@@ -805,10 +939,13 @@ u16 find_free_addr(u32 addr)
 *****************************************************************************/
 void save_8209c_params(void)
 {
-  //u32 startADDR = FLASH_PARAMETER_ADDRESS; 
-
+  u16 len;
+  u16 crcVal;
+  
+  MemSet(g_updateBuffer, 0, 1024);
+  
   /* sprintf 应该会自动在末尾添加 0 */
-  sprintf(g_updateBuffer,"%s%d;%s%d;%s%d;%s%d;%s%d;%s%d;%s%d;%s%f;",             
+  sprintf(g_updateBuffer,"%s%d;%s%d;%s%d;%s%d;%s%d;%s%d;%s%d;%s%.3f;end",             
           paralist[0],rn8209c_papameter.calibration,
           paralist[1],rn8209c_papameter.PStart,
           paralist[2],rn8209c_papameter.GPQA,
@@ -819,9 +956,25 @@ void save_8209c_params(void)
           paralist[7],rn8209c_papameter.Kp
           );
   
+   len = strlen(g_updateBuffer);
+   
+   crcVal = GetCRC16((u8*)g_updateBuffer,len);
+   
+   g_updateBuffer[len]       = (u8)((crcVal >> 8) &0xFF);
+   g_updateBuffer[len + 1 ]  = (u8)(crcVal & 0xFF);
+   g_updateBuffer[len + 2 ]  = 0;
+    
+
    if (FLASH_ErasePage(FLASH_PARAMETER_ADDRESS) == FLASH_COMPLETE)
    {
-      FLASH_Write_chars( FLASH_PARAMETER_ADDRESS, (u8*)g_updateBuffer ,strlen(g_updateBuffer));
+      if ( FLASH_Write_chars( FLASH_PARAMETER_ADDRESS, (u8*)g_updateBuffer ,  len + 3 ) != FLASH_OK)
+      {
+        printf("save calibration data error\r\n");
+      }
+   }
+   else
+   {
+     printf("save calibration data error\r\n");
    }
 }
 
@@ -844,7 +997,7 @@ void set_8209c_params(void)
   config_8209c_reg(ADPhsA, rn8209c_papameter.PhsA);
   config_8209c_reg(ADPFCnt, rn8209c_papameter.PFcount);
   
-  Delayms(1);
+  //Delayms(1);
   
   read_8209c_regs(ADEMUStatus , &status);
   
@@ -881,7 +1034,7 @@ bool find_old_data(u16 length)
 
        crcval = (u16)((u16)g_updateBuffer[FLASH_CRC_PINT]*256 + g_updateBuffer[FLASH_CRC_PINT + 1]);
 
-       if (GetCRC16((u8*)g_updateBuffer,ELC_FLIE_LEN-2) == crcval)
+       if (GetCRC16((u8*)g_updateBuffer,FLASH_CRC_PINT) == crcval)
        {
            rn8209c_papameter.PFcount       = (u16)(g_updateBuffer[FLASH_PFCOUNT_POINT]*256 +g_updateBuffer[FLASH_PFCOUNT_POINT + 1]);
            rn8209c_papameter.energyAPulse  = (u32)(g_updateBuffer[FLASH_ENERGY_POINT]*16777216 +g_updateBuffer[FLASH_ENERGY_POINT+1]*65536 + g_updateBuffer[FLASH_ENERGY_POINT+2]*256 + g_updateBuffer[FLASH_ENERGY_POINT+3]);
@@ -922,60 +1075,63 @@ void init_8209c_params(void)
   
   u16 length;
   u16 crcval;
-
-  read_params_area(FLASH_PARAMETER_ADDRESS);
   
-  if (find_params(0, & rn8209c_papameter.calibration) )
+  if (read_params_area(FLASH_PARAMETER_ADDRESS) == true)
   {
-        /* 计量校准过，读取参数 */
-        if (rn8209c_papameter.calibration == 1)
-        {
-            find_params(1, &rn8209c_papameter.PStart);
-            find_params(2, &rn8209c_papameter.GPQA);
-            find_params(3, &rn8209c_papameter.PhsA);
-
-            find_params(5, &rn8209c_papameter.Ku);
-            find_params(6, & rn8209c_papameter.KIa);
-            find_params(7, & rn8209c_papameter.Kp);
-
-            /*read from flashA */
-            length =   find_free_addr(FLASH_ELC_SAVE_ADDRESS);
-
-            /* 存储长度正确 */
-            if(  (length < (1024 - ELC_FILE_TAIL_LEN)) &&  (length > 0) )
+      if (find_params(PARAM_CAL, & rn8209c_papameter.calibration) )
+      {
+            /* 计量校准过，读取参数 */
+            if (rn8209c_papameter.calibration == 1)
             {
-                read_flash(FLASH_ELC_SAVE_ADDRESS + length - ELC_FLIE_LEN, (u8*)g_updateBuffer, ELC_FLIE_LEN);
+                find_params(PARAM_PSTART, &rn8209c_papameter.PStart);
+                find_params(PARAM_GPQA, &rn8209c_papameter.GPQA);
+                find_params(PARAM_PHSA, &rn8209c_papameter.PhsA);
+                find_params(PARAM_KU, &rn8209c_papameter.Ku);
+                find_params(PARAM_KI, & rn8209c_papameter.KIa);
+                find_params(7, & rn8209c_papameter.Kp);
+                //find_params(PARAM_QPHCAL, &rn8209c_papameter.QPhsCal);
+            
 
-                crcval = (u16)((u16)g_updateBuffer[FLASH_CRC_PINT]*256 + g_updateBuffer[FLASH_CRC_PINT + 1]);
+                /*read from flashA */
+                length =   find_free_addr(FLASH_ELC_SAVE_ADDRESS);
 
-                if (GetCRC16((u8*)g_updateBuffer,ELC_FLIE_LEN-2) == crcval)
+                /* 存储长度正确 */
+                if(  (length < (1024 - ELC_FILE_TAIL_LEN)) &&  (length > 0) )
                 {
-                    flash_ok = true;
-                    rn8209c_papameter.PFcount       = (u16)(g_updateBuffer[FLASH_PFCOUNT_POINT]*256 +g_updateBuffer[FLASH_PFCOUNT_POINT + 1]);
-                    rn8209c_papameter.energyAPulse  = (u32)(g_updateBuffer[FLASH_ENERGY_POINT]*16777216 +g_updateBuffer[FLASH_ENERGY_POINT+1]*65536 + g_updateBuffer[FLASH_ENERGY_POINT+2]*256 + g_updateBuffer[FLASH_ENERGY_POINT+3]);
-                    rn8209c_papameter.lightTime     = (u32)(g_updateBuffer[FLASH_LIGHT_POINT]*16777216 +g_updateBuffer[FLASH_LIGHT_POINT+1]*65536 + g_updateBuffer[FLASH_LIGHT_POINT+2]*256 + g_updateBuffer[FLASH_LIGHT_POINT+3]);
-                }
+                    read_flash(FLASH_ELC_SAVE_ADDRESS + length - ELC_FLIE_LEN, (u8*)g_updateBuffer, ELC_FLIE_LEN);
+
+                    crcval = (u16)((u16)g_updateBuffer[FLASH_CRC_PINT]*256 + g_updateBuffer[FLASH_CRC_PINT + 1]);
+
+                    if (GetCRC16((u8*)g_updateBuffer,FLASH_CRC_PINT) == crcval)
+                    {
+                        flash_ok = true;
+                        rn8209c_papameter.PFcount       = (u16)(g_updateBuffer[FLASH_PFCOUNT_POINT]*256 +g_updateBuffer[FLASH_PFCOUNT_POINT + 1]);
+                        rn8209c_papameter.energyAPulse  = (u32)(g_updateBuffer[FLASH_ENERGY_POINT]*16777216 +g_updateBuffer[FLASH_ENERGY_POINT+1]*65536 + g_updateBuffer[FLASH_ENERGY_POINT+2]*256 + g_updateBuffer[FLASH_ENERGY_POINT+3]);
+                        rn8209c_papameter.lightTime     = (u32)(g_updateBuffer[FLASH_LIGHT_POINT]*16777216 +g_updateBuffer[FLASH_LIGHT_POINT+1]*65536 + g_updateBuffer[FLASH_LIGHT_POINT+2]*256 + g_updateBuffer[FLASH_LIGHT_POINT+3]);
+                    }
+                    else
+                    {   
+                        /* 读取旧的flash数据，若成功，在保护时间到后，将此数据保存，若读取失败，则保护时间到后直接写入新数据 */
+                      (find_old_data(length) == true)? (flash_ok = true):(flash_ok = false);
+                    }
+                } 
                 else
-                {   
-                    /* 在保护时间到后，檫除flash, 重新保存数据 */
-                    flash_ok = false;
-                    /* 读取旧的flash数据，若成功，在保护时间到后，将此数据保存，若读取失败，则参数是初始化数据 */
+                {
+                    /* 存储长度失败，则直接檫除flash */
                     /* 是否做一个轮询flash的函数，错误直接轮询flash */
-                    find_old_data(length);
+                    flash_ok = false;
                 }
-            } 
-            else
-            {
-                /* 存储长度失败，则直接檫除flash */
-                /* 是否做一个轮询flash的函数，错误直接轮询flash */
-                flash_ok = false;
-            }
-        }  
+            }  
+      }
+      else
+      {
+         rn8209c_papameter.calibration = 0;
+      } 
   }
   else
   {
      rn8209c_papameter.calibration = 0;
-  } 
+  }
  
   set_8209c_params();
 }
@@ -1031,6 +1187,7 @@ void format_elc_data(void)
 
     g_updateBuffer[15] = (u8)((crc >> 8) &0xFF);
     g_updateBuffer[16] = (u8)(crc & 0xFF);
+    g_updateBuffer[17] = 0;
 }
 
 /*****************************************************************************
@@ -1099,6 +1256,7 @@ void power_down_protect(void)
 void read_UIP(void)
 {
     u32 temp;
+    
     read_8209c_regs(ADURMS,&temp);
     rn8209c_papameter.Uv  =   ((temp & 0x800000) > 0) ? 0:(u16)(220.0*10/rn8209c_papameter.Ku*temp);
     read_8209c_regs(ADIARMS,&temp);
@@ -1134,7 +1292,7 @@ u32 read_8209c_energyP(void)
 
     rn8209c_papameter.energyAPulse += temp;
 
-    rn8209c_papameter.energyA = (u32)( rn8209c_papameter.energyAPulse/rn8209c_papameter.EC * 1000.0);
+    rn8209c_papameter.energyA = (u32)( (float)rn8209c_papameter.energyAPulse* 1000.0/rn8209c_papameter.EC );
 
     return  rn8209c_papameter.energyA;
    
@@ -1188,9 +1346,14 @@ u8 read_pow_factor(void)
 *****************************************************************************/
 u32 get_light_time(void)
 {
-   return (read_light_time() /60000); 
+   if ((read_light_time() /60000) > 0)
+   {
+     rn8209c_papameter.lightTime += (read_light_time() /60000); 
+     clear_light_time();
+   }
+   
+   return rn8209c_papameter.lightTime;
 }
-
 
 /*****************************************************************************
  Prototype    : read_LED_state

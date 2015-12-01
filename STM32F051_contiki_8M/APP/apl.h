@@ -46,6 +46,7 @@ typedef struct
     u8            group_addr;
     u8            frame_number;
     u8            ext_head[3]; 
+    u8            *data;
 }st_APL_frame;
 
 #if 0
@@ -134,7 +135,7 @@ void InitAplVariable(void);
 void ReadVersion(void);
 void SoftReset(void);
 void init_update(void);
-void read_params_area(u32 addr);
+bool read_params_area(u32 addr);
 bool find_params(u8 pos, void * val);
 void read_flash(u32 addr ,u8 * str,u16 len);
 u16 find_free_addr(u32 addr);
