@@ -1,84 +1,84 @@
 ###############################################################################
 #
-# IAR ELF Linker V7.10.3.6832/W32 for ARM                 11/Dec/2015  17:53:24
+# IAR ELF Linker V7.10.3.6832/W32 for ARM                 11/Dec/2015  20:29:45
 # Copyright 2007-2014 IAR Systems AB.
 #
-#    Output file  =  E:\svnProject\street_lamp_new\Debug\Exe\SlaverNode.out
-#    Map file     =  E:\svnProject\street_lamp_new\Debug\List\SlaverNode.map
+#    Output file  =  G:\git_hub_lamp\lamp_slave_git\Debug\Exe\SlaverNode.out
+#    Map file     =  G:\git_hub_lamp\lamp_slave_git\Debug\List\SlaverNode.map
 #    Command line =  
-#        E:\svnProject\street_lamp_new\Debug\Obj\APL.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\apl_debug.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\autostart.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\checkpoint.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\clock.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\common.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\compower.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\contiki-main.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\crc16.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\ctimer.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\elfloader.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\energest.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\etimer.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\gpio_per.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\hal_falsh.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\hal_GDflash.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\hal_led.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\hal_memory.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\hal_nvic.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\hal_radio.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\hal_rcc.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\hal_timer.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\hal_uart.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\hal_wdg.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\ifft.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\list.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\memb.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\mmem.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\os_cpu_a.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\PHY.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\print-stats.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\process.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\procinit.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\profile.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\random.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\ringbuf.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\rtimer.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\settings.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\startup_stm32f030.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stimer.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_adc.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_cec.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_comp.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_crc.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_dac.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_dbgmcu.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_dma.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_exti.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_flash.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_gpio.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_i2c.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_it.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_iwdg.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_misc.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_pwr.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_rcc.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_rtc.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_spi.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_syscfg.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_tim.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_usart.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\stm32f0xx_wwdg.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\sx1276-Fsk.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\sx1276-FskMisc.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\sx1276-LoRa.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\sx1276-LoRaMisc.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\system_stm32f0xx.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\timer.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\timetable-aggregate.o
-#        E:\svnProject\street_lamp_new\Debug\Obj\trickle-timer.o -o
-#        E:\svnProject\street_lamp_new\Debug\Exe\SlaverNode.out --map
-#        E:\svnProject\street_lamp_new\Debug\List\SlaverNode.map --config
-#        E:\svnProject\street_lamp_new\SlaverNode.icf --entry
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\APL.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\apl_debug.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\autostart.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\checkpoint.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\clock.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\common.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\compower.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\contiki-main.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\crc16.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ctimer.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\elfloader.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\energest.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\etimer.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\gpio_per.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_falsh.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_GDflash.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_led.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_memory.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_nvic.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_radio.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_rcc.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_timer.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_uart.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_wdg.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ifft.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\list.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\memb.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\mmem.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\os_cpu_a.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\PHY.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\print-stats.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\process.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\procinit.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\profile.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\random.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ringbuf.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\rtimer.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\settings.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\startup_stm32f030.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stimer.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_adc.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_cec.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_comp.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_crc.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_dac.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_dbgmcu.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_dma.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_exti.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_flash.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_gpio.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_i2c.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_it.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_iwdg.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_misc.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_pwr.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_rcc.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_rtc.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_spi.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_syscfg.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_tim.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_usart.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_wwdg.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\sx1276-Fsk.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\sx1276-FskMisc.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\sx1276-LoRa.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\sx1276-LoRaMisc.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\system_stm32f0xx.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\timer.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\timetable-aggregate.o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\trickle-timer.o -o
+#        G:\git_hub_lamp\lamp_slave_git\Debug\Exe\SlaverNode.out --map
+#        G:\git_hub_lamp\lamp_slave_git\Debug\List\SlaverNode.map --config
+#        G:\git_hub_lamp\lamp_slave_git\SlaverNode.icf --entry
 #        __iar_program_start --vfe
 #
 ###############################################################################
@@ -505,7 +505,7 @@ Copy (__iar_copy_init3)
     Module               ro code  ro data  rw data  rw data
                                                      (abs)
     ------               -------  -------  -------  -------
-E:\svnProject\street_lamp_new\Debug\Obj: [1]
+G:\git_hub_lamp\lamp_slave_git\Debug\Obj: [1]
     APL.o                  1 830      792      465
     PHY.o                     48       12
     apl_debug.o            2 928      972
@@ -1241,7 +1241,7 @@ write_finish_debug      0x08004575   0x2e  Code  Gb  APL.o [1]
 write_update_flash      0x080044d9   0x8c  Code  Gb  APL.o [1]
 
 
-[1] = E:\svnProject\street_lamp_new\Debug\Obj
+[1] = G:\git_hub_lamp\lamp_slave_git\Debug\Obj
 [2] = command line
 [3] = dl6M_tln.a
 [4] = m6M_tl.a

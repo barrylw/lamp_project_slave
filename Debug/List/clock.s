@@ -1,35 +1,35 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  17:46:12
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:28:35
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
 //    Endian       =  little
-//    Source file  =  E:\svnProject\street_lamp_new\platform\clock.c
+//    Source file  =  G:\git_hub_lamp\lamp_slave_git\platform\clock.c
 //    Command line =  
-//        E:\svnProject\street_lamp_new\platform\clock.c -D
+//        G:\git_hub_lamp\lamp_slave_git\platform\clock.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb E:\svnProject\street_lamp_new\Debug\List\
-//        --diag_suppress Pa050 -o E:\svnProject\street_lamp_new\Debug\Obj\
+//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
+//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
 //        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
 //        --no_clustering --no_scheduling --debug --endian=little
 //        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
-//        E:\svnProject\street_lamp_new\APP\ -I
-//        E:\svnProject\street_lamp_new\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
-//        E:\svnProject\street_lamp_new\LIB\CMSIS\CM0\DeviceSupport\ST\STM32F0xx\
-//        -I E:\svnProject\street_lamp_new\LIB\CMSIS\CM0\CoreSupport\ -I
-//        E:\svnProject\street_lamp_new\core\ -I
-//        E:\svnProject\street_lamp_new\core\sys\ -I
-//        E:\svnProject\street_lamp_new\platform\ -I
-//        E:\svnProject\street_lamp_new\core\lib\ -I
-//        E:\svnProject\street_lamp_new\tools\wpcapslip\ -I
-//        E:\svnProject\street_lamp_new\core\cfs\ -I
-//        E:\svnProject\street_lamp_new\OLED\ -I
-//        E:\svnProject\street_lamp_new\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\APP\ -I
+//        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
+//        G:\git_hub_lamp\lamp_slave_git\LIB\CMSIS\CM0\DeviceSupport\ST\STM32F0xx\
+//        -I G:\git_hub_lamp\lamp_slave_git\LIB\CMSIS\CM0\CoreSupport\ -I
+//        G:\git_hub_lamp\lamp_slave_git\core\ -I
+//        G:\git_hub_lamp\lamp_slave_git\core\sys\ -I
+//        G:\git_hub_lamp\lamp_slave_git\platform\ -I
+//        G:\git_hub_lamp\lamp_slave_git\core\lib\ -I
+//        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
+//        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
+//        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
-//    List file    =  E:\svnProject\street_lamp_new\Debug\List\clock.s
+//    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\clock.s
 //
 ///////////////////////////////////////////////////////////////////////////////
 
