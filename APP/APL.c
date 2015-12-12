@@ -66,7 +66,7 @@ __root const Manufacturer_Version aplVersion =
 {
   {'B', 'R'},//厂商代码 
   {'2', '3'},//芯片代码
-   0x30, 0x01, 0x14,//日月年
+   0x12, 0x12, 0x15,//日月年
   {0x00, 0x00}//版本
 };
 
@@ -416,7 +416,7 @@ void write_update_flash(ST_UPDATE *st_update_Structure )
      tempBuf[UPDATE_CRC_POS]               =  (u8)((st_update_Structure->crcValue >>8)&0xFF);
      tempBuf[UPDATE_CRC_POS + 1]           =  (u8)(st_update_Structure->crcValue & 0xFF);
 
-    if (FLASH_ErasePage(FLASH_UPDATE_PARAMS_ADDRESS) == FLASH_COMPLETE)
+    if (flash_erase_page(FLASH_UPDATE_PARAMS_ADDRESS) == FLASH_COMPLETE)
     {
        FLASH_Write_chars( FLASH_UPDATE_PARAMS_ADDRESS,  tempBuf, TOTAL_UPDATE_BYTE);
     }  
@@ -432,6 +432,21 @@ void write_finish_debug(void)
    tempupdate.total_packets = 720;
    tempupdate.status        = UPDATE_FINISH;
    write_update_flash(&tempupdate );
+}
+
+void printf_params(void)
+{
+  printf("apl_version = %d\r\n", st_update.version);
+  printf("total_packets = %d\r\n", st_update.total_packets);
+  printf("status = %d\r\n", st_update.status);
+  printf("totoalBytes = %d\r\n",   st_update.totoalBytes);
+  printf("apl_packetsState = ");
+  
+  for (u16 i = 0; i < UPDATE_PACKETS_STATUS_LEN; i++)
+  {
+      printf(" %d", st_update.packetsState[i]);
+  }
+  printf("\r\n");
 }
 
 /*****************************************************************************
@@ -611,24 +626,6 @@ void FLASH_Write_update_page(u16 packetNo, u8 * Data, u8 length)
  *
  *
 *****************************************************************************/
-void printf_params(void)
-{
-  printf("apl_version = %d\r\n", st_update.version);
-  printf("total_packets = %d\r\n", st_update.total_packets);
-  printf("status = %d\r\n", st_update.status);
-  printf("totoalBytes = %d\r\n",   st_update.totoalBytes);
-  printf("apl_packetsState = ");
-  
-  for (u16 i = 0; i < UPDATE_PACKETS_STATUS_LEN; i++)
-  {
-      printf(" %d", st_update.packetsState[i]);
-  }
-  printf("\r\n");
-}
-
-
-
-
 u8 modify_update_flash_params(u8 params)
 {
   u32 startADDR = UPDATE_FLASH_PARAMETER_DDR;
@@ -659,7 +656,7 @@ u8 modify_update_flash_params(u8 params)
     }
   }
 
-  if (FLASH_ErasePage(UPDATE_FLASH_PARAMETER_DDR) == FLASH_COMPLETE)
+  if (flash_erase_page(UPDATE_FLASH_PARAMETER_DDR) == FLASH_COMPLETE)
   {
     if (params & UPDATE_TOTALBYTES_MASK)
     { 
@@ -791,7 +788,7 @@ void reset_update_params(void)
     tempBuf[UPDATE_FLASH_LENGTH]     = (u8)(crcValue & 0xFF);
     tempBuf[UPDATE_FLASH_LENGTH + 1] = (u8)((crcValue >> 8) & 0xFF);
      
-    if (FLASH_ErasePage(UPDATE_FLASH_PARAMETER_DDR) == FLASH_COMPLETE)
+    if (flash_erase_page(UPDATE_FLASH_PARAMETER_DDR) == FLASH_COMPLETE)
     {
        FLASH_Write_chars( &startADDR,  tempBuf, UPDATE_FLASH_LENGTH + 2);
     }  
@@ -961,7 +958,7 @@ uint32_t FLASH_Write_update_page(u8 packetNo, u8 * Data, u8 length)
   }
   
   
-  if (FLASH_ErasePage(page_start_addr) == FLASH_COMPLETE)
+  if (flash_erase_page(page_start_addr) == FLASH_COMPLETE)
   {
     return (FLASH_Write_chars(&page_start_addr,g_updateBuffer ,FLASH_PAGE_SIZE));
      

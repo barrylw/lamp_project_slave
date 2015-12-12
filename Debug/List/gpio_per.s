@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  14:38:01
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  17:45:10
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -46,7 +46,6 @@
         EXTERN Delayms
         EXTERN EXTI_ClearITPendingBit
         EXTERN EXTI_Init
-        EXTERN FLASH_ErasePage
         EXTERN FLASH_Write_chars
         EXTERN GPIO_Init
         EXTERN GPIO_PinAFConfig
@@ -93,6 +92,7 @@
         EXTERN atoi
         EXTERN clear_light_time
         EXTERN etimer_set
+        EXTERN flash_erase_page
         EXTERN hal_InitUART
         EXTERN paralist
         EXTERN printf
@@ -501,18 +501,17 @@ process_thread_start_time_detect_process:
         CMP      R0,#+0
         BEQ      ??process_thread_start_time_detect_process_0
         MOVS     R1,#+255
-        ADDS     R1,R1,#+146      ;; #+401
+        ADDS     R1,R1,#+144      ;; #+399
         CMP      R0,R1
         BEQ      ??process_thread_start_time_detect_process_1
         B        ??process_thread_start_time_detect_process_2
 ??process_thread_start_time_detect_process_0:
-        BL       rn8209c_init
         LDR      R1,??DataTable5_4  ;; 0x7530
         LDR      R0,??DataTable6_3
         BL       etimer_set
         MOVS     R4,#+0
         MOVS     R0,#+255
-        ADDS     R0,R0,#+146      ;; #+401
+        ADDS     R0,R0,#+144      ;; #+399
         STRH     R0,[R5, #+0]
 ??process_thread_start_time_detect_process_1:
         UXTB     R4,R4
@@ -555,7 +554,7 @@ process_thread_start_time_detect_process:
         BL       read_8209c_energyP
         BL       format_elc_data
         LDR      R0,??DataTable6_7  ;; 0x800f800
-        BL       FLASH_ErasePage
+        BL       flash_erase_page
         CMP      R0,#+4
         BNE      ??process_thread_start_time_detect_process_9
         MOVS     R2,#+18
@@ -583,7 +582,7 @@ process_thread_start_time_detect_process:
         BL       read_8209c_energyP
         BL       format_elc_data
         LDR      R0,??DataTable6_7  ;; 0x800f800
-        BL       FLASH_ErasePage
+        BL       flash_erase_page
         CMP      R0,#+4
         BNE      ??process_thread_start_time_detect_process_9
         MOVS     R2,#+18
@@ -1827,7 +1826,7 @@ save_8209c_params:
         ADDS     R1,R1,R4
         STRB     R0,[R1, #+2]
         LDR      R0,??DataTable18_1  ;; 0x800fc00
-        BL       FLASH_ErasePage
+        BL       flash_erase_page
         CMP      R0,#+4
         BNE      ??save_8209c_params_0
         MOVS     R2,R4
@@ -2281,7 +2280,7 @@ save_elc_datas:
         CMP      R4,R0
         BLT      ??save_elc_datas_0
         LDR      R0,??DataTable22_3  ;; 0x800f800
-        BL       FLASH_ErasePage
+        BL       flash_erase_page
         MOVS     R0,#+0
         MOVS     R4,R0
 ??save_elc_datas_0:
@@ -2811,9 +2810,9 @@ read_LED_state:
 // 1 062 bytes in section .bss
 //    89 bytes in section .data
 //   406 bytes in section .rodata
-// 4 426 bytes in section .text
+// 4 422 bytes in section .text
 // 
-// 4 410 bytes of CODE  memory (+ 16 bytes shared)
+// 4 406 bytes of CODE  memory (+ 16 bytes shared)
 //   406 bytes of CONST memory
 // 1 151 bytes of DATA  memory
 //

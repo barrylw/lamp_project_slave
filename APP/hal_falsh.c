@@ -15,12 +15,18 @@ void FLASH_Init(void)
   FLASH_ClearFlag(FLASH_FLAG_EOP|FLASH_FLAG_WRPERR | FLASH_FLAG_PGERR | FLASH_FLAG_BSY);   
 }
 
-/*
+
 void hal_Init_Flash(void)
 {
   FLASH_Init();
 }
-*/
+
+FLASH_Status  flash_erase_page(uint32_t FlashAddress)
+{
+  FLASH_Status val;
+  val = FLASH_ErasePage(FlashAddress);
+  return val;
+}
 
 uint32_t FLASH_Write_chars( uint32_t FlashAddress, uint8_t* Data ,uint16_t DataLength)
 {
@@ -28,9 +34,6 @@ uint32_t FLASH_Write_chars( uint32_t FlashAddress, uint8_t* Data ,uint16_t DataL
   
   __disable_irq();
   
-  FLASH_Init();
-
- 
     for (u16 i = 0; i < (DataLength/2); i++)
     {
        temp = (u16)(Data[i*2] + Data[i*2+1] *256);
@@ -43,14 +46,12 @@ uint32_t FLASH_Write_chars( uint32_t FlashAddress, uint8_t* Data ,uint16_t DataL
              /* Flash content doesn't match SRAM content */
              //return(2);
               __enable_irq();
-              FLASH_Lock();
              return FLASH_WRITE_ERROR;
           }
        }
        else
        {
           __enable_irq();
-            FLASH_Lock();
          return FLASH_ERASE_ERROR;
        }
 
@@ -59,9 +60,8 @@ uint32_t FLASH_Write_chars( uint32_t FlashAddress, uint8_t* Data ,uint16_t DataL
 
     if (DataLength % 2 == 0)
     {
-       __enable_irq();
-         FLASH_Lock();
-      return FLASH_OK;
+        __enable_irq();
+        return FLASH_OK;
     }
     else
     {
@@ -74,20 +74,17 @@ uint32_t FLASH_Write_chars( uint32_t FlashAddress, uint8_t* Data ,uint16_t DataL
             {
                 /* Flash content doesn't match SRAM content */
                  __enable_irq();
-                   FLASH_Lock();
                 return FLASH_WRITE_ERROR;
             }
             else
             {
                  __enable_irq();
-                   FLASH_Lock();
                 return FLASH_OK;
             }
         }
         else
         {
              __enable_irq();
-               FLASH_Lock();
             return FLASH_ERASE_ERROR;
         }
     }

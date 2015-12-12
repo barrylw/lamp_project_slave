@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  14:02:06
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  17:18:26
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -35,7 +35,6 @@
 
         #define SHT_PROGBITS 0x1
 
-        EXTERN FLASH_ErasePage
         EXTERN FLASH_Write_chars
         EXTERN GPIO_ResetBits
         EXTERN GPIO_SetBits
@@ -57,6 +56,7 @@
         EXTERN __aeabi_memclr4
         EXTERN atoi
         EXTERN config_8209c_reg
+        EXTERN flash_erase_page
         EXTERN g_DebugRxBuffer
         EXTERN g_DebugRxFlag
         EXTERN g_SystickCounter
@@ -65,6 +65,7 @@
         EXTERN hal_InitRF
         EXTERN local_addr
         EXTERN printf
+        EXTERN printf_params
         EXTERN read_8209c_energyP
         EXTERN read_8209c_regs
         EXTERN read_PWM_volt
@@ -298,6 +299,12 @@ hal_GetSystickCounter:
         DC8 "getaddr"
 
         SECTION `.rodata`:CONST:REORDER:NOROOT(2)
+`?<Constant "update">`:
+        DATA
+        DC8 "update"
+        DC8 0
+
+        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
 `?<Constant "flashfinish">`:
         DATA
         DC8 "flashfinish"
@@ -457,7 +464,8 @@ CmdList:
         DC32 debug_set_pwm, `?<Constant "factor">`, read_factor
         DC32 `?<Constant "dbsave">`, debug_save, `?<Constant "adc">`, read_adc
         DC32 `?<Constant "setaddr">`, set_local_addr, `?<Constant "getaddr">`
-        DC32 read_local_addr, `?<Constant "flashfinish">`, write_finish
+        DC32 read_local_addr, `?<Constant "update">`, printf_params
+        DC32 `?<Constant "flashfinish">`, write_finish
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -491,7 +499,7 @@ apl_ProcessCmdLine:
         STR      R0,[SP, #+0]
         MOVS     R4,#+0
         MOVS     R5,#+0
-        MOVS     R0,#+31
+        MOVS     R0,#+32
         MOV      R1,SP
         STRB     R0,[R1, #+8]
         MOVS     R7,#+1
@@ -1363,7 +1371,7 @@ set_8209c_Kx:
         STRB     R0,[R1, #+4]
         BL       save_8209c_params
         LDR      R0,??DataTable22_10  ;; 0x800f800
-        BL       FLASH_ErasePage
+        BL       flash_erase_page
         POP      {R0,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -1840,7 +1848,7 @@ set_local_addr:
         ADD      R1,SP,#+12
         STRB     R0,[R1, #+7]
         LDR      R0,??DataTable25_8  ;; 0x800f000
-        BL       FLASH_ErasePage
+        BL       flash_erase_page
         CMP      R0,#+4
         BNE      ??set_local_addr_2
         MOVS     R2,#+8
@@ -2014,11 +2022,11 @@ write_finish:
 
         END
 // 
-// 1 004 bytes in section .rodata
+// 1 020 bytes in section .rodata
 // 2 564 bytes in section .text
 // 
 // 2 564 bytes of CODE  memory
-// 1 004 bytes of CONST memory
+// 1 020 bytes of CONST memory
 //
 //Errors: none
 //Warnings: 4

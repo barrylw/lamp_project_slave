@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  13:18:40
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  17:38:28
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -36,7 +36,7 @@
         #define SHT_PROGBITS 0x1
 
         EXTERN FLASH_ClearFlag
-        EXTERN FLASH_Lock
+        EXTERN FLASH_ErasePage
         EXTERN FLASH_ProgramHalfWord
         EXTERN FLASH_Unlock
         EXTERN __aeabi_idiv
@@ -44,6 +44,8 @@
 
         PUBLIC FLASH_Init
         PUBLIC FLASH_Write_chars
+        PUBLIC flash_erase_page
+        PUBLIC hal_Init_Flash
 
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -57,13 +59,31 @@ FLASH_Init:
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
+hal_Init_Flash:
+        PUSH     {R7,LR}
+        BL       FLASH_Init
+        POP      {R0,PC}          ;; return
+
+        SECTION `.text`:CODE:NOROOT(1)
+        THUMB
+flash_erase_page:
+        PUSH     {R3-R5,LR}
+        MOVS     R4,R0
+        MOVS     R0,R4
+        BL       FLASH_ErasePage
+        MOVS     R5,R0
+        MOVS     R0,R5
+        UXTB     R0,R0
+        POP      {R1,R4,R5,PC}    ;; return
+
+        SECTION `.text`:CODE:NOROOT(1)
+        THUMB
 FLASH_Write_chars:
         PUSH     {R3-R7,LR}
         MOVS     R5,R0
         MOVS     R6,R1
         MOVS     R7,R2
         CPSID    I
-        BL       FLASH_Init
         MOVS     R4,#+0
 ??FLASH_Write_chars_0:
         UXTH     R7,R7
@@ -100,7 +120,6 @@ FLASH_Write_chars:
         CMP      R0,R1
         BEQ      ??FLASH_Write_chars_3
         CPSIE    I
-        BL       FLASH_Lock
         MOVS     R0,#+2
         B        ??FLASH_Write_chars_4
 ??FLASH_Write_chars_3:
@@ -109,7 +128,6 @@ FLASH_Write_chars:
         B        ??FLASH_Write_chars_0
 ??FLASH_Write_chars_2:
         CPSIE    I
-        BL       FLASH_Lock
         MOVS     R0,#+1
         B        ??FLASH_Write_chars_4
 ??FLASH_Write_chars_1:
@@ -120,7 +138,6 @@ FLASH_Write_chars:
         CMP      R1,#+0
         BNE      ??FLASH_Write_chars_5
         CPSIE    I
-        BL       FLASH_Lock
         MOVS     R0,#+0
         B        ??FLASH_Write_chars_4
 ??FLASH_Write_chars_5:
@@ -142,17 +159,14 @@ FLASH_Write_chars:
         CMP      R0,R1
         BEQ      ??FLASH_Write_chars_7
         CPSIE    I
-        BL       FLASH_Lock
         MOVS     R0,#+2
         B        ??FLASH_Write_chars_4
 ??FLASH_Write_chars_7:
         CPSIE    I
-        BL       FLASH_Lock
         MOVS     R0,#+0
         B        ??FLASH_Write_chars_4
 ??FLASH_Write_chars_6:
         CPSIE    I
-        BL       FLASH_Lock
         MOVS     R0,#+1
 ??FLASH_Write_chars_4:
         POP      {R1,R4-R7,PC}    ;; return
@@ -170,9 +184,9 @@ FLASH_Write_chars:
 
         END
 // 
-// 216 bytes in section .text
+// 214 bytes in section .text
 // 
-// 216 bytes of CODE memory
+// 214 bytes of CODE memory
 //
 //Errors: none
 //Warnings: none

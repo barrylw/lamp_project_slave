@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  13:18:39
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  17:45:10
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -50,6 +50,7 @@
         EXTERN process_init
         EXTERN process_run
         EXTERN process_start
+        EXTERN rn8209c_init
         EXTERN start_time_detect_process
 
         PUBLIC InitVariable
@@ -149,6 +150,7 @@ main:
         BL       InitVariable
         BL       InitHardware
         BL       gpio_per_init
+        BL       rn8209c_init
         BL       init_update
         LDR      R0,??DataTable0_2
         BL       printf
@@ -255,9 +257,9 @@ main:
 //  80 bytes in section .data
 // 192 bytes in section .noinit (abs)
 //  12 bytes in section .rodata
-// 192 bytes in section .text
+// 196 bytes in section .text
 // 
-// 192 bytes of CODE  memory
+// 196 bytes of CODE  memory
 //  12 bytes of CONST memory
 // 255 bytes of DATA  memory (+ 192 bytes shared)
 //

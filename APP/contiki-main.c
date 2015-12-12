@@ -260,6 +260,7 @@ int main()
     InitHardware(); 
 
     gpio_per_init();
+    rn8209c_init();
     init_update();
     
      

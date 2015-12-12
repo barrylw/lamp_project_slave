@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  13:18:41
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  17:49:05
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -45,6 +45,8 @@
         EXTERN hal_InitTimerVariable
         EXTERN hal_InitUART
         EXTERN hal_InitUartVariable
+        EXTERN hal_InitWDG
+        EXTERN hal_Init_Flash
         EXTERN hal_sRF_Transmit
 
         PUBLIC InitHardware
@@ -77,6 +79,8 @@ InitHardware:
         BL       hal_InitLED
         BL       hal_InitUART
         BL       hal_InitTIMER
+        BL       hal_Init_Flash
+        BL       hal_InitWDG
         BL       hal_InitRF
         POP      {R0,PC}          ;; return
 
@@ -296,9 +300,9 @@ Phy_SetAttr:
 // 
 //   4 bytes in section .bss
 //  12 bytes in section .rodata
-// 312 bytes in section .text
+// 320 bytes in section .text
 // 
-// 312 bytes of CODE  memory
+// 320 bytes of CODE  memory
 //  12 bytes of CONST memory
 //   4 bytes of DATA  memory
 //

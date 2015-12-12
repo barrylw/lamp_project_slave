@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  15:41:15
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  17:39:24
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -36,7 +36,6 @@
 
         EXTERN CRC16_CCITT_Table
         EXTERN Delayms
-        EXTERN FLASH_ErasePage
         EXTERN FLASH_Write_chars
         EXTERN GDflash_64KByte_erase
         EXTERN GDflash_init
@@ -45,6 +44,7 @@
         EXTERN GetCRC16
         EXTERN __aeabi_idiv
         EXTERN __aeabi_idivmod
+        EXTERN flash_erase_page
         EXTERN phyVersion
         EXTERN printf
         EXTERN w_memcpy
@@ -70,6 +70,7 @@
         PUBLIC init_update
         PUBLIC paralist
         PUBLIC phsA
+        PUBLIC printf_params
         PUBLIC proceess_packet
         PUBLIC pstart
         PUBLIC qphsal
@@ -255,6 +256,44 @@ st_update:
         DC8 0, 0, 0
 
         SECTION `.rodata`:CONST:REORDER:NOROOT(2)
+`?<Constant "apl_version = %d\\r\\n">`:
+        DATA
+        DC8 "apl_version = %d\015\012"
+        DC8 0
+
+        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
+`?<Constant "total_packets = %d\\r\\n">`:
+        DATA
+        DC8 "total_packets = %d\015\012"
+        DC8 0, 0, 0
+
+        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
+`?<Constant "status = %d\\r\\n">`:
+        DATA
+        DC8 "status = %d\015\012"
+        DC8 0, 0
+
+        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
+`?<Constant "totoalBytes = %d\\r\\n">`:
+        DATA
+        DC8 "totoalBytes = %d\015\012"
+        DC8 0
+
+        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
+`?<Constant "apl_packetsState = ">`:
+        DATA
+        DC8 "apl_packetsState = "
+
+        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
+        DATA
+        DC8 " %d"
+
+        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
+        DATA
+        DC8 "\015\012"
+        DC8 0
+
+        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
 `?<Constant "update failed\\r\\n">`:
         DATA
         DC8 "update failed\015\012"
@@ -279,7 +318,7 @@ st_update:
         SECTION `.rodata`:CONST:REORDER:ROOT(2)
 aplVersion:
         DATA
-        DC8 66, 82, 50, 51, 48, 1, 20, 0, 0, 0, 0, 0
+        DC8 66, 82, 50, 51, 18, 18, 21, 0, 0, 0, 0, 0
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -370,58 +409,58 @@ process_thread_apl_update_process:
         BL       printf
         B        ??process_thread_apl_update_process_0
 ??process_thread_apl_update_process_5:
-        LDR      R0,??DataTable6
+        LDR      R0,??DataTable5_2
         LDRB     R0,[R0, #+10]
         CMP      R0,#+0
         BNE      ??process_thread_apl_update_process_6
-        LDR      R0,??DataTable5_2
+        LDR      R0,??DataTable5_3
         BL       printf
         LDR      R0,??DataTable5
         LDRB     R2,[R0, #+12]
         ADDS     R2,R2,#+9
         LDR      R0,??DataTable4
         LDR      R1,[R0, #+0]
-        LDR      R0,??DataTable6_1
+        LDR      R0,??DataTable5_4
         BL       w_memcpy
         BL       GDflash_64KByte_erase
         MOVS     R2,#+140
         MOVS     R1,#+0
-        LDR      R0,??DataTable6
+        LDR      R0,??DataTable5_2
         BL       w_memset
         MOVS     R0,#+1
-        LDR      R1,??DataTable6
+        LDR      R1,??DataTable5_2
         STRB     R0,[R1, #+10]
         LDR      R0,??DataTable5
         LDRH     R0,[R0, #+6]
-        LDR      R1,??DataTable6
+        LDR      R1,??DataTable5_2
         STRH     R0,[R1, #+8]
         LDR      R0,??DataTable5
         LDRH     R0,[R0, #+2]
-        LDR      R1,??DataTable6
+        LDR      R1,??DataTable5_2
         STRH     R0,[R1, #+0]
         LDR      R0,??DataTable5
         LDRH     R0,[R0, #+0]
-        LDR      R1,??DataTable6
+        LDR      R1,??DataTable5_2
         STRH     R0,[R1, #+2]
         MOVS     R0,#+1
-        LDR      R1,??DataTable6_2
+        LDR      R1,??DataTable5_5
         STRB     R0,[R1, #+0]
-        LDR      R0,??DataTable6
+        LDR      R0,??DataTable5_2
         LDRH     R3,[R0, #+2]
-        LDR      R0,??DataTable6
+        LDR      R0,??DataTable5_2
         LDRH     R2,[R0, #+0]
-        LDR      R0,??DataTable6
+        LDR      R0,??DataTable5_2
         LDRH     R1,[R0, #+8]
-        LDR      R0,??DataTable6_3
+        LDR      R0,??DataTable5_6
         BL       printf
         B        ??process_thread_apl_update_process_0
 ??process_thread_apl_update_process_6:
-        LDR      R0,??DataTable6
+        LDR      R0,??DataTable5_2
         LDRB     R0,[R0, #+10]
         CMP      R0,#+1
         BNE      ??process_thread_apl_update_process_7
 ??process_thread_apl_update_process_8:
-        LDR      R0,??DataTable6
+        LDR      R0,??DataTable5_2
         LDRH     R0,[R0, #+8]
         LDR      R1,??DataTable5
         LDRH     R1,[R1, #+6]
@@ -432,22 +471,22 @@ process_thread_apl_update_process:
         BL       check_update_packect_state
         CMP      R0,#+1
         BNE      ??process_thread_apl_update_process_10
-        LDR      R0,??DataTable6_4
+        LDR      R0,??DataTable6
         BL       printf
         B        ??process_thread_apl_update_process_0
 ??process_thread_apl_update_process_10:
-        LDR      R1,??DataTable6
+        LDR      R1,??DataTable5_2
         LDR      R0,??DataTable5
         BL       proceess_packet
-        LDR      R0,??DataTable6_2
+        LDR      R0,??DataTable5_5
         LDRB     R0,[R0, #+0]
         CMP      R0,#+1
         BNE      ??process_thread_apl_update_process_11
         MOVS     R0,#+0
-        LDR      R1,??DataTable6_2
+        LDR      R1,??DataTable5_5
         STRB     R0,[R1, #+0]
         LDR      R1,??DataTable5
-        LDR      R0,??DataTable6_1
+        LDR      R0,??DataTable5_4
         BL       get_packet_info
         B        ??process_thread_apl_update_process_8
 ??process_thread_apl_update_process_11:
@@ -460,31 +499,31 @@ process_thread_apl_update_process:
         ADDS     R2,R2,#+9
         LDR      R0,??DataTable4
         LDR      R1,[R0, #+0]
-        LDR      R0,??DataTable6_1
+        LDR      R0,??DataTable5_4
         BL       w_memcpy
         BL       reset_update_params
         BL       GDflash_64KByte_erase
         MOVS     R0,#+1
-        LDR      R1,??DataTable6
+        LDR      R1,??DataTable5_2
         STRB     R0,[R1, #+10]
         LDR      R0,??DataTable5
         LDRH     R0,[R0, #+6]
-        LDR      R1,??DataTable6
+        LDR      R1,??DataTable5_2
         STRH     R0,[R1, #+8]
         LDR      R0,??DataTable5
         LDRH     R0,[R0, #+2]
-        LDR      R1,??DataTable6
+        LDR      R1,??DataTable5_2
         STRH     R0,[R1, #+0]
         LDR      R0,??DataTable5
         LDRH     R0,[R0, #+0]
-        LDR      R1,??DataTable6
+        LDR      R1,??DataTable5_2
         STRH     R0,[R1, #+2]
         MOVS     R0,#+1
-        LDR      R1,??DataTable6_2
+        LDR      R1,??DataTable5_5
         STRB     R0,[R1, #+0]
-        LDR      R0,??DataTable6
+        LDR      R0,??DataTable5_2
         LDRH     R2,[R0, #+2]
-        LDR      R0,??DataTable6
+        LDR      R0,??DataTable5_2
         LDRH     R1,[R0, #+8]
         LDR      R0,??DataTable8
         BL       printf
@@ -529,12 +568,12 @@ proceess_packet:
         LDRB     R0,[R4, #+12]
         CMP      R0,#+65
         BLT      ??proceess_packet_1
-        LDR      R0,??DataTable9
+        LDR      R0,??DataTable8_1
         BL       printf
         B        ??proceess_packet_2
 ??proceess_packet_1:
         LDRH     R1,[R4, #+4]
-        LDR      R0,??DataTable9_1
+        LDR      R0,??DataTable8_2
         BL       printf
         LDRB     R2,[R4, #+12]
         LDR      R1,[R4, #+8]
@@ -548,11 +587,11 @@ proceess_packet:
         BNE      ??proceess_packet_3
         B        ??proceess_packet_4
 ??proceess_packet_0:
-        LDR      R0,??DataTable10
+        LDR      R0,??DataTable8_3
         BL       printf
         B        ??proceess_packet_2
 ??proceess_packet_4:
-        LDR      R0,??DataTable10_1
+        LDR      R0,??DataTable8_4
         BL       printf
         LDRH     R0,[R4, #+2]
         BL       update_software_check
@@ -562,7 +601,7 @@ proceess_packet:
         STRB     R0,[R5, #+10]
         MOVS     R0,R5
         BL       write_update_flash
-        LDR      R0,??DataTable10_2
+        LDR      R0,??DataTable9
         BL       printf
         MOVS     R0,#+250
         LSLS     R0,R0,#+1        ;; #+500
@@ -571,7 +610,7 @@ proceess_packet:
         B        ??proceess_packet_6
 ??proceess_packet_5:
         BL       reset_update_params
-        LDR      R0,??DataTable10_3
+        LDR      R0,??DataTable10
         BL       printf
         B        ??proceess_packet_6
 ??proceess_packet_3:
@@ -605,7 +644,7 @@ read_flash:
 read_update_flash:
         PUSH     {R4-R6,LR}
         MOVS     R5,R0
-        LDR      R4,??DataTable10_4  ;; 0x800f400
+        LDR      R4,??DataTable11  ;; 0x800f400
         LDRB     R0,[R4, #+0]
         MOVS     R1,#+128
         LSLS     R1,R1,#+1        ;; #+256
@@ -728,13 +767,13 @@ write_update_flash:
         MOV      R1,SP
         ADDS     R1,R1,#+136
         STRB     R0,[R1, #+0]
-        LDR      R0,??DataTable10_4  ;; 0x800f400
-        BL       FLASH_ErasePage
+        LDR      R0,??DataTable11  ;; 0x800f400
+        BL       flash_erase_page
         CMP      R0,#+4
         BNE      ??write_update_flash_0
         MOVS     R2,#+137
         MOV      R1,SP
-        LDR      R0,??DataTable10_4  ;; 0x800f400
+        LDR      R0,??DataTable11  ;; 0x800f400
         BL       FLASH_Write_chars
 ??write_update_flash_0:
         ADD      SP,SP,#+144
@@ -754,10 +793,10 @@ write_finish_debug:
         MOVS     R0,#+5
         MOV      R1,SP
         STRH     R0,[R1, #+8]
-        LDR      R0,??DataTable11  ;; 0x2cf
+        LDR      R0,??DataTable11_1  ;; 0x2cf
         MOV      R1,SP
         STRH     R0,[R1, #+4]
-        LDR      R0,??DataTable11_1  ;; 0xb3d6
+        LDR      R0,??DataTable11_2  ;; 0xb3d6
         MOV      R1,SP
         STRH     R0,[R1, #+0]
         MOVS     R0,#+180
@@ -788,7 +827,77 @@ write_finish_debug:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable5_2:
+        DC32     st_update
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable5_3:
         DC32     `?<Constant "update start\\r\\n">`
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable5_4:
+        DC32     ??g_updateBuffer
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable5_5:
+        DC32     ??update_buf_full
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable5_6:
+        DC32     `?<Constant "update version = %d, ...">`
+
+        SECTION `.text`:CODE:NOROOT(1)
+        THUMB
+printf_params:
+        PUSH     {R4,LR}
+        LDR      R0,??DataTable12
+        LDRH     R1,[R0, #+8]
+        LDR      R0,??DataTable11_3
+        BL       printf
+        LDR      R0,??DataTable12
+        LDRH     R1,[R0, #+2]
+        LDR      R0,??DataTable11_4
+        BL       printf
+        LDR      R0,??DataTable12
+        LDRB     R1,[R0, #+10]
+        LDR      R0,??DataTable12_1
+        BL       printf
+        LDR      R0,??DataTable12
+        LDRH     R1,[R0, #+0]
+        LDR      R0,??DataTable12_2
+        BL       printf
+        LDR      R0,??DataTable12_3
+        BL       printf
+        MOVS     R4,#+0
+??printf_params_0:
+        UXTH     R4,R4
+        CMP      R4,#+128
+        BGE      ??printf_params_1
+        UXTH     R4,R4
+        LDR      R0,??DataTable12
+        ADDS     R0,R0,R4
+        LDRB     R1,[R0, #+11]
+        ADR      R0,??DataTable12_4  ;; " %d"
+        BL       printf
+        ADDS     R4,R4,#+1
+        B        ??printf_params_0
+??printf_params_1:
+        ADR      R0,??DataTable12_5  ;; 0x0D, 0x0A, 0x00, 0x00
+        BL       printf
+        POP      {R4,PC}          ;; return
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable6:
+        DC32     `?<Constant "the same packet\\r\\n">`
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -796,48 +905,24 @@ reset_update_params:
         PUSH     {R7,LR}
         MOVS     R2,#+140
         MOVS     R1,#+0
-        LDR      R0,??DataTable6
+        LDR      R0,??DataTable12
         BL       w_memset
-        LDR      R0,??DataTable6
+        LDR      R0,??DataTable12
         BL       write_update_flash
         POP      {R0,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable6:
-        DC32     st_update
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable6_1:
-        DC32     ??g_updateBuffer
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable6_2:
-        DC32     ??update_buf_full
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable6_3:
-        DC32     `?<Constant "update version = %d, ...">`
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable6_4:
-        DC32     `?<Constant "the same packet\\r\\n">`
+??DataTable7:
+        DC32     `?<Constant "receive higher versio...">`
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 update_software_check:
         PUSH     {R0,R4-R7,LR}
         SUB      SP,SP,#+8
-        LDR      R5,??DataTable11_2  ;; 0xffff
+        LDR      R5,??DataTable12_6  ;; 0xffff
         MOV      R0,SP
         LDRH     R0,[R0, #+8]
         SUBS     R6,R0,#+2
@@ -863,13 +948,13 @@ update_software_check:
         UXTB     R1,R1
         MOVS     R2,#+2
         MULS     R1,R2,R1
-        LDR      R2,??DataTable11_3
+        LDR      R2,??DataTable12_7
         LDRH     R5,[R2, R1]
         EORS     R5,R5,R0
         B        ??update_software_check_0
 ??update_software_check_1:
         MOVS     R0,R5
-        LDR      R5,??DataTable11_2  ;; 0xffff
+        LDR      R5,??DataTable12_6  ;; 0xffff
         EORS     R5,R5,R0
         MOVS     R2,#+1
         MOV      R1,SP
@@ -904,17 +989,41 @@ update_software_check:
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable7:
-        DC32     `?<Constant "receive higher versio...">`
+??DataTable8:
+        DC32     `?<Constant "update version = %d, ...">_1`
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable8_1:
+        DC32     `?<Constant "packet length err\\r\\n">`
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable8_2:
+        DC32     `?<Constant "write packet %d in fl...">`
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable8_3:
+        DC32     `?<Constant "packet number err\\r\\n">`
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable8_4:
+        DC32     `?<Constant "all packet received\\r\\n">`
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 init_update:
         PUSH     {R7,LR}
         BL       GDflash_init
-        LDR      R0,??DataTable11_4
+        LDR      R0,??DataTable12
         BL       read_update_flash
-        LDR      R0,??DataTable11_4
+        LDR      R0,??DataTable12
         LDRB     R0,[R0, #+10]
         CMP      R0,#+0
         BEQ      ??init_update_0
@@ -926,7 +1035,7 @@ init_update:
         BCC      ??init_update_4
         B        ??init_update_5
 ??init_update_2:
-        LDR      R0,??DataTable11_4
+        LDR      R0,??DataTable12
         LDRH     R0,[R0, #+0]
         CMP      R0,#+0
         BNE      ??init_update_6
@@ -938,16 +1047,16 @@ init_update:
 ??init_update_0:
         MOVS     R2,#+140
         MOVS     R1,#+0
-        LDR      R0,??DataTable11_4
+        LDR      R0,??DataTable12
         BL       w_memset
         B        ??init_update_7
 ??init_update_3:
-        LDR      R0,??DataTable11_5
+        LDR      R0,??DataTable12_8
         BL       printf
         BL       reset_update_params
         B        ??init_update_7
 ??init_update_4:
-        LDR      R0,??DataTable11_6
+        LDR      R0,??DataTable12_9
         BL       printf
         BL       reset_update_params
         B        ??init_update_7
@@ -959,8 +1068,8 @@ init_update:
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable8:
-        DC32     `?<Constant "update version = %d, ...">_1`
+??DataTable9:
+        DC32     `?<Constant "update data OK\\r\\n">`
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -971,13 +1080,13 @@ set_update_packetState:
         MOVS     R0,R4
         MOVS     R1,#+8
         BL       __aeabi_idiv
-        LDR      R1,??DataTable11_4
+        LDR      R1,??DataTable12
         ADDS     R5,R1,R0
         UXTH     R4,R4
         MOVS     R0,R4
         MOVS     R1,#+8
         BL       __aeabi_idiv
-        LDR      R1,??DataTable11_4
+        LDR      R1,??DataTable12
         ADDS     R0,R1,R0
         LDRB     R6,[R0, #+11]
         MOVS     R7,#+1
@@ -993,14 +1102,8 @@ set_update_packetState:
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable9:
-        DC32     `?<Constant "packet length err\\r\\n">`
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable9_1:
-        DC32     `?<Constant "write packet %d in fl...">`
+??DataTable10:
+        DC32     `?<Constant "update crc err\\r\\n">`
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1011,7 +1114,7 @@ check_update_packect_state:
         MOVS     R0,R4
         MOVS     R1,#+8
         BL       __aeabi_idiv
-        LDR      R1,??DataTable11_4
+        LDR      R1,??DataTable12
         ADDS     R0,R1,R0
         LDRB     R5,[R0, #+11]
         MOVS     R6,#+1
@@ -1032,32 +1135,32 @@ check_update_packect_state:
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable10:
-        DC32     `?<Constant "packet number err\\r\\n">`
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable10_1:
-        DC32     `?<Constant "all packet received\\r\\n">`
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable10_2:
-        DC32     `?<Constant "update data OK\\r\\n">`
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable10_3:
-        DC32     `?<Constant "update crc err\\r\\n">`
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable10_4:
+??DataTable11:
         DC32     0x800f400
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable11_1:
+        DC32     0x2cf
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable11_2:
+        DC32     0xb3d6
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable11_3:
+        DC32     `?<Constant "apl_version = %d\\r\\n">`
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable11_4:
+        DC32     `?<Constant "total_packets = %d\\r\\n">`
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1109,39 +1212,39 @@ FLASH_Write_update_page:
 ReadVersion:
         PUSH     {LR}
         SUB      SP,SP,#+36
-        LDR      R0,??DataTable11_7
+        LDR      R0,??DataTable12_10
         LDRB     R0,[R0, #+0]
         MOV      R1,SP
         STRB     R0,[R1, #+24]
-        LDR      R0,??DataTable11_7
+        LDR      R0,??DataTable12_10
         LDRB     R0,[R0, #+1]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+1]
-        LDR      R0,??DataTable11_7
+        LDR      R0,??DataTable12_10
         LDRB     R0,[R0, #+2]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+2]
-        LDR      R0,??DataTable11_7
+        LDR      R0,??DataTable12_10
         LDRB     R0,[R0, #+3]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+3]
-        LDR      R0,??DataTable11_7
+        LDR      R0,??DataTable12_10
         LDRB     R0,[R0, #+4]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+4]
-        LDR      R0,??DataTable11_7
+        LDR      R0,??DataTable12_10
         LDRB     R0,[R0, #+5]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+5]
-        LDR      R0,??DataTable11_7
+        LDR      R0,??DataTable12_10
         LDRB     R0,[R0, #+6]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+6]
-        LDR      R0,??DataTable11_7
+        LDR      R0,??DataTable12_10
         LDRB     R0,[R0, #+7]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+7]
-        LDR      R0,??DataTable11_7
+        LDR      R0,??DataTable12_10
         LDRB     R0,[R0, #+8]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+8]
@@ -1169,41 +1272,41 @@ ReadVersion:
         LDRB     R2,[R0, #+24]
         ADD      R0,SP,#+24
         LDRB     R1,[R0, #+1]
-        LDR      R0,??DataTable11_8
+        LDR      R0,??DataTable12_11
         BL       printf
-        LDR      R0,??DataTable11_9
+        LDR      R0,??DataTable12_12
         LDRB     R0,[R0, #+0]
         MOV      R1,SP
         STRB     R0,[R1, #+24]
-        LDR      R0,??DataTable11_9
+        LDR      R0,??DataTable12_12
         LDRB     R0,[R0, #+1]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+1]
-        LDR      R0,??DataTable11_9
+        LDR      R0,??DataTable12_12
         LDRB     R0,[R0, #+2]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+2]
-        LDR      R0,??DataTable11_9
+        LDR      R0,??DataTable12_12
         LDRB     R0,[R0, #+3]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+3]
-        LDR      R0,??DataTable11_9
+        LDR      R0,??DataTable12_12
         LDRB     R0,[R0, #+4]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+4]
-        LDR      R0,??DataTable11_9
+        LDR      R0,??DataTable12_12
         LDRB     R0,[R0, #+5]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+5]
-        LDR      R0,??DataTable11_9
+        LDR      R0,??DataTable12_12
         LDRB     R0,[R0, #+6]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+6]
-        LDR      R0,??DataTable11_9
+        LDR      R0,??DataTable12_12
         LDRB     R0,[R0, #+7]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+7]
-        LDR      R0,??DataTable11_9
+        LDR      R0,??DataTable12_12
         LDRB     R0,[R0, #+8]
         ADD      R1,SP,#+24
         STRB     R0,[R1, #+8]
@@ -1231,7 +1334,7 @@ ReadVersion:
         LDRB     R2,[R0, #+24]
         ADD      R0,SP,#+24
         LDRB     R1,[R0, #+1]
-        LDR      R0,??DataTable11_10
+        LDR      R0,??DataTable12_13
         BL       printf
         ADD      SP,SP,#+36
         POP      {PC}             ;; return
@@ -1239,67 +1342,85 @@ ReadVersion:
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable11:
-        DC32     0x2cf
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable11_1:
-        DC32     0xb3d6
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable11_2:
-        DC32     0xffff
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable11_3:
-        DC32     CRC16_CCITT_Table
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable11_4:
+??DataTable12:
         DC32     st_update
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable11_5:
+??DataTable12_1:
+        DC32     `?<Constant "status = %d\\r\\n">`
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable12_2:
+        DC32     `?<Constant "totoalBytes = %d\\r\\n">`
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable12_3:
+        DC32     `?<Constant "apl_packetsState = ">`
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable12_4:
+        DC8      " %d"
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable12_5:
+        DC8      0x0D, 0x0A, 0x00, 0x00
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable12_6:
+        DC32     0xffff
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable12_7:
+        DC32     CRC16_CCITT_Table
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable12_8:
         DC32     `?<Constant "update failed\\r\\n">`
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable11_6:
+??DataTable12_9:
         DC32     `?<Constant "update successful\\r\\n">`
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable11_7:
+??DataTable12_10:
         DC32     aplVersion
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable11_8:
+??DataTable12_11:
         DC32     `?<Constant "APL Version=%c%c%c%c-...">`
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable11_9:
+??DataTable12_12:
         DC32     phyVersion
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable11_10:
+??DataTable12_13:
         DC32     `?<Constant "PHY Version=%c%c%c%c-...">`
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -1325,11 +1446,11 @@ SoftReset:
 // 
 //   317 bytes in section .bss
 //   160 bytes in section .data
-//   512 bytes in section .rodata
-// 1 698 bytes in section .text
+//   620 bytes in section .rodata
+// 1 808 bytes in section .text
 // 
-// 1 698 bytes of CODE  memory
-//   512 bytes of CONST memory
+// 1 808 bytes of CODE  memory
+//   620 bytes of CONST memory
 //   477 bytes of DATA  memory
 //
 //Errors: none

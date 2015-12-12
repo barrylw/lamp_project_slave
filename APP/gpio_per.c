@@ -388,15 +388,13 @@ PROCESS_THREAD(period_save_data_process, ev, data)
 PROCESS(start_time_detect_process, "safe_start");
 PROCESS_THREAD(start_time_detect_process, ev, data)
 {
-    static struct etimer start_etimer; 
+   static struct etimer start_etimer; 
     
-    static u16 length;
+   static u16 length;
     
-    PROCESS_BEGIN();
+   PROCESS_BEGIN();
     
-    rn8209c_init();
-    
-    etimer_set(&start_etimer, SAFE_START_TIME);
+   etimer_set(&start_etimer, SAFE_START_TIME);
    
    PROCESS_WAIT_EVENT_UNTIL( (ev == PROCESS_EVENT_TIMER) && ((struct etimer *)data == &start_etimer));
    printf("protected time end\r\n");
@@ -415,7 +413,7 @@ PROCESS_THREAD(start_time_detect_process, ev, data)
                 read_8209c_energyP();
                 format_elc_data();
 
-                if (FLASH_ErasePage(FLASH_ELC_SAVE_ADDRESS) == FLASH_COMPLETE)
+                if (flash_erase_page(FLASH_ELC_SAVE_ADDRESS) == FLASH_COMPLETE)
                 {
                     FLASH_Write_chars( FLASH_ELC_SAVE_ADDRESS, (u8*)g_cal_Buf , ELC_FLIE_LEN);
                 }  
@@ -434,7 +432,7 @@ PROCESS_THREAD(start_time_detect_process, ev, data)
             read_8209c_energyP();
             format_elc_data();
 
-            if (FLASH_ErasePage(FLASH_ELC_SAVE_ADDRESS) == FLASH_COMPLETE)
+            if (flash_erase_page(FLASH_ELC_SAVE_ADDRESS) == FLASH_COMPLETE)
             {
                 FLASH_Write_chars( FLASH_ELC_SAVE_ADDRESS, (u8*)g_cal_Buf , ELC_FLIE_LEN);
                 flash_ok = true;
@@ -1092,7 +1090,7 @@ void save_8209c_params(void)
    g_cal_Buf[len + 2 ]  = 0;
     
 
-   if (FLASH_ErasePage(FLASH_PARAMETER_ADDRESS) == FLASH_COMPLETE)
+   if (flash_erase_page(FLASH_PARAMETER_ADDRESS) == FLASH_COMPLETE)
    {
       if ( FLASH_Write_chars( FLASH_PARAMETER_ADDRESS, (u8*)g_cal_Buf ,  len + 3 ) != FLASH_OK)
       {
@@ -1337,7 +1335,7 @@ void save_elc_datas(void)
     /*  直接存,保证最少一个存储空间留给掉电保存 */
     if ( length >= (1024 - ELC_FILE_TAIL_LEN - ELC_FLIE_LEN) )
     {
-    FLASH_ErasePage(FLASH_ELC_SAVE_ADDRESS);
+    flash_erase_page(FLASH_ELC_SAVE_ADDRESS);
     length = 0;
     }
 

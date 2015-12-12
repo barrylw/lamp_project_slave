@@ -56,6 +56,7 @@ void read_gdflash(void);
 void set_local_addr(void);
 void read_local_addr(void);
 void write_finish();
+void printf_params(void);
 /** @addtogroup  APL Debug Command
   * @{
   */ 
@@ -97,6 +98,7 @@ static const ST_DEBUG_COMMAND CmdList[] =
   {"adc",read_adc},
   {"setaddr",set_local_addr},
   {"getaddr",read_local_addr},
+  {"update",printf_params},
   {"flashfinish",write_finish},
 
 };
@@ -640,7 +642,7 @@ void set_8209c_Kx(void)
     read_8209c_regs(ADPhsA,&rn8209c_papameter.PhsA );
     
     save_8209c_params();
-    FLASH_ErasePage(FLASH_ELC_SAVE_ADDRESS);
+    flash_erase_page(FLASH_ELC_SAVE_ADDRESS);
     
     process_start(&start_time_detect_process, NULL);
 #endif
@@ -657,7 +659,7 @@ void set_8209c_Kx(void)
     rn8209c_papameter.calibration  = 1;
     
     save_8209c_params();
-    FLASH_ErasePage(FLASH_ELC_SAVE_ADDRESS);
+    flash_erase_page(FLASH_ELC_SAVE_ADDRESS);
 }
 
 void read_param_all(void)
@@ -858,7 +860,7 @@ void set_local_addr(void)
         flashtemp[6] = (u8)(crcvalue & 0xFF);
         flashtemp[7] = (u8)(crcvalue >>8 & 0xFF);
         
-        if (FLASH_ErasePage(FLASH_LOCAL_ADDR_ADDRESS) == FLASH_COMPLETE)
+        if (flash_erase_page(FLASH_LOCAL_ADDR_ADDRESS) == FLASH_COMPLETE)
         {
             FLASH_Write_chars( FLASH_LOCAL_ADDR_ADDRESS,  flashtemp, 8);
         }  
