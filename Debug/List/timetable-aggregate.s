@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:43
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:23
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -10,12 +10,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\core\sys\timetable-aggregate.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -28,7 +28,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  
 //        G:\git_hub_lamp\lamp_slave_git\Debug\List\timetable-aggregate.s
@@ -51,115 +51,123 @@
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 find_aggregate_category:
-        PUSH     {R4,R5,LR}
-        MOVS     R2,#+0
-        B        ??find_aggregate_category_0
-??find_aggregate_category_1:
-        ADDS     R2,R2,#+1
+        PUSH     {R4-R6,LR}
+        MOVS     R2,R0
+        MOVS     R0,#+0
+        MOVS     R3,R0
 ??find_aggregate_category_0:
-        LDR      R3,[R0, #+4]
-        CMP      R2,R3
-        BGE      ??find_aggregate_category_2
-        MOVS     R3,#+12
-        MULS     R3,R2,R3
-        LDR      R4,[R0, #+0]
-        LDR      R3,[R4, R3]
-        LDRB     R3,[R3, #+0]
-        LSLS     R3,R3,#+8
-        MOVS     R4,#+12
-        MULS     R4,R2,R4
-        LDR      R5,[R0, #+0]
-        LDR      R4,[R5, R4]
-        LDRB     R4,[R4, #+1]
-        ADDS     R3,R3,R4
-        UXTH     R3,R3
+        LDR      R0,[R2, #+4]
+        CMP      R3,R0
+        BGE      ??find_aggregate_category_1
+        MOVS     R0,#+12
+        MULS     R0,R3,R0
+        LDR      R5,[R2, #+0]
+        LDR      R0,[R5, R0]
+        LDRB     R0,[R0, #+0]
+        LSLS     R0,R0,#+8
+        MOVS     R5,#+12
+        MULS     R5,R3,R5
+        LDR      R6,[R2, #+0]
+        LDR      R5,[R6, R5]
+        LDRB     R5,[R5, #+1]
+        ADDS     R0,R0,R5
+        MOVS     R4,R0
+        UXTH     R4,R4
         UXTH     R1,R1
-        CMP      R3,R1
-        BNE      ??find_aggregate_category_1
-        MOVS     R1,#+12
-        MULS     R2,R1,R2
-        LDR      R0,[R0, #+0]
-        ADDS     R0,R0,R2
+        CMP      R4,R1
+        BNE      ??find_aggregate_category_2
+        MOVS     R0,#+12
+        MULS     R3,R0,R3
+        LDR      R0,[R2, #+0]
+        ADDS     R0,R0,R3
         B        ??find_aggregate_category_3
 ??find_aggregate_category_2:
-        LDR      R1,[R0, #+8]
-        CMP      R2,R1
+        ADDS     R3,R3,#+1
+        B        ??find_aggregate_category_0
+??find_aggregate_category_1:
+        LDR      R0,[R2, #+8]
+        CMP      R3,R0
         BNE      ??find_aggregate_category_4
         MOVS     R0,#+0
         B        ??find_aggregate_category_3
 ??find_aggregate_category_4:
-        MOVS     R1,#+0
-        LDR      R2,[R0, #+4]
-        MOVS     R3,#+12
-        MULS     R2,R3,R2
-        LDR      R3,[R0, #+0]
-        STR      R1,[R3, R2]
-        LDR      R1,[R0, #+4]
-        MOVS     R2,R1
-        ADDS     R2,R2,#+1
-        STR      R2,[R0, #+4]
-        MOVS     R2,#+12
-        MULS     R1,R2,R1
-        LDR      R0,[R0, #+0]
-        ADDS     R0,R0,R1
+        MOVS     R0,#+0
+        LDR      R5,[R2, #+4]
+        MOVS     R6,#+12
+        MULS     R5,R6,R5
+        LDR      R6,[R2, #+0]
+        STR      R0,[R6, R5]
+        LDR      R0,[R2, #+4]
+        MOVS     R5,R0
+        ADDS     R5,R5,#+1
+        STR      R5,[R2, #+4]
+        MOVS     R5,#+12
+        MULS     R0,R5,R0
+        LDR      R2,[R2, #+0]
+        ADDS     R0,R2,R0
 ??find_aggregate_category_3:
-        POP      {R4,R5,PC}       ;; return
+        POP      {R4-R6,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 find_aggregate:
-        PUSH     {R4,LR}
-        MOVS     R2,#+0
-        B        ??find_aggregate_0
-??find_aggregate_1:
-        ADDS     R2,R2,#+1
+        PUSH     {R4,R5,LR}
+        MOVS     R2,R0
+        MOVS     R0,#+0
+        MOVS     R3,R0
 ??find_aggregate_0:
-        LDR      R3,[R0, #+4]
-        CMP      R2,R3
-        BGE      ??find_aggregate_2
-        MOVS     R3,#+12
-        MULS     R3,R2,R3
-        LDR      R4,[R0, #+0]
-        LDR      R3,[R4, R3]
-        CMP      R3,R1
-        BNE      ??find_aggregate_1
-        MOVS     R1,#+12
-        MULS     R2,R1,R2
-        LDR      R0,[R0, #+0]
-        ADDS     R0,R0,R2
+        LDR      R0,[R2, #+4]
+        CMP      R3,R0
+        BGE      ??find_aggregate_1
+        MOVS     R0,#+12
+        MULS     R0,R3,R0
+        LDR      R4,[R2, #+0]
+        LDR      R0,[R4, R0]
+        CMP      R0,R1
+        BNE      ??find_aggregate_2
+        MOVS     R0,#+12
+        MULS     R3,R0,R3
+        LDR      R0,[R2, #+0]
+        ADDS     R0,R0,R3
         B        ??find_aggregate_3
 ??find_aggregate_2:
-        LDR      R1,[R0, #+8]
-        CMP      R2,R1
+        ADDS     R3,R3,#+1
+        B        ??find_aggregate_0
+??find_aggregate_1:
+        LDR      R0,[R2, #+8]
+        CMP      R3,R0
         BNE      ??find_aggregate_4
         MOVS     R0,#+0
         B        ??find_aggregate_3
 ??find_aggregate_4:
-        MOVS     R1,#+0
-        LDR      R2,[R0, #+4]
-        MOVS     R3,#+12
-        MULS     R2,R3,R2
-        LDR      R3,[R0, #+0]
-        STR      R1,[R3, R2]
-        LDR      R1,[R0, #+4]
-        MOVS     R2,R1
-        ADDS     R2,R2,#+1
-        STR      R2,[R0, #+4]
-        MOVS     R2,#+12
-        MULS     R1,R2,R1
-        LDR      R0,[R0, #+0]
-        ADDS     R0,R0,R1
+        MOVS     R0,#+0
+        LDR      R4,[R2, #+4]
+        MOVS     R5,#+12
+        MULS     R4,R5,R4
+        LDR      R5,[R2, #+0]
+        STR      R0,[R5, R4]
+        LDR      R0,[R2, #+4]
+        MOVS     R4,R0
+        ADDS     R4,R4,#+1
+        STR      R4,[R2, #+4]
+        MOVS     R4,#+12
+        MULS     R0,R4,R0
+        LDR      R2,[R2, #+0]
+        ADDS     R0,R2,R0
 ??find_aggregate_3:
-        POP      {R4,PC}          ;; return
+        POP      {R4,R5,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 timetable_aggregate_print_detailed:
         PUSH     {R3-R5,LR}
         MOVS     R5,R0
-        MOVS     R4,#+0
-        B        ??timetable_aggregate_print_detailed_0
-??timetable_aggregate_print_detailed_1:
+        MOVS     R0,#+0
+        MOVS     R4,R0
+??timetable_aggregate_print_detailed_0:
+        LDR      R0,[R5, #+4]
+        CMP      R4,R0
+        BGE      ??timetable_aggregate_print_detailed_1
         MOVS     R0,#+12
         MULS     R0,R4,R0
         LDR      R1,[R5, #+0]
@@ -189,10 +197,8 @@ timetable_aggregate_print_detailed:
         LDR      R0,??DataTable3
         BL       printf
         ADDS     R4,R4,#+1
-??timetable_aggregate_print_detailed_0:
-        LDR      R0,[R5, #+4]
-        CMP      R4,R0
-        BLT      ??timetable_aggregate_print_detailed_1
+        B        ??timetable_aggregate_print_detailed_0
+??timetable_aggregate_print_detailed_1:
         LDR      R3,[R5, #+4]
         MOVS     R0,#+12
         MULS     R3,R0,R3
@@ -206,9 +212,12 @@ timetable_aggregate_print_detailed:
         THUMB
 timetable_aggregate_reset:
         PUSH     {R4,LR}
-        MOVS     R1,#+0
-        B        ??timetable_aggregate_reset_0
-??timetable_aggregate_reset_1:
+        MOVS     R2,#+0
+        MOVS     R1,R2
+??timetable_aggregate_reset_0:
+        LDR      R2,[R0, #+4]
+        CMP      R1,R2
+        BGE      ??timetable_aggregate_reset_1
         MOVS     R2,#+0
         MOVS     R3,#+12
         MULS     R3,R1,R3
@@ -222,10 +231,8 @@ timetable_aggregate_reset:
         ADDS     R3,R4,R3
         STRH     R2,[R3, #+4]
         ADDS     R1,R1,#+1
-??timetable_aggregate_reset_0:
-        LDR      R2,[R0, #+4]
-        CMP      R1,R2
-        BLT      ??timetable_aggregate_reset_1
+        B        ??timetable_aggregate_reset_0
+??timetable_aggregate_reset_1:
         POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -234,9 +241,12 @@ timetable_aggregate_print_categories:
         PUSH     {R4,R5,LR}
         SUB      SP,SP,#+12
         MOVS     R5,R0
-        MOVS     R4,#+0
-        B        ??timetable_aggregate_print_categories_0
-??timetable_aggregate_print_categories_1:
+        MOVS     R0,#+0
+        MOVS     R4,R0
+??timetable_aggregate_print_categories_0:
+        LDR      R0,[R5, #+4]
+        CMP      R4,R0
+        BGE      ??timetable_aggregate_print_categories_1
         MOVS     R0,#+12
         MULS     R0,R4,R0
         LDR      R1,[R5, #+0]
@@ -273,10 +283,8 @@ timetable_aggregate_print_categories:
         LDR      R0,??DataTable3_2
         BL       printf
         ADDS     R4,R4,#+1
-??timetable_aggregate_print_categories_0:
-        LDR      R0,[R5, #+4]
-        CMP      R4,R0
-        BLT      ??timetable_aggregate_print_categories_1
+        B        ??timetable_aggregate_print_categories_0
+??timetable_aggregate_print_categories_1:
         LDR      R3,[R5, #+4]
         MOVS     R0,#+12
         MULS     R3,R0,R3
@@ -291,75 +299,83 @@ timetable_aggregate_print_categories:
 timetable_aggregate_compute_detailed:
         PUSH     {R3-R7,LR}
         MOVS     R7,R0
-        MOVS     R4,R1
-        LDR      R0,[R4, #+0]
-        LDRH     R6,[R0, #+4]
-        MOVS     R5,#+1
-        B        ??timetable_aggregate_compute_detailed_0
-??timetable_aggregate_compute_detailed_1:
-        LDR      R1,[R0, #+8]
-        MOVS     R2,#+8
-        MULS     R2,R5,R2
-        LDR      R3,[R4, #+0]
-        ADDS     R2,R3,R2
-        LDRH     R2,[R2, #+4]
-        UXTH     R6,R6
-        SUBS     R2,R2,R6
-        LDR      R3,??DataTable3_3
-        LDRH     R3,[R3, #+0]
-        SUBS     R2,R2,R3
-        ADDS     R1,R1,R2
-        STR      R1,[R0, #+8]
-        LDRH     R1,[R0, #+4]
-        ADDS     R1,R1,#+1
-        STRH     R1,[R0, #+4]
-??timetable_aggregate_compute_detailed_2:
-        MOVS     R0,#+8
-        MULS     R0,R5,R0
-        LDR      R1,[R4, #+0]
-        ADDS     R0,R1,R0
-        LDRH     R6,[R0, #+4]
-        ADDS     R5,R5,#+1
+        MOVS     R6,R1
+        MOV      R0,SP
+        LDR      R1,[R6, #+0]
+        LDRH     R1,[R1, #+4]
+        STRH     R1,[R0, #+0]
+        MOVS     R0,#+1
+        MOVS     R4,R0
 ??timetable_aggregate_compute_detailed_0:
-        LDR      R0,[R4, #+8]
+        LDR      R0,[R6, #+8]
         LDR      R0,[R0, #+0]
-        CMP      R5,R0
-        BCS      ??timetable_aggregate_compute_detailed_3
+        CMP      R4,R0
+        BCS      ??timetable_aggregate_compute_detailed_1
         MOVS     R0,#+8
-        MULS     R0,R5,R0
-        LDR      R1,[R4, #+0]
+        MULS     R0,R4,R0
+        LDR      R1,[R6, #+0]
         ADDS     R0,R1,R0
         SUBS     R0,R0,#+8
         LDR      R1,[R0, #+0]
         MOVS     R0,R7
         BL       find_aggregate
-        CMP      R0,#+0
+        MOVS     R5,R0
+        CMP      R5,#+0
         BEQ      ??timetable_aggregate_compute_detailed_2
-        LDR      R1,[R0, #+0]
-        CMP      R1,#+0
-        BNE      ??timetable_aggregate_compute_detailed_1
+        LDR      R0,[R5, #+0]
+        CMP      R0,#+0
+        BNE      ??timetable_aggregate_compute_detailed_3
+        MOVS     R0,#+8
+        MULS     R0,R4,R0
+        LDR      R1,[R6, #+0]
+        ADDS     R0,R1,R0
+        SUBS     R0,R0,#+8
+        LDR      R0,[R0, #+0]
+        STR      R0,[R5, #+0]
+        MOVS     R0,#+8
+        MULS     R0,R4,R0
+        LDR      R1,[R6, #+0]
+        ADDS     R0,R1,R0
+        LDRH     R0,[R0, #+4]
+        MOV      R1,SP
+        LDRH     R1,[R1, #+0]
+        SUBS     R0,R0,R1
+        LDR      R1,??DataTable3_3
+        LDRH     R1,[R1, #+0]
+        SUBS     R0,R0,R1
+        STR      R0,[R5, #+8]
+        MOVS     R0,#+1
+        STRH     R0,[R5, #+4]
+        B        ??timetable_aggregate_compute_detailed_2
+??timetable_aggregate_compute_detailed_3:
+        LDR      R0,[R5, #+8]
         MOVS     R1,#+8
-        MULS     R1,R5,R1
-        LDR      R2,[R4, #+0]
-        ADDS     R1,R2,R1
-        SUBS     R1,R1,#+8
-        LDR      R1,[R1, #+0]
-        STR      R1,[R0, #+0]
-        MOVS     R1,#+8
-        MULS     R1,R5,R1
-        LDR      R2,[R4, #+0]
+        MULS     R1,R4,R1
+        LDR      R2,[R6, #+0]
         ADDS     R1,R2,R1
         LDRH     R1,[R1, #+4]
-        UXTH     R6,R6
-        SUBS     R1,R1,R6
+        MOV      R2,SP
+        LDRH     R2,[R2, #+0]
+        SUBS     R1,R1,R2
         LDR      R2,??DataTable3_3
         LDRH     R2,[R2, #+0]
         SUBS     R1,R1,R2
-        STR      R1,[R0, #+8]
-        MOVS     R1,#+1
-        STRH     R1,[R0, #+4]
-        B        ??timetable_aggregate_compute_detailed_2
-??timetable_aggregate_compute_detailed_3:
+        ADDS     R0,R0,R1
+        STR      R0,[R5, #+8]
+        LDRH     R0,[R5, #+4]
+        ADDS     R0,R0,#+1
+        STRH     R0,[R5, #+4]
+??timetable_aggregate_compute_detailed_2:
+        MOV      R0,SP
+        MOVS     R1,#+8
+        MULS     R1,R4,R1
+        LDR      R2,[R6, #+0]
+        ADDS     R1,R2,R1
+        LDRH     R1,[R1, #+4]
+        STRH     R1,[R0, #+0]
+        ADDS     R4,R4,#+1
+        B        ??timetable_aggregate_compute_detailed_0
+??timetable_aggregate_compute_detailed_1:
         POP      {R0,R4-R7,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -368,52 +384,20 @@ timetable_aggregate_compute_categories:
         PUSH     {R0,R4-R7,LR}
         SUB      SP,SP,#+72
         MOVS     R7,R1
-        MOVS     R4,#+0
+        MOVS     R6,#+0
         MOV      R0,SP
         LDR      R1,[R7, #+0]
         LDRH     R1,[R1, #+4]
-        STRH     R1,[R0, #+0]
-        MOVS     R5,#+1
-        B        ??timetable_aggregate_compute_categories_0
-??timetable_aggregate_compute_categories_1:
-        ADDS     R0,R0,#+1
-??timetable_aggregate_compute_categories_2:
-        CMP      R0,R4
-        BGE      ??timetable_aggregate_compute_categories_3
-        MOVS     R2,#+2
-        MULS     R2,R0,R2
-        ADD      R3,SP,#+4
-        LDRH     R2,[R3, R2]
-        UXTH     R6,R6
-        CMP      R2,R6
-        BNE      ??timetable_aggregate_compute_categories_1
-??timetable_aggregate_compute_categories_3:
-        CMP      R0,R4
-        BNE      ??timetable_aggregate_compute_categories_4
-        MOVS     R2,#+2
-        MULS     R0,R2,R0
-        ADD      R2,SP,#+4
-        STRH     R6,[R2, R0]
-        ADDS     R4,R4,#+1
-        LDRH     R0,[R1, #+4]
-        ADDS     R0,R0,#+1
-        STRH     R0,[R1, #+4]
-??timetable_aggregate_compute_categories_4:
-        MOV      R0,SP
-        MOVS     R1,#+8
-        MULS     R1,R5,R1
-        LDR      R2,[R7, #+0]
-        ADDS     R1,R2,R1
-        LDRH     R1,[R1, #+4]
-        STRH     R1,[R0, #+0]
-        ADDS     R5,R5,#+1
+        STRH     R1,[R0, #+6]
+        MOVS     R0,#+1
+        MOVS     R4,R0
 ??timetable_aggregate_compute_categories_0:
         LDR      R0,[R7, #+8]
         LDR      R0,[R0, #+0]
-        CMP      R5,R0
-        BCS      ??timetable_aggregate_compute_categories_5
+        CMP      R4,R0
+        BCS      ??timetable_aggregate_compute_categories_1
         MOVS     R0,#+8
-        MULS     R0,R5,R0
+        MULS     R0,R4,R0
         LDR      R1,[R7, #+0]
         ADDS     R0,R1,R0
         SUBS     R0,R0,#+8
@@ -421,63 +405,111 @@ timetable_aggregate_compute_categories:
         LDRB     R0,[R0, #+0]
         LSLS     R0,R0,#+8
         MOVS     R1,#+8
-        MULS     R1,R5,R1
+        MULS     R1,R4,R1
         LDR      R2,[R7, #+0]
         ADDS     R1,R2,R1
         SUBS     R1,R1,#+8
         LDR      R1,[R1, #+0]
         LDRB     R1,[R1, #+1]
-        ADDS     R6,R0,R1
-        MOVS     R1,R6
-        UXTH     R1,R1
+        ADDS     R0,R0,R1
+        MOV      R1,SP
+        STRH     R0,[R1, #+4]
+        MOV      R0,SP
+        LDRH     R1,[R0, #+4]
         LDR      R0,[SP, #+72]
         BL       find_aggregate_category
-        MOVS     R1,R0
-        CMP      R1,#+0
-        BEQ      ??timetable_aggregate_compute_categories_4
-        LDR      R0,[R1, #+0]
+        STR      R0,[SP, #+0]
+        LDR      R0,[SP, #+0]
         CMP      R0,#+0
-        BNE      ??timetable_aggregate_compute_categories_6
+        BEQ      ??timetable_aggregate_compute_categories_2
+        LDR      R0,[SP, #+0]
+        LDR      R0,[R0, #+0]
+        CMP      R0,#+0
+        BNE      ??timetable_aggregate_compute_categories_3
         MOVS     R0,#+8
-        MULS     R0,R5,R0
-        LDR      R2,[R7, #+0]
-        ADDS     R0,R2,R0
+        MULS     R0,R4,R0
+        LDR      R1,[R7, #+0]
+        ADDS     R0,R1,R0
         SUBS     R0,R0,#+8
         LDR      R0,[R0, #+0]
+        LDR      R1,[SP, #+0]
         STR      R0,[R1, #+0]
         MOVS     R0,#+8
-        MULS     R0,R5,R0
-        LDR      R2,[R7, #+0]
-        ADDS     R0,R2,R0
+        MULS     R0,R4,R0
+        LDR      R1,[R7, #+0]
+        ADDS     R0,R1,R0
         LDRH     R0,[R0, #+4]
-        MOV      R2,SP
-        LDRH     R2,[R2, #+0]
-        SUBS     R0,R0,R2
-        LDR      R2,??DataTable3_3
-        LDRH     R2,[R2, #+0]
-        SUBS     R0,R0,R2
+        MOV      R1,SP
+        LDRH     R1,[R1, #+6]
+        SUBS     R0,R0,R1
+        LDR      R1,??DataTable3_3
+        LDRH     R1,[R1, #+0]
+        SUBS     R0,R0,R1
+        LDR      R1,[SP, #+0]
         STR      R0,[R1, #+8]
         MOVS     R0,#+1
+        LDR      R1,[SP, #+0]
         STRH     R0,[R1, #+4]
-        B        ??timetable_aggregate_compute_categories_4
-??timetable_aggregate_compute_categories_6:
-        LDR      R0,[R1, #+8]
-        MOVS     R2,#+8
-        MULS     R2,R5,R2
-        LDR      R3,[R7, #+0]
-        ADDS     R2,R3,R2
-        LDRH     R2,[R2, #+4]
-        MOV      R3,SP
-        LDRH     R3,[R3, #+0]
-        SUBS     R2,R2,R3
-        LDR      R3,??DataTable3_3
-        LDRH     R3,[R3, #+0]
-        SUBS     R2,R2,R3
-        ADDS     R0,R0,R2
+        B        ??timetable_aggregate_compute_categories_2
+??timetable_aggregate_compute_categories_3:
+        LDR      R0,[SP, #+0]
+        LDR      R0,[R0, #+8]
+        MOVS     R1,#+8
+        MULS     R1,R4,R1
+        LDR      R2,[R7, #+0]
+        ADDS     R1,R2,R1
+        LDRH     R1,[R1, #+4]
+        MOV      R2,SP
+        LDRH     R2,[R2, #+6]
+        SUBS     R1,R1,R2
+        LDR      R2,??DataTable3_3
+        LDRH     R2,[R2, #+0]
+        SUBS     R1,R1,R2
+        ADDS     R0,R0,R1
+        LDR      R1,[SP, #+0]
         STR      R0,[R1, #+8]
         MOVS     R0,#+0
-        B        ??timetable_aggregate_compute_categories_2
+        MOVS     R5,R0
+??timetable_aggregate_compute_categories_4:
+        CMP      R5,R6
+        BGE      ??timetable_aggregate_compute_categories_5
+        MOVS     R0,#+2
+        MULS     R0,R5,R0
+        ADD      R1,SP,#+8
+        LDRH     R0,[R1, R0]
+        MOV      R1,SP
+        LDRH     R1,[R1, #+4]
+        CMP      R0,R1
+        BEQ      ??timetable_aggregate_compute_categories_5
+??timetable_aggregate_compute_categories_6:
+        ADDS     R5,R5,#+1
+        B        ??timetable_aggregate_compute_categories_4
 ??timetable_aggregate_compute_categories_5:
+        CMP      R5,R6
+        BNE      ??timetable_aggregate_compute_categories_2
+        MOV      R0,SP
+        LDRH     R0,[R0, #+4]
+        MOVS     R1,#+2
+        MULS     R1,R5,R1
+        ADD      R2,SP,#+8
+        STRH     R0,[R2, R1]
+        ADDS     R6,R6,#+1
+        LDR      R0,[SP, #+0]
+        LDRH     R0,[R0, #+4]
+        ADDS     R0,R0,#+1
+        LDR      R1,[SP, #+0]
+        STRH     R0,[R1, #+4]
+??timetable_aggregate_compute_categories_2:
+        MOV      R0,SP
+        MOVS     R1,#+8
+        MULS     R1,R4,R1
+        LDR      R2,[R7, #+0]
+        ADDS     R1,R2,R1
+        LDRH     R1,[R1, #+4]
+        STRH     R1,[R0, #+6]
+        ADDS     R4,R4,#+1
+        B        ??timetable_aggregate_compute_categories_0
+??timetable_aggregate_compute_categories_1:
         ADD      SP,SP,#+76
         POP      {R4-R7,PC}       ;; return
 
@@ -537,9 +569,9 @@ timetable_aggregate_compute_categories:
         END
 // 
 //  88 bytes in section .rodata
-// 788 bytes in section .text
+// 852 bytes in section .text
 // 
-// 788 bytes of CODE  memory
+// 852 bytes of CODE  memory
 //  88 bytes of CONST memory
 //
 //Errors: none

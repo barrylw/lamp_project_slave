@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:31
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:10
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -8,9 +8,9 @@
 //    Source file  =  G:\git_hub_lamp\lamp_slave_git\APP\hal_nvic.c
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\APP\hal_nvic.c -D USE_STDPERIPH_DRIVER
-//        -D STM32F030X8 -D AUTOSTART_ENABLE -D PRINTF_DEBUG -lb
-//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
-//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        -D STM32F030X8 -D AUTOSTART_ENABLE -D PRINTF_DEBUG -D USE_LORA_MODE
+//        -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050
+//        -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
 //        --no_inline --no_code_motion --no_tbaa --no_clustering
 //        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
 //        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
@@ -26,7 +26,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\hal_nvic.s
 //
@@ -51,35 +51,36 @@ NVIC_SetPriority:
         LSLS     R2,R0,#+28       ;; ZeroExtS R2,R0,#+28,#+28
         LSRS     R2,R2,#+28
         SUBS     R2,R2,#+8
+        MOVS     R5,R2
+        LSRS     R5,R5,#+2
+        MOVS     R2,#+4
+        MULS     R5,R2,R5
+        LDR      R4,??DataTable0  ;; 0xe000ed1c
+        SXTB     R0,R0
+        LSLS     R2,R0,#+28       ;; ZeroExtS R2,R0,#+28,#+28
+        LSRS     R2,R2,#+28
+        SUBS     R2,R2,#+8
         LSRS     R2,R2,#+2
         MOVS     R3,#+4
         MULS     R2,R3,R2
         LDR      R3,??DataTable0  ;; 0xe000ed1c
-        SXTB     R0,R0
-        LSLS     R4,R0,#+28       ;; ZeroExtS R4,R0,#+28,#+28
-        LSRS     R4,R4,#+28
-        SUBS     R4,R4,#+8
-        LSRS     R4,R4,#+2
-        MOVS     R5,#+4
-        MULS     R4,R5,R4
-        LDR      R5,??DataTable0  ;; 0xe000ed1c
-        LDR      R4,[R5, R4]
-        MOVS     R5,#+255
+        LDR      R2,[R3, R2]
+        MOVS     R3,#+255
         LSLS     R6,R0,#+30       ;; ZeroExtS R6,R0,#+30,#+30
         LSRS     R6,R6,#+30
         MOVS     R7,#+8
         MULS     R6,R7,R6
-        LSLS     R5,R5,R6
-        BICS     R4,R4,R5
-        LSLS     R1,R1,#+6
-        UXTB     R1,R1
-        LSLS     R0,R0,#+30       ;; ZeroExtS R0,R0,#+30,#+30
-        LSRS     R0,R0,#+30
-        MOVS     R5,#+8
-        MULS     R0,R5,R0
-        LSLS     R1,R1,R0
-        ORRS     R1,R1,R4
-        STR      R1,[R3, R2]
+        LSLS     R3,R3,R6
+        BICS     R2,R2,R3
+        LSLS     R3,R1,#+6
+        UXTB     R3,R3
+        LSLS     R6,R0,#+30       ;; ZeroExtS R6,R0,#+30,#+30
+        LSRS     R6,R6,#+30
+        MOVS     R7,#+8
+        MULS     R6,R7,R6
+        LSLS     R3,R3,R6
+        ORRS     R3,R3,R2
+        STR      R3,[R4, R5]
         B        ??NVIC_SetPriority_1
 ??NVIC_SetPriority_0:
         SXTB     R0,R0
@@ -96,20 +97,21 @@ NVIC_SetPriority:
         MULS     R4,R5,R4
         LSLS     R3,R3,R4
         BICS     R2,R2,R3
-        LSLS     R1,R1,#+6
-        UXTB     R1,R1
-        LSLS     R3,R0,#+30       ;; ZeroExtS R3,R0,#+30,#+30
-        LSRS     R3,R3,#+30
-        MOVS     R4,#+8
-        MULS     R3,R4,R3
-        LSLS     R1,R1,R3
-        ORRS     R1,R1,R2
+        LSLS     R3,R1,#+6
+        UXTB     R3,R3
+        LSLS     R4,R0,#+30       ;; ZeroExtS R4,R0,#+30,#+30
+        LSRS     R4,R4,#+30
+        MOVS     R5,#+8
+        MULS     R4,R5,R4
+        LSLS     R3,R3,R4
+        ORRS     R3,R3,R2
         SXTB     R0,R0
-        LSRS     R0,R0,#+2
-        MOVS     R2,#+4
-        MULS     R0,R2,R0
-        LDR      R2,??DataTable0_1  ;; 0xe000e400
-        STR      R1,[R2, R0]
+        MOVS     R2,R0
+        LSRS     R2,R2,#+2
+        MOVS     R4,#+4
+        MULS     R2,R4,R2
+        LDR      R4,??DataTable0_1  ;; 0xe000e400
+        STR      R3,[R4, R2]
 ??NVIC_SetPriority_1:
         POP      {R4-R7,PC}       ;; return
 
@@ -235,9 +237,9 @@ hal_InitNVIC:
 
         END
 // 
-// 348 bytes in section .text
+// 352 bytes in section .text
 // 
-// 348 bytes of CODE memory
+// 352 bytes of CODE memory
 //
 //Errors: none
 //Warnings: none

@@ -28,7 +28,7 @@ ITMportsTermIO=0
 ITMportsLogFile=0
 ITMlogFile=$PROJ_DIR$\ITM.log
 [DebugChecksum]
-Checksum=1598633410
+Checksum=382000403
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -49,10 +49,12 @@ Fmt5=u8[255]	4	0
 Fmt6=u8[5]	4	0
 Fmt7=u8[64]	4	0
 Fmt8=u8[6]	4	0
-Fmt9=uint8_t[112]	4	0
+Fmt9=u8[8]	4	0
+Fmt10=uint8_t[112]	4	0
 [watch_formats]
-Fmt0={W}0:input[12]	4	0
-Fmt1={W}0:pwm_light	4	0
+Fmt0={W}0:crcvalue	4	0
+Fmt1={W}0:input[12]	4	0
+Fmt2={W}0:pwm_light	4	0
 [SWOTraceWindow]
 PcSampling=0
 InterruptLogs=0
@@ -113,7 +115,8 @@ Exclusions=
 [Disassemble mode]
 mode=0
 [Breakpoints2]
-Count=0
+Bp0=_ 1 "EMUL_CODE" "{$PROJ_DIR$\APP\hal_radio.c}.1314.3" 0 0 1 "" 0 "" 0
+Count=1
 [Aliases]
 Count=0
 SuppressDialog=0

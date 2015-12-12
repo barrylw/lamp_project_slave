@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:33
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  13:18:41
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -8,9 +8,9 @@
 //    Source file  =  G:\git_hub_lamp\lamp_slave_git\APP\hal_uart.c
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\APP\hal_uart.c -D USE_STDPERIPH_DRIVER
-//        -D STM32F030X8 -D AUTOSTART_ENABLE -D PRINTF_DEBUG -lb
-//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
-//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        -D STM32F030X8 -D AUTOSTART_ENABLE -D PRINTF_DEBUG -D USE_LORA_MODE
+//        -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050
+//        -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
 //        --no_inline --no_code_motion --no_tbaa --no_clustering
 //        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
 //        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
@@ -26,7 +26,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\hal_uart.s
 //
@@ -138,10 +138,10 @@ hal_LightLED:
         LDRH     R1,[R2, R1]
         UXTB     R0,R0
         MOVS     R2,#+4
-        MULS     R0,R2,R0
-        LDR      R2,??DataTable4_2
-        LDR      R0,[R2, R0]
-        STRH     R1,[R0, #+40]
+        MULS     R2,R0,R2
+        LDR      R3,??DataTable4_2
+        LDR      R2,[R3, R2]
+        STRH     R1,[R2, #+40]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -155,10 +155,10 @@ hal_BlindLED:
         LDRH     R1,[R2, R1]
         UXTB     R0,R0
         MOVS     R2,#+4
-        MULS     R0,R2,R0
-        LDR      R2,??DataTable4_2
-        LDR      R0,[R2, R0]
-        STR      R1,[R0, #+24]
+        MULS     R2,R0,R2
+        LDR      R3,??DataTable4_2
+        LDR      R2,[R3, R2]
+        STR      R1,[R2, #+24]
         BX       LR               ;; return
 
         SECTION `.data`:DATA:REORDER:NOROOT(2)
@@ -455,7 +455,8 @@ process_thread_hal_urat_process:
         BL       hal_DebugDMATx
         B        ??process_thread_hal_urat_process_0
 ??process_thread_hal_urat_process_2:
-        MOVS     R1,#+0
+        MOVS     R0,#+0
+        MOVS     R1,R0
         MOVS     R0,#+0
         STRH     R0,[R4, #+0]
         MOVS     R0,#+3
@@ -591,7 +592,7 @@ hal_InitCOM:
         UXTB     R4,R4
         MOVS     R0,#+4
         MULS     R0,R4,R0
-        LDR      R2,??DataTable6
+        LDR      R2,??DataTable5_15
         LDR      R0,[R2, R0]
         BL       RCC_APB1PeriphClockCmd
         B        ??hal_InitCOM_1
@@ -600,7 +601,7 @@ hal_InitCOM:
         UXTB     R4,R4
         MOVS     R0,#+4
         MULS     R0,R4,R0
-        LDR      R2,??DataTable6
+        LDR      R2,??DataTable5_15
         LDR      R0,[R2, R0]
         BL       RCC_APB2PeriphClockCmd
         MOVS     R1,#+1
@@ -609,35 +610,35 @@ hal_InitCOM:
         BL       SYSCFG_DMAChannelRemapConfig
 ??hal_InitCOM_1:
         UXTB     R4,R4
-        LDR      R0,??DataTable6_1
+        LDR      R0,??DataTable6
         LDRB     R2,[R0, R4]
         UXTB     R4,R4
-        LDR      R0,??DataTable6_2
+        LDR      R0,??DataTable6_1
         LDRB     R1,[R0, R4]
         UXTH     R1,R1
         UXTB     R4,R4
         MOVS     R0,#+4
         MULS     R0,R4,R0
-        LDR      R3,??DataTable6_3
+        LDR      R3,??DataTable6_2
         LDR      R0,[R3, R0]
         BL       GPIO_PinAFConfig
         UXTB     R4,R4
-        LDR      R0,??DataTable6_4
+        LDR      R0,??DataTable6_3
         LDRB     R2,[R0, R4]
         UXTB     R4,R4
-        LDR      R0,??DataTable6_5
+        LDR      R0,??DataTable6_4
         LDRB     R1,[R0, R4]
         UXTH     R1,R1
         UXTB     R4,R4
         MOVS     R0,#+4
         MULS     R0,R4,R0
-        LDR      R3,??DataTable7
+        LDR      R3,??DataTable6_5
         LDR      R0,[R3, R0]
         BL       GPIO_PinAFConfig
         UXTB     R4,R4
         MOVS     R0,#+2
         MULS     R0,R4,R0
-        LDR      R1,??DataTable7_1
+        LDR      R1,??DataTable6_6
         LDRH     R0,[R1, R0]
         STR      R0,[SP, #+0]
         MOVS     R0,#+2
@@ -665,26 +666,26 @@ hal_InitCOM:
         UXTB     R4,R4
         MOVS     R0,#+4
         MULS     R0,R4,R0
-        LDR      R2,??DataTable6_3
+        LDR      R2,??DataTable6_2
         LDR      R0,[R2, R0]
         BL       GPIO_Init
         UXTB     R4,R4
         MOVS     R0,#+2
         MULS     R0,R4,R0
-        LDR      R1,??DataTable7_2
+        LDR      R1,??DataTable7
         LDRH     R0,[R1, R0]
         STR      R0,[SP, #+0]
         MOV      R1,SP
         UXTB     R4,R4
         MOVS     R0,#+4
         MULS     R0,R4,R0
-        LDR      R2,??DataTable7
+        LDR      R2,??DataTable6_5
         LDR      R0,[R2, R0]
         BL       GPIO_Init
         UXTB     R4,R4
         MOVS     R0,#+4
         MULS     R0,R4,R0
-        LDR      R1,??DataTable7_3
+        LDR      R1,??DataTable7_1
         LDR      R0,[R1, R0]
         STR      R0,[SP, #+8]
         MOVS     R0,#+128
@@ -732,9 +733,9 @@ hal_InitCOM:
         MOVS     R1,#+128
         UXTB     R4,R4
         MOVS     R0,#+4
-        MULS     R4,R0,R4
-        LDR      R0,??DataTable8
-        LDR      R0,[R0, R4]
+        MULS     R0,R4,R0
+        LDR      R3,??DataTable8
+        LDR      R0,[R3, R0]
         BL       USART_DMACmd
         MOVS     R1,#+1
         MOVS     R0,#+1
@@ -833,26 +834,35 @@ hal_InitCOM:
 ??DataTable5_14:
         DC32     COM_RX_PORT_CLK
 
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable5_15:
+        DC32     COM_USART_CLK
+
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 printf:
-        PUSH     {R1-R3}
+        PUSH     {R0-R3}
         PUSH     {R4-R7,LR}
-        SUB      SP,SP,#+232
-        MOVS     R2,R0
+        SUB      SP,SP,#+236
         MOVS     R0,#+0
         MOV      R1,SP
         STRH     R0,[R1, #+2]
         MOVS     R4,#+0
-        MOVS     R7,#+0
+        MOVS     R0,#+0
+        MOV      R1,SP
+        STRB     R0,[R1, #+1]
         MOVS     R5,#+0
-        ADD      R0,SP,#+32
-        STR      R0,[SP, #+4]
+        ADD      R6,SP,#+32
         MOVS     R0,#+0
         MOV      R1,SP
         STRB     R0,[R1, #+0]
-        MOVS     R6,#+0
-        ADD      R3,SP,#+252
+        MOVS     R7,#+0
+        ADD      R0,SP,#+260
+        STR      R0,[SP, #+4]
+        LDR      R3,[SP, #+4]
+        LDR      R2,[SP, #+256]
         MOVS     R1,#+200
         ADD      R0,SP,#+32
         BL       vsnprintf
@@ -877,70 +887,37 @@ printf:
         MOVS     R0,R4
         MOVS     R1,#+12
         BL       __aeabi_uidiv
-        MOVS     R7,R0
-        ADDS     R7,R7,#+1
+        ADDS     R0,R0,#+1
+        MOV      R1,SP
+        STRB     R0,[R1, #+1]
         B        ??printf_2
 ??printf_1:
         UXTH     R4,R4
         MOVS     R0,R4
         MOVS     R1,#+12
         BL       __aeabi_uidiv
-        MOVS     R7,R0
+        MOV      R1,SP
+        STRB     R0,[R1, #+1]
 ??printf_2:
-        MOVS     R5,#+0
-        BL       hal_GetSystickCounter
-        MOVS     R6,R0
-        B        ??printf_3
-??printf_4:
-        MOVS     R2,R4
-        UXTH     R2,R2
-        LDR      R1,[SP, #+4]
-        LDR      R0,??DataTable8_2
-        LDRB     R0,[R0, #+0]
-        MOVS     R3,#+8
-        MULS     R0,R3,R0
-        LDR      R3,??DataTable8_2
-        ADDS     R0,R3,R0
-        LDR      R0,[R0, #+4]
-        BL       OS_MemCopy
-        MOVS     R0,R4
-        LDR      R1,??DataTable8_2
-        LDRB     R1,[R1, #+0]
-        MOVS     R2,#+8
-        MULS     R1,R2,R1
-        LDR      R2,??DataTable8_2
-        ADDS     R1,R2,R1
-        STRB     R0,[R1, #+8]
-??printf_5:
-        BL       hal_GetSystickCounter
-        MOVS     R6,R0
-        ADDS     R5,R5,#+1
-        LDR      R0,??DataTable8_2
-        LDRB     R0,[R0, #+0]
-        ADDS     R0,R0,#+1
-        LDR      R1,??DataTable8_2
-        STRB     R0,[R1, #+0]
-        LDR      R0,??DataTable8_2
-        LDRB     R0,[R0, #+0]
-        CMP      R0,#+50
-        BLT      ??printf_3
         MOVS     R0,#+0
-        LDR      R1,??DataTable8_2
-        STRB     R0,[R1, #+0]
-??printf_3:
-        UXTB     R5,R5
-        UXTB     R7,R7
-        CMP      R5,R7
-        BCS      ??printf_6
+        MOVS     R5,R0
         BL       hal_GetSystickCounter
-        SUBS     R0,R0,R6
+        MOVS     R7,R0
+??printf_3:
+        MOV      R0,SP
+        LDRB     R0,[R0, #+1]
+        UXTB     R5,R5
+        CMP      R5,R0
+        BCS      ??printf_4
+        BL       hal_GetSystickCounter
+        SUBS     R0,R0,R7
         CMP      R0,#+101
-        BCS      ??printf_6
+        BCS      ??printf_4
         BL       IWDG_ReloadCounter
         MOVS     R0,#+127
         BL       WWDG_SetCounter
         ADD      R1,SP,#+8
-        LDR      R0,??DataTable8_3
+        LDR      R0,??DataTable8_2
         LDR      R0,[R0, #+0]
         BL       OSMemQuery
         MOV      R1,SP
@@ -953,15 +930,15 @@ printf:
         CMP      R0,#+0
         BEQ      ??printf_3
         MOV      R1,SP
-        LDR      R0,??DataTable8_3
+        LDR      R0,??DataTable8_2
         LDR      R0,[R0, #+0]
         BL       OSMemGet
         ADDS     R0,R0,#+4
-        LDR      R1,??DataTable8_2
+        LDR      R1,??DataTable8_3
         LDRB     R1,[R1, #+0]
         MOVS     R2,#+8
         MULS     R1,R2,R1
-        LDR      R2,??DataTable8_2
+        LDR      R2,??DataTable8_3
         ADDS     R1,R2,R1
         STR      R0,[R1, #+4]
         MOV      R0,SP
@@ -970,31 +947,66 @@ printf:
         BNE      ??printf_3
         UXTH     R4,R4
         CMP      R4,#+13
-        BCC      ??printf_4
+        BCC      ??printf_5
         MOVS     R2,#+12
-        LDR      R1,[SP, #+4]
-        LDR      R0,??DataTable8_2
+        MOVS     R1,R6
+        LDR      R0,??DataTable8_3
         LDRB     R0,[R0, #+0]
         MOVS     R3,#+8
         MULS     R0,R3,R0
-        LDR      R3,??DataTable8_2
+        LDR      R3,??DataTable8_3
         ADDS     R0,R3,R0
         LDR      R0,[R0, #+4]
         BL       OS_MemCopy
         MOVS     R0,#+12
-        LDR      R1,??DataTable8_2
+        LDR      R1,??DataTable8_3
         LDRB     R1,[R1, #+0]
         MOVS     R2,#+8
         MULS     R1,R2,R1
-        LDR      R2,??DataTable8_2
+        LDR      R2,??DataTable8_3
         ADDS     R1,R2,R1
         STRB     R0,[R1, #+8]
         SUBS     R4,R4,#+12
-        LDR      R0,[SP, #+4]
-        ADDS     R0,R0,#+12
-        STR      R0,[SP, #+4]
-        B        ??printf_5
+        ADDS     R6,R6,#+12
+        B        ??printf_6
+??printf_5:
+        MOVS     R2,R4
+        UXTH     R2,R2
+        MOVS     R1,R6
+        LDR      R0,??DataTable8_3
+        LDRB     R0,[R0, #+0]
+        MOVS     R3,#+8
+        MULS     R0,R3,R0
+        LDR      R3,??DataTable8_3
+        ADDS     R0,R3,R0
+        LDR      R0,[R0, #+4]
+        BL       OS_MemCopy
+        MOVS     R0,R4
+        LDR      R1,??DataTable8_3
+        LDRB     R1,[R1, #+0]
+        MOVS     R2,#+8
+        MULS     R1,R2,R1
+        LDR      R2,??DataTable8_3
+        ADDS     R1,R2,R1
+        STRB     R0,[R1, #+8]
 ??printf_6:
+        BL       hal_GetSystickCounter
+        MOVS     R7,R0
+        ADDS     R5,R5,#+1
+        LDR      R0,??DataTable8_3
+        LDRB     R0,[R0, #+0]
+        ADDS     R0,R0,#+1
+        LDR      R1,??DataTable8_3
+        STRB     R0,[R1, #+0]
+        LDR      R0,??DataTable8_3
+        LDRB     R0,[R0, #+0]
+        CMP      R0,#+50
+        BLT      ??printf_3
+        MOVS     R0,#+0
+        LDR      R1,??DataTable8_3
+        STRB     R0,[R1, #+0]
+        B        ??printf_3
+??printf_4:
         LDR      R0,??DataTable9
         LDRB     R0,[R0, #+0]
         CMP      R0,#+8
@@ -1002,19 +1014,19 @@ printf:
         MOVS     R0,#+8
         LDR      R1,??DataTable9
         STRB     R0,[R1, #+0]
-        LDR      R0,??DataTable8_2
+        LDR      R0,??DataTable8_3
         LDRB     R0,[R0, #+1]
         MOVS     R1,#+8
         MULS     R0,R1,R0
-        LDR      R1,??DataTable8_2
+        LDR      R1,??DataTable8_3
         ADDS     R0,R1,R0
         LDRB     R1,[R0, #+8]
         UXTH     R1,R1
-        LDR      R0,??DataTable8_2
+        LDR      R0,??DataTable8_3
         LDRB     R0,[R0, #+1]
         MOVS     R2,#+8
         MULS     R0,R2,R0
-        LDR      R2,??DataTable8_2
+        LDR      R2,??DataTable8_3
         ADDS     R0,R2,R0
         LDR      R0,[R0, #+4]
         BL       hal_DebugDMATx
@@ -1025,47 +1037,53 @@ printf:
 ??printf_0:
         MOV      R0,SP
         LDRH     R0,[R0, #+2]
-        ADD      SP,SP,#+232
+        ADD      SP,SP,#+236
         LDR      R1,[SP, #+16]
         POP      {R4-R7}
-        ADD      SP,SP,#+16
+        ADD      SP,SP,#+20
         BX       R1               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable6:
-        DC32     COM_USART_CLK
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable6_1:
         DC32     COM_TX_AF
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable6_2:
+??DataTable6_1:
         DC32     COM_TX_PIN_SOURCE
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable6_3:
+??DataTable6_2:
         DC32     COM_TX_PORT
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable6_4:
+??DataTable6_3:
         DC32     COM_RX_AF
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable6_5:
+??DataTable6_4:
         DC32     COM_RX_PIN_SOURCE
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable6_5:
+        DC32     COM_RX_PORT
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable6_6:
+        DC32     COM_TX_PIN
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1080,7 +1098,8 @@ hal_DebugDMATx:
         UXTH     R4,R4
         CMP      R4,#+201
         BLT      ??hal_DebugDMATx_1
-        MOVS     R4,#+200
+        MOVS     R0,#+200
+        MOVS     R4,R0
 ??hal_DebugDMATx_1:
         LDR      R0,??DataTable10_1  ;; 0x40020044
         BL       DMA_DeInit
@@ -1124,49 +1143,40 @@ hal_DebugDMATx:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable7:
-        DC32     COM_RX_PORT
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable7_1:
-        DC32     COM_TX_PIN
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable7_2:
         DC32     COM_RX_PIN
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable7_3:
+??DataTable7_1:
         DC32     COM_BAUD
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 hal_UartINTTx:
-        PUSH     {R7,LR}
-        UXTH     R1,R1
-        CMP      R1,#+0
+        PUSH     {R3-R5,LR}
+        MOVS     R5,R0
+        MOVS     R4,R1
+        UXTH     R4,R4
+        CMP      R4,#+0
         BEQ      ??hal_UartINTTx_0
-        UXTH     R1,R1
-        CMP      R1,#+255
+        UXTH     R4,R4
+        CMP      R4,#+255
         BLE      ??hal_UartINTTx_1
-        MOVS     R1,#+255
+        MOVS     R0,#+255
+        MOVS     R4,R0
 ??hal_UartINTTx_1:
-        MOVS     R2,#+0
-        LDR      R3,??DataTable10_3
-        STRH     R2,[R3, #+0]
-        LDR      R2,??DataTable10_3
-        STRH     R1,[R2, #+2]
-        LDR      R2,??DataTable10_4
-        CMP      R0,R2
+        MOVS     R0,#+0
+        LDR      R1,??DataTable10_3
+        STRH     R0,[R1, #+0]
+        LDR      R0,??DataTable10_3
+        STRH     R4,[R0, #+2]
+        LDR      R0,??DataTable10_4
+        CMP      R5,R0
         BEQ      ??hal_UartINTTx_2
-        MOVS     R2,R1
+        MOVS     R2,R4
         UXTH     R2,R2
-        MOVS     R1,R0
+        MOVS     R1,R5
         LDR      R0,??DataTable10_4
         BL       OS_MemCopy
 ??hal_UartINTTx_2:
@@ -1184,7 +1194,7 @@ hal_UartINTTx:
         LDR      R0,??DataTable12  ;; 0x40004400
         BL       USART_ITConfig
 ??hal_UartINTTx_0:
-        POP      {R0,PC}          ;; return
+        POP      {R0,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -1202,47 +1212,47 @@ hal_UartINTTx:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable8_2:
-        DC32     g_Print
+        DC32     g_Print+0x4B4
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable8_3:
-        DC32     g_Print+0x4B4
+        DC32     g_Print
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 USART2_IRQHandler:
         PUSH     {R7,LR}
-        LDR      R1,??DataTable11  ;; 0x50105
+        LDR      R1,??DataTable10_7  ;; 0x50105
         LDR      R0,??DataTable12  ;; 0x40004400
         BL       USART_GetITStatus
         CMP      R0,#+0
         BEQ      ??USART2_IRQHandler_0
         MOVS     R0,#+0
         BL       hal_LightLED
-        LDR      R0,??DataTable11_1
+        LDR      R0,??DataTable11
         LDRH     R0,[R0, #+0]
         CMP      R0,#+255
         BLT      ??USART2_IRQHandler_1
         MOVS     R0,#+0
-        LDR      R1,??DataTable11_1
+        LDR      R1,??DataTable11
         STRH     R0,[R1, #+0]
 ??USART2_IRQHandler_1:
         LDR      R0,??DataTable12  ;; 0x40004400
         BL       USART_ReceiveData
-        LDR      R1,??DataTable11_1
+        LDR      R1,??DataTable11
         LDRH     R1,[R1, #+0]
-        LDR      R2,??DataTable11_2
+        LDR      R2,??DataTable11_1
         STRB     R0,[R2, R1]
-        LDR      R0,??DataTable11_1
+        LDR      R0,??DataTable11
         LDRH     R0,[R0, #+0]
         CMP      R0,#+0
         BNE      ??USART2_IRQHandler_2
         MOVS     R0,#+4
-        LDR      R1,??DataTable11_3
+        LDR      R1,??DataTable11_2
         STRB     R0,[R1, #+0]
-        LDR      R2,??DataTable11_3
+        LDR      R2,??DataTable11_2
         MOVS     R1,#+134
         LDR      R0,??DataTable10
         BL       process_post
@@ -1250,10 +1260,10 @@ USART2_IRQHandler:
 ??USART2_IRQHandler_2:
         MOVS     R1,#+151
         LSLS     R1,R1,#+1        ;; #+302
-        LDR      R0,??DataTable12_1
+        LDR      R0,??DataTable11_3
         BL       etimer_remodify
 ??USART2_IRQHandler_3:
-        LDR      R0,??DataTable11_1
+        LDR      R0,??DataTable11
         LDRH     R0,[R0, #+0]
         CMP      R0,#+0
         BEQ      ??USART2_IRQHandler_4
@@ -1267,71 +1277,71 @@ USART2_IRQHandler:
         BLS      ??USART2_IRQHandler_5
         B        ??USART2_IRQHandler_6
 ??USART2_IRQHandler_4:
-        LDR      R0,??DataTable11_1
+        LDR      R0,??DataTable11
         LDRH     R0,[R0, #+0]
-        LDR      R1,??DataTable11_2
+        LDR      R1,??DataTable11_1
         LDRB     R0,[R1, R0]
         CMP      R0,#+104
         BEQ      ??USART2_IRQHandler_7
         MOVS     R0,#+0
-        LDR      R1,??DataTable11_1
+        LDR      R1,??DataTable11
         STRH     R0,[R1, #+0]
         B        ??USART2_IRQHandler_8
 ??USART2_IRQHandler_7:
-        LDR      R0,??DataTable11_1
+        LDR      R0,??DataTable11
         LDRH     R0,[R0, #+0]
         ADDS     R0,R0,#+1
-        LDR      R1,??DataTable11_1
+        LDR      R1,??DataTable11
         STRH     R0,[R1, #+0]
 ??USART2_IRQHandler_8:
         B        ??USART2_IRQHandler_0
 ??USART2_IRQHandler_5:
-        LDR      R0,??DataTable11_1
+        LDR      R0,??DataTable11
         LDRH     R0,[R0, #+0]
         ADDS     R0,R0,#+1
-        LDR      R1,??DataTable11_1
+        LDR      R1,??DataTable11
         STRH     R0,[R1, #+0]
         B        ??USART2_IRQHandler_0
 ??USART2_IRQHandler_6:
-        LDR      R0,??DataTable11_1
+        LDR      R0,??DataTable11
         LDRH     R0,[R0, #+0]
-        LDR      R1,??DataTable11_2
+        LDR      R1,??DataTable11_1
         LDRB     R1,[R1, #+9]
         ADDS     R1,R1,#+11
         CMP      R0,R1
         BLT      ??USART2_IRQHandler_9
-        LDR      R0,??DataTable11_1
+        LDR      R0,??DataTable11
         LDRH     R0,[R0, #+0]
-        LDR      R1,??DataTable11_2
+        LDR      R1,??DataTable11_1
         LDRB     R0,[R1, R0]
         CMP      R0,#+22
         BNE      ??USART2_IRQHandler_10
         MOVS     R0,#+5
-        LDR      R1,??DataTable11_3
+        LDR      R1,??DataTable11_2
         STRB     R0,[R1, #+0]
-        LDR      R0,??DataTable12_1
+        LDR      R0,??DataTable11_3
         BL       etimer_stop
-        LDR      R2,??DataTable11_3
+        LDR      R2,??DataTable11_2
         MOVS     R1,#+134
         LDR      R0,??DataTable10
         BL       process_post
-        LDR      R0,??DataTable11_1
+        LDR      R0,??DataTable11
         LDRH     R0,[R0, #+0]
         ADDS     R0,R0,#+1
-        LDR      R1,??DataTable11_1
+        LDR      R1,??DataTable11
         STRH     R0,[R1, #+2]
 ??USART2_IRQHandler_10:
         MOVS     R0,#+0
-        LDR      R1,??DataTable11_1
+        LDR      R1,??DataTable11
         STRH     R0,[R1, #+0]
         MOVS     R0,#+0
         BL       hal_BlindLED
         B        ??USART2_IRQHandler_11
 ??USART2_IRQHandler_9:
-        LDR      R0,??DataTable11_1
+        LDR      R0,??DataTable11
         LDRH     R0,[R0, #+0]
         ADDS     R0,R0,#+1
-        LDR      R1,??DataTable11_1
+        LDR      R1,??DataTable11
         STRH     R0,[R1, #+0]
 ??USART2_IRQHandler_11:
 ??USART2_IRQHandler_0:
@@ -1358,7 +1368,7 @@ USART2_IRQHandler:
         LDRH     R1,[R1, #+2]
         CMP      R0,R1
         BCC      ??USART2_IRQHandler_12
-        LDR      R0,??DataTable12_2
+        LDR      R0,??DataTable12_1
         BL       etimer_stop
         MOVS     R0,#+1
         LDR      R1,??DataTable10_5
@@ -1381,68 +1391,69 @@ USART2_IRQHandler:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 USART1_IRQHandler:
-        PUSH     {R7,LR}
-        LDR      R1,??DataTable11  ;; 0x50105
-        LDR      R0,??DataTable12_3  ;; 0x40013800
+        PUSH     {R4,LR}
+        LDR      R1,??DataTable10_7  ;; 0x50105
+        LDR      R0,??DataTable12_2  ;; 0x40013800
         BL       USART_GetITStatus
         CMP      R0,#+0
         BEQ      ??USART1_IRQHandler_0
-        LDR      R0,??DataTable12_3  ;; 0x40013800
+        LDR      R0,??DataTable12_2  ;; 0x40013800
         BL       USART_ReceiveData
-        LDR      R1,??DataTable12_4
-        LDRH     R1,[R1, #+0]
-        CMP      R1,#+30
+        MOVS     R4,R0
+        LDR      R0,??DataTable12_3
+        LDRH     R0,[R0, #+0]
+        CMP      R0,#+30
         BLT      ??USART1_IRQHandler_1
-        MOVS     R1,#+0
-        LDR      R2,??DataTable12_4
-        STRH     R1,[R2, #+0]
+        MOVS     R0,#+0
+        LDR      R1,??DataTable12_3
+        STRH     R0,[R1, #+0]
 ??USART1_IRQHandler_1:
-        UXTB     R0,R0
-        CMP      R0,#+8
+        UXTB     R4,R4
+        CMP      R4,#+8
         BNE      ??USART1_IRQHandler_2
-        LDR      R0,??DataTable12_4
+        LDR      R0,??DataTable12_3
         LDRH     R0,[R0, #+0]
         CMP      R0,#+0
         BEQ      ??USART1_IRQHandler_0
-        LDR      R0,??DataTable12_4
+        LDR      R0,??DataTable12_3
         LDRH     R0,[R0, #+0]
         SUBS     R0,R0,#+1
-        LDR      R1,??DataTable12_4
+        LDR      R1,??DataTable12_3
         STRH     R0,[R1, #+0]
         B        ??USART1_IRQHandler_0
 ??USART1_IRQHandler_2:
+        LDR      R0,??DataTable12_3
+        LDRH     R0,[R0, #+0]
         LDR      R1,??DataTable12_4
-        LDRH     R1,[R1, #+0]
-        LDR      R2,??DataTable12_5
-        STRB     R0,[R2, R1]
-        LDR      R1,??DataTable12_4
-        LDRH     R1,[R1, #+0]
-        ADDS     R1,R1,#+1
-        LDR      R2,??DataTable12_4
-        STRH     R1,[R2, #+0]
-        UXTB     R0,R0
-        CMP      R0,#+13
+        STRB     R4,[R1, R0]
+        LDR      R0,??DataTable12_3
+        LDRH     R0,[R0, #+0]
+        ADDS     R0,R0,#+1
+        LDR      R1,??DataTable12_3
+        STRH     R0,[R1, #+0]
+        UXTB     R4,R4
+        CMP      R4,#+13
         BEQ      ??USART1_IRQHandler_3
-        UXTB     R0,R0
-        CMP      R0,#+10
+        UXTB     R4,R4
+        CMP      R4,#+10
         BNE      ??USART1_IRQHandler_0
 ??USART1_IRQHandler_3:
         MOVS     R0,#+12
-        LDR      R1,??DataTable12_6
+        LDR      R1,??DataTable12_5
         STRB     R0,[R1, #+0]
-        LDR      R2,??DataTable12_6
+        LDR      R2,??DataTable12_5
         MOVS     R1,#+134
         LDR      R0,??DataTable10
         BL       process_post
-        LDR      R0,??DataTable12_4
+        LDR      R0,??DataTable12_3
         LDRH     R0,[R0, #+0]
-        LDR      R1,??DataTable12_4
+        LDR      R1,??DataTable12_3
         STRH     R0,[R1, #+2]
         MOVS     R0,#+0
-        LDR      R1,??DataTable12_4
+        LDR      R1,??DataTable12_3
         STRH     R0,[R1, #+0]
 ??USART1_IRQHandler_0:
-        POP      {R0,PC}          ;; return
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -1486,6 +1497,12 @@ USART1_IRQHandler:
 ??DataTable10_6:
         DC32     0x70107
 
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable10_7:
+        DC32     0x50105
+
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 DMA1_Channel4_5_IRQHandler:
@@ -1499,70 +1516,70 @@ DMA1_Channel4_5_IRQHandler:
         MOVS     R0,#+128
         LSLS     R0,R0,#+6        ;; #+8192
         BL       DMA_ClearITPendingBit
-        LDR      R0,??DataTable12_7
+        LDR      R0,??DataTable12_6
         LDRB     R0,[R0, #+1]
         MOVS     R1,#+8
         MULS     R0,R1,R0
-        LDR      R1,??DataTable12_7
+        LDR      R1,??DataTable12_6
         ADDS     R0,R1,R0
         LDR      R1,[R0, #+4]
         SUBS     R1,R1,#+4
-        LDR      R0,??DataTable12_8
+        LDR      R0,??DataTable12_7
         LDR      R0,[R0, #+0]
         BL       OSMemPut
         MOVS     R4,R0
         UXTB     R4,R4
         CMP      R4,#+0
         BNE      ??DMA1_Channel4_5_IRQHandler_0
-        LDR      R0,??DataTable12_7
+        LDR      R0,??DataTable12_6
         LDRB     R0,[R0, #+1]
         ADDS     R0,R0,#+1
-        LDR      R1,??DataTable12_7
+        LDR      R1,??DataTable12_6
         STRB     R0,[R1, #+1]
-        LDR      R0,??DataTable12_7
+        LDR      R0,??DataTable12_6
         LDRB     R0,[R0, #+1]
         CMP      R0,#+50
         BLT      ??DMA1_Channel4_5_IRQHandler_1
         MOVS     R0,#+0
-        LDR      R1,??DataTable12_7
+        LDR      R1,??DataTable12_6
         STRB     R0,[R1, #+1]
 ??DMA1_Channel4_5_IRQHandler_1:
-        LDR      R0,??DataTable12_7
+        LDR      R0,??DataTable12_6
         LDRB     R0,[R0, #+1]
-        LDR      R1,??DataTable12_7
+        LDR      R1,??DataTable12_6
         LDRB     R1,[R1, #+0]
         CMP      R0,R1
         BEQ      ??DMA1_Channel4_5_IRQHandler_2
         MOVS     R0,#+8
-        LDR      R1,??DataTable12_9
+        LDR      R1,??DataTable12_8
         STRB     R0,[R1, #+0]
-        LDR      R0,??DataTable12_7
+        LDR      R0,??DataTable12_6
         LDRB     R0,[R0, #+1]
         MOVS     R1,#+8
         MULS     R0,R1,R0
-        LDR      R1,??DataTable12_7
+        LDR      R1,??DataTable12_6
         ADDS     R0,R1,R0
         LDRB     R1,[R0, #+8]
         UXTH     R1,R1
-        LDR      R0,??DataTable12_7
+        LDR      R0,??DataTable12_6
         LDRB     R0,[R0, #+1]
         MOVS     R2,#+8
         MULS     R0,R2,R0
-        LDR      R2,??DataTable12_7
+        LDR      R2,??DataTable12_6
         ADDS     R0,R2,R0
         LDR      R0,[R0, #+4]
         BL       hal_DebugDMATx
         MOVS     R1,#+157
-        LDR      R0,??DataTable12_10
+        LDR      R0,??DataTable12_9
         BL       etimer_remodify
         B        ??DMA1_Channel4_5_IRQHandler_0
 ??DMA1_Channel4_5_IRQHandler_2:
         MOVS     R0,#+9
-        LDR      R1,??DataTable12_9
+        LDR      R1,??DataTable12_8
         STRB     R0,[R1, #+0]
-        LDR      R2,??DataTable12_9
+        LDR      R2,??DataTable12_8
         MOVS     R1,#+134
-        LDR      R0,??DataTable12_11
+        LDR      R0,??DataTable12_10
         BL       process_post
 ??DMA1_Channel4_5_IRQHandler_0:
         MOVS     R0,#+128
@@ -1574,9 +1591,9 @@ DMA1_Channel4_5_IRQHandler:
         LSLS     R0,R0,#+8        ;; #+32768
         BL       DMA_ClearITPendingBit
         MOVS     R0,#+10
-        LDR      R1,??DataTable12_9
+        LDR      R1,??DataTable12_8
         STRB     R0,[R1, #+0]
-        LDR      R0,??DataTable12_10
+        LDR      R0,??DataTable12_9
         BL       etimer_stop
 ??DMA1_Channel4_5_IRQHandler_3:
         POP      {R4,PC}          ;; return
@@ -1585,25 +1602,25 @@ DMA1_Channel4_5_IRQHandler:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable11:
-        DC32     0x50105
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable11_1:
         DC32     g_UartRxFlag
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable11_2:
+??DataTable11_1:
         DC32     g_UartRxBuffer
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable11_3:
+??DataTable11_2:
         DC32     g_UartRx_state
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable11_3:
+        DC32     timer_uart_rx
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1620,32 +1637,42 @@ SendUart:
         CMP      R0,#+0
         BEQ      ??SendUart_0
         MOVS     R0,#+1
+        B        ??SendUart_1
+??SendUart_0:
+        MOVS     R0,#+0
+??SendUart_1:
         MOV      R1,SP
         LDRH     R1,[R1, #+0]
         CMP      R1,#+255
-        BGE      ??SendUart_0
-        LSLS     R0,R0,#+31
-        BPL      ??SendUart_0
-        MOVS     R0,#+0
-        B        ??SendUart_1
+        BGE      ??SendUart_2
+        MOVS     R1,#+1
+        B        ??SendUart_3
 ??SendUart_2:
-        MOVS     R1,R0
-        ADDS     R1,R1,#+1
-        UXTH     R0,R0
-        LDR      R2,??DataTable12_12
-        STRB     R1,[R2, R0]
-        ADDS     R0,R0,#+1
-??SendUart_1:
+        MOVS     R1,#+0
+??SendUart_3:
+        UXTB     R0,R0
+        TST      R0,R1
+        BEQ      ??SendUart_4
+        MOVS     R0,#+0
+??SendUart_5:
         MOV      R1,SP
         LDRH     R1,[R1, #+0]
         UXTH     R0,R0
         CMP      R0,R1
-        BCC      ??SendUart_2
+        BCS      ??SendUart_6
+        MOVS     R1,R0
+        ADDS     R1,R1,#+1
+        UXTH     R0,R0
+        LDR      R2,??DataTable12_11
+        STRB     R1,[R2, R0]
+        ADDS     R0,R0,#+1
+        B        ??SendUart_5
+??SendUart_6:
         MOV      R0,SP
         LDRH     R1,[R0, #+0]
-        LDR      R0,??DataTable12_12
+        LDR      R0,??DataTable12_11
         BL       hal_UartINTTx
-??SendUart_0:
+??SendUart_4:
         POP      {R0,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -1658,72 +1685,66 @@ SendUart:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable12_1:
-        DC32     timer_uart_rx
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable12_2:
         DC32     timer_uart_tx
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable12_3:
+??DataTable12_2:
         DC32     0x40013800
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable12_4:
+??DataTable12_3:
         DC32     g_DebugRxFlag
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable12_5:
+??DataTable12_4:
         DC32     g_DebugRxBuffer
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable12_6:
+??DataTable12_5:
         DC32     g_DebugRx_state
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable12_7:
+??DataTable12_6:
         DC32     g_Print
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable12_8:
+??DataTable12_7:
         DC32     g_Print+0x4B4
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable12_9:
+??DataTable12_8:
         DC32     g_DebugTx_state
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable12_10:
+??DataTable12_9:
         DC32     timer_debug_uart_tx
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable12_11:
+??DataTable12_10:
         DC32     hal_urat_process
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable12_12:
+??DataTable12_11:
         DC32     g_UartTxBuffer
 
         SECTION `.iar_vfe_header`:DATA:NOALLOC:NOROOT(2)
@@ -1742,9 +1763,9 @@ SendUart:
 // 1 812 bytes in section .bss
 //    44 bytes in section .data
 //   160 bytes in section .rodata
-// 2 328 bytes in section .text
+// 2 362 bytes in section .text
 // 
-// 2 328 bytes of CODE  memory
+// 2 362 bytes of CODE  memory
 //   160 bytes of CONST memory
 // 1 856 bytes of DATA  memory
 //

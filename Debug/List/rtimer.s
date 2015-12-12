@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:35
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:15
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,12 +9,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\core\sys\rtimer.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -27,7 +27,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\rtimer.s
 //
@@ -57,34 +57,38 @@ rtimer_init:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 rtimer_set:
-        PUSH     {R4,LR}
-        MOVS     R2,R0
-        MOVS     R0,R1
-        MOVS     R1,#+0
-        LDR      R4,??DataTable1
-        LDR      R4,[R4, #+0]
-        CMP      R4,#+0
+        PUSH     {R0-R2,R4-R7,LR}
+        MOVS     R4,R0
+        MOVS     R7,R3
+        LDR      R5,[SP, #+32]
+        MOVS     R6,#+0
+        LDR      R0,??DataTable1
+        LDR      R0,[R0, #+0]
+        CMP      R0,#+0
         BNE      ??rtimer_set_0
-        MOVS     R1,#+1
+        MOVS     R0,#+1
+        MOVS     R6,R0
 ??rtimer_set_0:
-        STR      R3,[R2, #+4]
-        LDR      R3,[SP, #+8]
-        STR      R3,[R2, #+8]
-        STRH     R0,[R2, #+0]
-        LDR      R3,??DataTable1
-        STR      R2,[R3, #+0]
-        CMP      R1,#+1
+        STR      R7,[R4, #+4]
+        STR      R5,[R4, #+8]
+        MOV      R0,SP
+        LDRH     R0,[R0, #+4]
+        STRH     R0,[R4, #+0]
+        LDR      R0,??DataTable1
+        STR      R4,[R0, #+0]
+        CMP      R6,#+1
         BNE      ??rtimer_set_1
-        UXTH     R0,R0
+        MOV      R0,SP
+        LDRH     R0,[R0, #+4]
         BL       rtimer_arch_schedule
 ??rtimer_set_1:
         MOVS     R0,#+0
-        POP      {R4,PC}          ;; return
+        POP      {R1-R7,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 rtimer_run_next:
-        PUSH     {R7,LR}
+        PUSH     {R4,LR}
         LDR      R0,??DataTable1
         LDR      R0,[R0, #+0]
         CMP      R0,#+0
@@ -92,11 +96,13 @@ rtimer_run_next:
 ??rtimer_run_next_1:
         LDR      R0,??DataTable1
         LDR      R0,[R0, #+0]
-        MOVS     R1,#+0
-        LDR      R2,??DataTable1
-        STR      R1,[R2, #+0]
-        LDR      R1,[R0, #+8]
-        LDR      R2,[R0, #+4]
+        MOVS     R4,R0
+        MOVS     R0,#+0
+        LDR      R1,??DataTable1
+        STR      R0,[R1, #+0]
+        LDR      R1,[R4, #+8]
+        MOVS     R0,R4
+        LDR      R2,[R4, #+4]
         BLX      R2
         LDR      R0,??DataTable1
         LDR      R0,[R0, #+0]
@@ -108,7 +114,7 @@ rtimer_run_next:
         BL       rtimer_arch_schedule
 ??rtimer_run_next_2:
 ??rtimer_run_next_0:
-        POP      {R0,PC}          ;; return
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -130,9 +136,9 @@ rtimer_run_next:
         END
 // 
 //   4 bytes in section .bss
-// 102 bytes in section .text
+// 114 bytes in section .text
 // 
-// 102 bytes of CODE memory
+// 114 bytes of CODE memory
 //   4 bytes of DATA memory
 //
 //Errors: none

@@ -347,34 +347,6 @@ void SX1276FskSetRFState( uint8_t state )
 }
 
 
-
-void start_continuous_mode(void)
-{
-  //4¡¢BitSyncOn 
-  //5¡¢continuous mode
-  //6¡¢RX
-  u8 RegDioMapping[2]; 
-  u8 temp;
-  
-  SX1276FskSetOpMode(RF_OPMODE_STANDBY); 
-  
-  hal_DIOx_ITConfig(all,DISABLE);
-
-  RegDioMapping[0] = RF_DIOMAPPING1_DIO0_11 | RF_DIOMAPPING1_DIO1_00 | RF_DIOMAPPING1_DIO2_11 | RF_DIOMAPPING1_DIO3_10;
-  RegDioMapping[1] = RF_DIOMAPPING2_DIO4_00 | RF_DIOMAPPING2_DIO5_11 | RF_DIOMAPPING2_MAP_PREAMBLEDETECT;
-  SX1276WriteBuffer( REG_DIOMAPPING1, RegDioMapping, 2 );
-
-  SX1276Read(REG_OOKPEAK, &temp);
-  temp |= (0x20);
-  SX1276Write(REG_OOKPEAK, temp);
-  
-  SX1276Read(REG_PACKETCONFIG2, &temp);
-  temp &= (~0x40);
-  SX1276Write(REG_PACKETCONFIG2, temp);
-  
-  SX1276FskSetOpMode(RF_OPMODE_RECEIVER);  
-}
-
 void packet_tx_data(u8 *PBuffer,u8 length)
 {
   g_fsk.buffer[0] = length;
@@ -416,9 +388,10 @@ void fill_fifo(void)
 
 void contious_tx(void)
 {
+   SX1276->RegFifoThresh = RF_FIFOTHRESH_TXSTARTCONDITION_FIFOTHRESH | TX_FIFO_THRESHOLD; // 24 bytes of data
+  SX1276Write( REG_FIFOTHRESH, SX1276->RegFifoThresh );
   SX1276FskSetOpMode( RF_OPMODE_TRANSMITTER );   
 }
-
 
 void read_fifo(bool rxdone)
 {
@@ -484,12 +457,6 @@ void SX1276Fsk_Send_Packet(u8 *PBuffer,u8 length)
     SX1276FskSetOpMode( RF_OPMODE_TRANSMITTER );   
 }
 
-void SX1276Fsk_long_send_no_Packet(void)
-{
-  SX1276->RegFifoThresh = RF_FIFOTHRESH_TXSTARTCONDITION_FIFOTHRESH | TX_FIFO_THRESHOLD; // 24 bytes of data
-  SX1276Write( REG_FIFOTHRESH, SX1276->RegFifoThresh );
-  SX1276FskSetOpMode( RF_OPMODE_TRANSMITTER );   
-}
 
 
 void SX1276Fsk_recrive_Packet(void)

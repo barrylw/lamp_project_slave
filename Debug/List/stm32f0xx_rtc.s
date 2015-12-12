@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:40
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:20
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -10,12 +10,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\src\stm32f0xx_rtc.c
 //        -D USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -28,7 +28,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\stm32f0xx_rtc.s
 //
@@ -88,66 +88,69 @@
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_DeInit:
-        PUSH     {R4,LR}
+        PUSH     {R3-R5,LR}
         MOVS     R4,#+0
         MOVS     R0,#+202
-        LDR      R1,??DataTable8  ;; 0x40002824
+        LDR      R1,??DataTable7  ;; 0x40002824
         STR      R0,[R1, #+0]
         MOVS     R0,#+83
-        LDR      R1,??DataTable8  ;; 0x40002824
+        LDR      R1,??DataTable7  ;; 0x40002824
         STR      R0,[R1, #+0]
         BL       RTC_EnterInitMode
         CMP      R0,#+0
         BNE      ??RTC_DeInit_0
-        MOVS     R4,#+0
+        MOVS     R0,#+0
+        MOVS     R4,R0
         B        ??RTC_DeInit_1
 ??RTC_DeInit_0:
         MOVS     R0,#+0
-        LDR      R1,??DataTable7  ;; 0x40002800
+        LDR      R1,??DataTable7_1  ;; 0x40002800
         STR      R0,[R1, #+0]
-        LDR      R0,??DataTable7_1  ;; 0x2101
-        LDR      R1,??DataTable7_2  ;; 0x40002804
+        LDR      R0,??DataTable7_2  ;; 0x2101
+        LDR      R1,??DataTable7_3  ;; 0x40002804
         STR      R0,[R1, #+0]
-        LDR      R0,??DataTable7_3  ;; 0x40002808
-        LDR      R4,[R0, #+0]
+        LDR      R0,??DataTable7_4  ;; 0x40002808
+        LDR      R5,[R0, #+0]
         MOVS     R0,#+0
-        LDR      R1,??DataTable7_3  ;; 0x40002808
+        LDR      R1,??DataTable7_4  ;; 0x40002808
         STR      R0,[R1, #+0]
-        LDR      R0,??DataTable7_4  ;; 0x7f00ff
-        LDR      R1,??DataTable7_5  ;; 0x40002810
-        STR      R0,[R1, #+0]
-        MOVS     R0,#+0
-        LDR      R1,??DataTable7_6  ;; 0x4000281c
+        LDR      R0,??DataTable7_5  ;; 0x7f00ff
+        LDR      R1,??DataTable7_6  ;; 0x40002810
         STR      R0,[R1, #+0]
         MOVS     R0,#+0
-        LDR      R1,??DataTable7_7  ;; 0x4000282c
+        LDR      R1,??DataTable7_7  ;; 0x4000281c
         STR      R0,[R1, #+0]
         MOVS     R0,#+0
-        LDR      R1,??DataTable7_8  ;; 0x4000283c
+        LDR      R1,??DataTable7_8  ;; 0x4000282c
         STR      R0,[R1, #+0]
         MOVS     R0,#+0
-        LDR      R1,??DataTable7_9  ;; 0x40002844
+        LDR      R1,??DataTable7_9  ;; 0x4000283c
         STR      R0,[R1, #+0]
         MOVS     R0,#+0
-        LDR      R1,??DataTable8_1  ;; 0x4000280c
+        LDR      R1,??DataTable7_10  ;; 0x40002844
         STR      R0,[R1, #+0]
         MOVS     R0,#+0
-        LDR      R1,??DataTable8_2  ;; 0x40002840
+        LDR      R1,??DataTable8  ;; 0x4000280c
+        STR      R0,[R1, #+0]
+        MOVS     R0,#+0
+        LDR      R1,??DataTable7_11  ;; 0x40002840
         STR      R0,[R1, #+0]
         BL       RTC_WaitForSynchro
         CMP      R0,#+0
         BNE      ??RTC_DeInit_2
-        MOVS     R4,#+0
+        MOVS     R0,#+0
+        MOVS     R4,R0
         B        ??RTC_DeInit_1
 ??RTC_DeInit_2:
-        MOVS     R4,#+1
+        MOVS     R0,#+1
+        MOVS     R4,R0
 ??RTC_DeInit_1:
         MOVS     R0,#+255
-        LDR      R1,??DataTable8  ;; 0x40002824
+        LDR      R1,??DataTable7  ;; 0x40002824
         STR      R0,[R1, #+0]
         MOVS     R0,R4
         UXTB     R0,R0
-        POP      {R4,PC}          ;; return
+        POP      {R1,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -156,44 +159,46 @@ RTC_Init:
         MOVS     R4,R0
         MOVS     R5,#+0
         MOVS     R0,#+202
-        LDR      R1,??DataTable8  ;; 0x40002824
+        LDR      R1,??DataTable7  ;; 0x40002824
         STR      R0,[R1, #+0]
         MOVS     R0,#+83
-        LDR      R1,??DataTable8  ;; 0x40002824
+        LDR      R1,??DataTable7  ;; 0x40002824
         STR      R0,[R1, #+0]
         BL       RTC_EnterInitMode
         CMP      R0,#+0
         BNE      ??RTC_Init_0
-        MOVS     R5,#+0
+        MOVS     R0,#+0
+        MOVS     R5,R0
         B        ??RTC_Init_1
 ??RTC_Init_0:
-        LDR      R0,??DataTable7_3  ;; 0x40002808
+        LDR      R0,??DataTable7_4  ;; 0x40002808
         LDR      R0,[R0, #+0]
         MOVS     R1,#+64
         BICS     R0,R0,R1
-        LDR      R1,??DataTable7_3  ;; 0x40002808
+        LDR      R1,??DataTable7_4  ;; 0x40002808
         STR      R0,[R1, #+0]
-        LDR      R0,??DataTable7_3  ;; 0x40002808
+        LDR      R0,??DataTable7_4  ;; 0x40002808
         LDR      R0,[R0, #+0]
         LDR      R1,[R4, #+0]
         ORRS     R1,R1,R0
-        LDR      R0,??DataTable7_3  ;; 0x40002808
+        LDR      R0,??DataTable7_4  ;; 0x40002808
         STR      R1,[R0, #+0]
         LDR      R0,[R4, #+8]
-        LDR      R1,??DataTable7_5  ;; 0x40002810
+        LDR      R1,??DataTable7_6  ;; 0x40002810
         STR      R0,[R1, #+0]
-        LDR      R0,??DataTable7_5  ;; 0x40002810
+        LDR      R0,??DataTable7_6  ;; 0x40002810
         LDR      R0,[R0, #+0]
         LDR      R1,[R4, #+4]
         LSLS     R1,R1,#+16
         ORRS     R1,R1,R0
-        LDR      R0,??DataTable7_5  ;; 0x40002810
+        LDR      R0,??DataTable7_6  ;; 0x40002810
         STR      R1,[R0, #+0]
         BL       RTC_ExitInitMode
-        MOVS     R5,#+1
+        MOVS     R0,#+1
+        MOVS     R5,R0
 ??RTC_Init_1:
         MOVS     R0,#+255
-        LDR      R1,??DataTable8  ;; 0x40002824
+        LDR      R1,??DataTable7  ;; 0x40002824
         STR      R0,[R1, #+0]
         MOVS     R0,R5
         UXTB     R0,R0
@@ -217,17 +222,17 @@ RTC_WriteProtectionCmd:
         UXTB     R0,R0
         CMP      R0,#+0
         BEQ      ??RTC_WriteProtectionCmd_0
-        MOVS     R0,#+255
-        LDR      R1,??DataTable8  ;; 0x40002824
-        STR      R0,[R1, #+0]
+        MOVS     R1,#+255
+        LDR      R2,??DataTable7  ;; 0x40002824
+        STR      R1,[R2, #+0]
         B        ??RTC_WriteProtectionCmd_1
 ??RTC_WriteProtectionCmd_0:
-        MOVS     R0,#+202
-        LDR      R1,??DataTable8  ;; 0x40002824
-        STR      R0,[R1, #+0]
-        MOVS     R0,#+83
-        LDR      R1,??DataTable8  ;; 0x40002824
-        STR      R0,[R1, #+0]
+        MOVS     R1,#+202
+        LDR      R2,??DataTable7  ;; 0x40002824
+        STR      R1,[R2, #+0]
+        MOVS     R1,#+83
+        LDR      R2,??DataTable7  ;; 0x40002824
+        STR      R1,[R2, #+0]
 ??RTC_WriteProtectionCmd_1:
         POP      {PC}             ;; return
 
@@ -239,41 +244,45 @@ RTC_EnterInitMode:
         STR      R0,[SP, #+0]
         MOVS     R0,#+0
         MOVS     R1,#+0
-        LDR      R2,??DataTable8_1  ;; 0x4000280c
+        LDR      R2,??DataTable8  ;; 0x4000280c
         LDR      R2,[R2, #+0]
         LSLS     R2,R2,#+25
         BMI      ??RTC_EnterInitMode_0
-        MOVS     R0,#+0
-        MVNS     R0,R0            ;; #-1
-        LDR      R1,??DataTable8_1  ;; 0x4000280c
-        STR      R0,[R1, #+0]
+        MOVS     R2,#+0
+        MVNS     R2,R2            ;; #-1
+        LDR      R3,??DataTable8  ;; 0x4000280c
+        STR      R2,[R3, #+0]
 ??RTC_EnterInitMode_1:
-        LDR      R0,??DataTable8_1  ;; 0x4000280c
-        LDR      R1,[R0, #+0]
-        MOVS     R0,#+64
-        ANDS     R1,R1,R0
-        LDR      R0,[SP, #+0]
-        ADDS     R0,R0,#+1
-        STR      R0,[SP, #+0]
-        LDR      R0,[SP, #+0]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+7        ;; #+16384
-        CMP      R0,R2
+        LDR      R2,??DataTable8  ;; 0x4000280c
+        LDR      R2,[R2, #+0]
+        MOVS     R3,#+64
+        ANDS     R2,R2,R3
+        MOVS     R1,R2
+        LDR      R2,[SP, #+0]
+        ADDS     R2,R2,#+1
+        STR      R2,[SP, #+0]
+        LDR      R2,[SP, #+0]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+7        ;; #+16384
+        CMP      R2,R3
         BEQ      ??RTC_EnterInitMode_2
         CMP      R1,#+0
         BEQ      ??RTC_EnterInitMode_1
 ??RTC_EnterInitMode_2:
-        LDR      R0,??DataTable8_1  ;; 0x4000280c
-        LDR      R0,[R0, #+0]
-        LSLS     R0,R0,#+25
+        LDR      R2,??DataTable8  ;; 0x4000280c
+        LDR      R2,[R2, #+0]
+        LSLS     R2,R2,#+25
         BPL      ??RTC_EnterInitMode_3
-        MOVS     R0,#+1
+        MOVS     R2,#+1
+        MOVS     R0,R2
         B        ??RTC_EnterInitMode_4
 ??RTC_EnterInitMode_3:
-        MOVS     R0,#+0
+        MOVS     R2,#+0
+        MOVS     R0,R2
         B        ??RTC_EnterInitMode_4
 ??RTC_EnterInitMode_0:
-        MOVS     R0,#+1
+        MOVS     R2,#+1
+        MOVS     R0,R2
 ??RTC_EnterInitMode_4:
         UXTB     R0,R0
         POP      {R1,PC}          ;; return
@@ -297,53 +306,57 @@ RTC_WaitForSynchro:
         STR      R0,[SP, #+0]
         MOVS     R0,#+0
         MOVS     R1,#+0
-        LDR      R2,??DataTable7_3  ;; 0x40002808
+        LDR      R2,??DataTable7_4  ;; 0x40002808
         LDR      R2,[R2, #+0]
         LSLS     R2,R2,#+26
         BPL      ??RTC_WaitForSynchro_0
-        MOVS     R0,#+1
+        MOVS     R2,#+1
+        MOVS     R0,R2
         B        ??RTC_WaitForSynchro_1
 ??RTC_WaitForSynchro_0:
-        MOVS     R0,#+202
-        LDR      R1,??DataTable8  ;; 0x40002824
-        STR      R0,[R1, #+0]
-        MOVS     R0,#+83
-        LDR      R1,??DataTable8  ;; 0x40002824
-        STR      R0,[R1, #+0]
-        LDR      R0,??DataTable8_1  ;; 0x4000280c
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+160
-        BICS     R0,R0,R1
-        LDR      R1,??DataTable8_1  ;; 0x4000280c
-        STR      R0,[R1, #+0]
+        MOVS     R2,#+202
+        LDR      R3,??DataTable7  ;; 0x40002824
+        STR      R2,[R3, #+0]
+        MOVS     R2,#+83
+        LDR      R3,??DataTable7  ;; 0x40002824
+        STR      R2,[R3, #+0]
+        LDR      R2,??DataTable8  ;; 0x4000280c
+        LDR      R2,[R2, #+0]
+        MOVS     R3,#+160
+        BICS     R2,R2,R3
+        LDR      R3,??DataTable8  ;; 0x4000280c
+        STR      R2,[R3, #+0]
 ??RTC_WaitForSynchro_2:
-        LDR      R0,??DataTable8_1  ;; 0x4000280c
-        LDR      R1,[R0, #+0]
-        MOVS     R0,#+32
-        ANDS     R1,R1,R0
-        LDR      R0,[SP, #+0]
-        ADDS     R0,R0,#+1
-        STR      R0,[SP, #+0]
-        LDR      R0,[SP, #+0]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+8        ;; #+32768
-        CMP      R0,R2
+        LDR      R2,??DataTable8  ;; 0x4000280c
+        LDR      R2,[R2, #+0]
+        MOVS     R3,#+32
+        ANDS     R2,R2,R3
+        MOVS     R1,R2
+        LDR      R2,[SP, #+0]
+        ADDS     R2,R2,#+1
+        STR      R2,[SP, #+0]
+        LDR      R2,[SP, #+0]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+8        ;; #+32768
+        CMP      R2,R3
         BEQ      ??RTC_WaitForSynchro_3
         CMP      R1,#+0
         BEQ      ??RTC_WaitForSynchro_2
 ??RTC_WaitForSynchro_3:
-        LDR      R0,??DataTable8_1  ;; 0x4000280c
-        LDR      R0,[R0, #+0]
-        LSLS     R0,R0,#+26
+        LDR      R2,??DataTable8  ;; 0x4000280c
+        LDR      R2,[R2, #+0]
+        LSLS     R2,R2,#+26
         BPL      ??RTC_WaitForSynchro_4
-        MOVS     R0,#+1
+        MOVS     R2,#+1
+        MOVS     R0,R2
         B        ??RTC_WaitForSynchro_5
 ??RTC_WaitForSynchro_4:
-        MOVS     R0,#+0
+        MOVS     R2,#+0
+        MOVS     R0,R2
 ??RTC_WaitForSynchro_5:
-        MOVS     R1,#+255
-        LDR      R2,??DataTable8  ;; 0x40002824
-        STR      R1,[R2, #+0]
+        MOVS     R2,#+255
+        LDR      R3,??DataTable7  ;; 0x40002824
+        STR      R2,[R3, #+0]
 ??RTC_WaitForSynchro_1:
         UXTB     R0,R0
         POP      {R1,PC}          ;; return
@@ -355,40 +368,42 @@ RTC_RefClockCmd:
         MOVS     R4,R0
         MOVS     R5,#+0
         MOVS     R0,#+202
-        LDR      R1,??DataTable9  ;; 0x40002824
+        LDR      R1,??DataTable8_1  ;; 0x40002824
         STR      R0,[R1, #+0]
         MOVS     R0,#+83
-        LDR      R1,??DataTable9  ;; 0x40002824
+        LDR      R1,??DataTable8_1  ;; 0x40002824
         STR      R0,[R1, #+0]
         BL       RTC_EnterInitMode
         CMP      R0,#+0
         BNE      ??RTC_RefClockCmd_0
-        MOVS     R5,#+0
+        MOVS     R0,#+0
+        MOVS     R5,R0
         B        ??RTC_RefClockCmd_1
 ??RTC_RefClockCmd_0:
         UXTB     R4,R4
         CMP      R4,#+0
         BEQ      ??RTC_RefClockCmd_2
-        LDR      R0,??DataTable8_3  ;; 0x40002808
+        LDR      R0,??DataTable8_2  ;; 0x40002808
         LDR      R0,[R0, #+0]
         MOVS     R1,#+16
         ORRS     R1,R1,R0
-        LDR      R0,??DataTable8_3  ;; 0x40002808
+        LDR      R0,??DataTable8_2  ;; 0x40002808
         STR      R1,[R0, #+0]
         B        ??RTC_RefClockCmd_3
 ??RTC_RefClockCmd_2:
-        LDR      R0,??DataTable8_3  ;; 0x40002808
+        LDR      R0,??DataTable8_2  ;; 0x40002808
         LDR      R0,[R0, #+0]
         MOVS     R1,#+16
         BICS     R0,R0,R1
-        LDR      R1,??DataTable8_3  ;; 0x40002808
+        LDR      R1,??DataTable8_2  ;; 0x40002808
         STR      R0,[R1, #+0]
 ??RTC_RefClockCmd_3:
         BL       RTC_ExitInitMode
-        MOVS     R5,#+1
+        MOVS     R0,#+1
+        MOVS     R5,R0
 ??RTC_RefClockCmd_1:
         MOVS     R0,#+255
-        LDR      R1,??DataTable9  ;; 0x40002824
+        LDR      R1,??DataTable8_1  ;; 0x40002824
         STR      R0,[R1, #+0]
         MOVS     R0,R5
         UXTB     R0,R0
@@ -399,105 +414,117 @@ RTC_RefClockCmd:
 RTC_BypassShadowCmd:
         PUSH     {LR}
         MOVS     R1,#+202
-        LDR      R2,??DataTable9  ;; 0x40002824
+        LDR      R2,??DataTable8_1  ;; 0x40002824
         STR      R1,[R2, #+0]
         MOVS     R1,#+83
-        LDR      R2,??DataTable9  ;; 0x40002824
+        LDR      R2,??DataTable8_1  ;; 0x40002824
         STR      R1,[R2, #+0]
         UXTB     R0,R0
         CMP      R0,#+0
         BEQ      ??RTC_BypassShadowCmd_0
-        LDR      R0,??DataTable8_3  ;; 0x40002808
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+32
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable8_3  ;; 0x40002808
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable8_2  ;; 0x40002808
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+32
+        ORRS     R2,R2,R1
+        LDR      R1,??DataTable8_2  ;; 0x40002808
+        STR      R2,[R1, #+0]
         B        ??RTC_BypassShadowCmd_1
 ??RTC_BypassShadowCmd_0:
-        LDR      R0,??DataTable8_3  ;; 0x40002808
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+223
-        ANDS     R1,R1,R0
-        LDR      R0,??DataTable8_3  ;; 0x40002808
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable8_2  ;; 0x40002808
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+223
+        ANDS     R2,R2,R1
+        LDR      R1,??DataTable8_2  ;; 0x40002808
+        STR      R2,[R1, #+0]
 ??RTC_BypassShadowCmd_1:
-        MOVS     R0,#+255
-        LDR      R1,??DataTable9  ;; 0x40002824
-        STR      R0,[R1, #+0]
+        MOVS     R1,#+255
+        LDR      R2,??DataTable8_1  ;; 0x40002824
+        STR      R1,[R2, #+0]
         POP      {PC}             ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable7:
-        DC32     0x40002800
+        DC32     0x40002824
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable7_1:
-        DC32     0x2101
+        DC32     0x40002800
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable7_2:
-        DC32     0x40002804
+        DC32     0x2101
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable7_3:
-        DC32     0x40002808
+        DC32     0x40002804
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable7_4:
-        DC32     0x7f00ff
+        DC32     0x40002808
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable7_5:
-        DC32     0x40002810
+        DC32     0x7f00ff
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable7_6:
-        DC32     0x4000281c
+        DC32     0x40002810
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable7_7:
-        DC32     0x4000282c
+        DC32     0x4000281c
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable7_8:
-        DC32     0x4000283c
+        DC32     0x4000282c
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable7_9:
+        DC32     0x4000283c
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable7_10:
         DC32     0x40002844
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable7_11:
+        DC32     0x40002840
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_SetTime:
-        PUSH     {R4-R6,LR}
-        MOVS     R5,R0
+        PUSH     {R0,R4-R7,LR}
         MOVS     R4,R1
-        MOVS     R6,#+0
-        MOVS     R0,#+0
-        CMP      R5,#+0
+        MOVS     R7,#+0
+        MOVS     R5,#+0
+        LDR      R0,[SP, #+0]
+        CMP      R0,#+0
         BNE      ??RTC_SetTime_0
-        LDR      R0,??DataTable8_3  ;; 0x40002808
+        LDR      R0,??DataTable8_2  ;; 0x40002808
         LDR      R0,[R0, #+0]
         LSLS     R0,R0,#+25
         BMI      ??RTC_SetTime_1
@@ -507,20 +534,21 @@ RTC_SetTime:
 ??RTC_SetTime_1:
         B        ??RTC_SetTime_3
 ??RTC_SetTime_0:
-        LDR      R0,??DataTable8_3  ;; 0x40002808
+        LDR      R0,??DataTable8_2  ;; 0x40002808
         LDR      R0,[R0, #+0]
         LSLS     R0,R0,#+25
         BPL      ??RTC_SetTime_4
         LDRB     R0,[R4, #+0]
         BL       RTC_Bcd2ToByte
-        MOVS     R6,R0
+        MOVS     R7,R0
         B        ??RTC_SetTime_5
 ??RTC_SetTime_4:
         MOVS     R0,#+0
         STRB     R0,[R4, #+3]
 ??RTC_SetTime_5:
 ??RTC_SetTime_3:
-        CMP      R5,#+0
+        LDR      R0,[SP, #+0]
+        CMP      R0,#+0
         BEQ      ??RTC_SetTime_6
         LDRB     R0,[R4, #+0]
         LSLS     R0,R0,#+16
@@ -530,45 +558,48 @@ RTC_SetTime:
         LDRB     R0,[R4, #+2]
         ORRS     R0,R0,R1
         LDRB     R1,[R4, #+3]
-        LSLS     R6,R1,#+16
-        ORRS     R6,R6,R0
+        LSLS     R1,R1,#+16
+        ORRS     R1,R1,R0
+        MOVS     R7,R1
         B        ??RTC_SetTime_7
 ??RTC_SetTime_6:
         LDRB     R0,[R4, #+0]
         BL       RTC_ByteToBcd2
-        MOVS     R5,R0
+        MOVS     R6,R0
         LDRB     R0,[R4, #+1]
         BL       RTC_ByteToBcd2
-        UXTB     R5,R5
-        LSLS     R1,R5,#+16
+        UXTB     R6,R6
+        LSLS     R1,R6,#+16
         UXTB     R0,R0
-        LSLS     R5,R0,#+8
-        ORRS     R5,R5,R1
+        LSLS     R6,R0,#+8
+        ORRS     R6,R6,R1
         LDRB     R0,[R4, #+2]
         BL       RTC_ByteToBcd2
-        ORRS     R0,R0,R5
+        ORRS     R0,R0,R6
         LDRB     R1,[R4, #+3]
-        LSLS     R6,R1,#+16
-        ORRS     R6,R6,R0
+        LSLS     R1,R1,#+16
+        ORRS     R1,R1,R0
+        MOVS     R7,R1
 ??RTC_SetTime_7:
         MOVS     R0,#+202
-        LDR      R1,??DataTable9  ;; 0x40002824
+        LDR      R1,??DataTable8_1  ;; 0x40002824
         STR      R0,[R1, #+0]
         MOVS     R0,#+83
-        LDR      R1,??DataTable9  ;; 0x40002824
+        LDR      R1,??DataTable8_1  ;; 0x40002824
         STR      R0,[R1, #+0]
         BL       RTC_EnterInitMode
         CMP      R0,#+0
         BNE      ??RTC_SetTime_8
         MOVS     R0,#+0
+        MOVS     R5,R0
         B        ??RTC_SetTime_9
 ??RTC_SetTime_8:
         LDR      R0,??DataTable13  ;; 0x7f7f7f
-        ANDS     R0,R0,R6
+        ANDS     R0,R0,R7
         LDR      R1,??DataTable13_1  ;; 0x40002800
         STR      R0,[R1, #+0]
         BL       RTC_ExitInitMode
-        LDR      R0,??DataTable8_3  ;; 0x40002808
+        LDR      R0,??DataTable8_2  ;; 0x40002808
         LDR      R0,[R0, #+0]
         LSLS     R0,R0,#+26
         BMI      ??RTC_SetTime_10
@@ -576,41 +607,39 @@ RTC_SetTime:
         CMP      R0,#+0
         BNE      ??RTC_SetTime_11
         MOVS     R0,#+0
+        MOVS     R5,R0
         B        ??RTC_SetTime_9
 ??RTC_SetTime_11:
         MOVS     R0,#+1
+        MOVS     R5,R0
         B        ??RTC_SetTime_9
 ??RTC_SetTime_10:
         MOVS     R0,#+1
+        MOVS     R5,R0
 ??RTC_SetTime_9:
-        MOVS     R1,#+255
-        LDR      R2,??DataTable9  ;; 0x40002824
-        STR      R1,[R2, #+0]
+        MOVS     R0,#+255
+        LDR      R1,??DataTable8_1  ;; 0x40002824
+        STR      R0,[R1, #+0]
+        MOVS     R0,R5
         UXTB     R0,R0
-        POP      {R4-R6,PC}       ;; return
+        POP      {R1,R4-R7,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable8:
-        DC32     0x40002824
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable8_1:
         DC32     0x4000280c
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable8_2:
-        DC32     0x40002840
+??DataTable8_1:
+        DC32     0x40002824
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable8_3:
+??DataTable8_2:
         DC32     0x40002808
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -629,33 +658,35 @@ RTC_TimeStructInit:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_GetTime:
-        PUSH     {R4,LR}
+        PUSH     {R4-R6,LR}
+        MOVS     R5,R0
         MOVS     R4,R1
-        MOVS     R1,#+0
-        LDR      R2,??DataTable13_1  ;; 0x40002800
-        LDR      R2,[R2, #+0]
-        LDR      R3,??DataTable13  ;; 0x7f7f7f
-        ANDS     R3,R3,R2
-        MOVS     R1,R3
-        MOVS     R2,R1
-        LSRS     R2,R2,#+16
-        LSLS     R2,R2,#+26       ;; ZeroExtS R2,R2,#+26,#+26
-        LSRS     R2,R2,#+26
-        STRB     R2,[R4, #+0]
-        MOVS     R2,R1
-        LSRS     R2,R2,#+8
-        LSLS     R2,R2,#+25       ;; ZeroExtS R2,R2,#+25,#+25
-        LSRS     R2,R2,#+25
-        STRB     R2,[R4, #+1]
-        MOVS     R2,R1
-        LSLS     R2,R2,#+25       ;; ZeroExtS R2,R2,#+25,#+25
-        LSRS     R2,R2,#+25
-        STRB     R2,[R4, #+2]
-        LSRS     R1,R1,#+16
-        MOVS     R2,#+64
-        ANDS     R1,R1,R2
-        STRB     R1,[R4, #+3]
-        CMP      R0,#+0
+        MOVS     R6,#+0
+        LDR      R0,??DataTable13_1  ;; 0x40002800
+        LDR      R0,[R0, #+0]
+        LDR      R1,??DataTable13  ;; 0x7f7f7f
+        ANDS     R1,R1,R0
+        MOVS     R6,R1
+        MOVS     R0,R6
+        LSRS     R0,R0,#+16
+        LSLS     R0,R0,#+26       ;; ZeroExtS R0,R0,#+26,#+26
+        LSRS     R0,R0,#+26
+        STRB     R0,[R4, #+0]
+        MOVS     R0,R6
+        LSRS     R0,R0,#+8
+        LSLS     R0,R0,#+25       ;; ZeroExtS R0,R0,#+25,#+25
+        LSRS     R0,R0,#+25
+        STRB     R0,[R4, #+1]
+        MOVS     R0,R6
+        LSLS     R0,R0,#+25       ;; ZeroExtS R0,R0,#+25,#+25
+        LSRS     R0,R0,#+25
+        STRB     R0,[R4, #+2]
+        MOVS     R0,R6
+        LSRS     R0,R0,#+16
+        MOVS     R1,#+64
+        ANDS     R0,R0,R1
+        STRB     R0,[R4, #+3]
+        CMP      R5,#+0
         BNE      ??RTC_GetTime_0
         LDRB     R0,[R4, #+0]
         BL       RTC_Bcd2ToByte
@@ -667,13 +698,7 @@ RTC_GetTime:
         BL       RTC_Bcd2ToByte
         STRB     R0,[R4, #+2]
 ??RTC_GetTime_0:
-        POP      {R4,PC}          ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable9:
-        DC32     0x40002824
+        POP      {R4-R6,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -682,7 +707,7 @@ RTC_GetSubSecond:
         LDR      R1,??DataTable14  ;; 0x40002828
         LDR      R1,[R1, #+0]
         MOVS     R0,R1
-        LDR      R1,??DataTable17  ;; 0x40002804
+        LDR      R1,??DataTable15  ;; 0x40002804
         LDR      R1,[R1, #+0]
         BX       LR               ;; return
 
@@ -695,12 +720,12 @@ RTC_GetSubSecond:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_SetDate:
-        PUSH     {R4-R6,LR}
-        MOVS     R5,R0
+        PUSH     {R0,R4-R7,LR}
         MOVS     R4,R1
-        MOVS     R6,#+0
-        MOVS     R0,#+0
-        CMP      R5,#+0
+        MOVS     R7,#+0
+        MOVS     R5,#+0
+        LDR      R0,[SP, #+0]
+        CMP      R0,#+0
         BNE      ??RTC_SetDate_0
         LDRB     R0,[R4, #+1]
         LSLS     R0,R0,#+27
@@ -711,17 +736,19 @@ RTC_SetDate:
         ADDS     R1,R1,#+10
         STRB     R1,[R4, #+1]
 ??RTC_SetDate_0:
-        CMP      R5,#+0
+        LDR      R0,[SP, #+0]
+        CMP      R0,#+0
         BEQ      ??RTC_SetDate_1
 ??RTC_SetDate_2:
         LDRB     R0,[R4, #+1]
         BL       RTC_Bcd2ToByte
-        MOVS     R6,R0
+        MOVS     R7,R0
         LDRB     R0,[R4, #+2]
         BL       RTC_Bcd2ToByte
-        MOVS     R6,R0
+        MOVS     R7,R0
 ??RTC_SetDate_1:
-        CMP      R5,#+0
+        LDR      R0,[SP, #+0]
+        CMP      R0,#+0
         BEQ      ??RTC_SetDate_3
         LDRB     R0,[R4, #+3]
         LSLS     R0,R0,#+16
@@ -731,42 +758,45 @@ RTC_SetDate:
         LDRB     R0,[R4, #+2]
         ORRS     R0,R0,R1
         LDRB     R1,[R4, #+0]
-        LSLS     R6,R1,#+13
-        ORRS     R6,R6,R0
+        LSLS     R1,R1,#+13
+        ORRS     R1,R1,R0
+        MOVS     R7,R1
         B        ??RTC_SetDate_4
 ??RTC_SetDate_3:
         LDRB     R0,[R4, #+3]
         BL       RTC_ByteToBcd2
-        MOVS     R5,R0
+        MOVS     R6,R0
         LDRB     R0,[R4, #+1]
         BL       RTC_ByteToBcd2
-        UXTB     R5,R5
-        LSLS     R1,R5,#+16
+        UXTB     R6,R6
+        LSLS     R1,R6,#+16
         UXTB     R0,R0
-        LSLS     R5,R0,#+8
-        ORRS     R5,R5,R1
+        LSLS     R6,R0,#+8
+        ORRS     R6,R6,R1
         LDRB     R0,[R4, #+2]
         BL       RTC_ByteToBcd2
-        ORRS     R0,R0,R5
+        ORRS     R0,R0,R6
         LDRB     R1,[R4, #+0]
-        LSLS     R6,R1,#+13
-        ORRS     R6,R6,R0
+        LSLS     R1,R1,#+13
+        ORRS     R1,R1,R0
+        MOVS     R7,R1
 ??RTC_SetDate_4:
         MOVS     R0,#+202
-        LDR      R1,??DataTable20  ;; 0x40002824
+        LDR      R1,??DataTable19  ;; 0x40002824
         STR      R0,[R1, #+0]
         MOVS     R0,#+83
-        LDR      R1,??DataTable20  ;; 0x40002824
+        LDR      R1,??DataTable19  ;; 0x40002824
         STR      R0,[R1, #+0]
         BL       RTC_EnterInitMode
         CMP      R0,#+0
         BNE      ??RTC_SetDate_5
         MOVS     R0,#+0
+        MOVS     R5,R0
         B        ??RTC_SetDate_6
 ??RTC_SetDate_5:
-        LDR      R0,??DataTable19  ;; 0xffff3f
-        ANDS     R0,R0,R6
-        LDR      R1,??DataTable17  ;; 0x40002804
+        LDR      R0,??DataTable17  ;; 0xffff3f
+        ANDS     R0,R0,R7
+        LDR      R1,??DataTable15  ;; 0x40002804
         STR      R0,[R1, #+0]
         BL       RTC_ExitInitMode
         LDR      R0,??DataTable19_1  ;; 0x40002808
@@ -777,18 +807,22 @@ RTC_SetDate:
         CMP      R0,#+0
         BNE      ??RTC_SetDate_8
         MOVS     R0,#+0
+        MOVS     R5,R0
         B        ??RTC_SetDate_6
 ??RTC_SetDate_8:
         MOVS     R0,#+1
+        MOVS     R5,R0
         B        ??RTC_SetDate_6
 ??RTC_SetDate_7:
         MOVS     R0,#+1
+        MOVS     R5,R0
 ??RTC_SetDate_6:
-        MOVS     R1,#+255
-        LDR      R2,??DataTable20  ;; 0x40002824
-        STR      R1,[R2, #+0]
+        MOVS     R0,#+255
+        LDR      R1,??DataTable19  ;; 0x40002824
+        STR      R0,[R1, #+0]
+        MOVS     R0,R5
         UXTB     R0,R0
-        POP      {R4-R6,PC}       ;; return
+        POP      {R1,R4-R7,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -806,31 +840,33 @@ RTC_DateStructInit:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_GetDate:
-        PUSH     {R4,LR}
+        PUSH     {R4-R6,LR}
+        MOVS     R5,R0
         MOVS     R4,R1
-        MOVS     R1,#+0
-        LDR      R2,??DataTable17  ;; 0x40002804
-        LDR      R2,[R2, #+0]
-        LDR      R3,??DataTable19  ;; 0xffff3f
-        ANDS     R3,R3,R2
-        MOVS     R1,R3
-        MOVS     R2,R1
-        LSRS     R2,R2,#+16
-        STRB     R2,[R4, #+3]
-        MOVS     R2,R1
-        LSRS     R2,R2,#+8
-        LSLS     R2,R2,#+27       ;; ZeroExtS R2,R2,#+27,#+27
-        LSRS     R2,R2,#+27
-        STRB     R2,[R4, #+1]
-        MOVS     R2,R1
-        LSLS     R2,R2,#+26       ;; ZeroExtS R2,R2,#+26,#+26
-        LSRS     R2,R2,#+26
-        STRB     R2,[R4, #+2]
-        LSRS     R1,R1,#+13
-        LSLS     R1,R1,#+29       ;; ZeroExtS R1,R1,#+29,#+29
-        LSRS     R1,R1,#+29
-        STRB     R1,[R4, #+0]
-        CMP      R0,#+0
+        MOVS     R6,#+0
+        LDR      R0,??DataTable15  ;; 0x40002804
+        LDR      R0,[R0, #+0]
+        LDR      R1,??DataTable17  ;; 0xffff3f
+        ANDS     R1,R1,R0
+        MOVS     R6,R1
+        MOVS     R0,R6
+        LSRS     R0,R0,#+16
+        STRB     R0,[R4, #+3]
+        MOVS     R0,R6
+        LSRS     R0,R0,#+8
+        LSLS     R0,R0,#+27       ;; ZeroExtS R0,R0,#+27,#+27
+        LSRS     R0,R0,#+27
+        STRB     R0,[R4, #+1]
+        MOVS     R0,R6
+        LSLS     R0,R0,#+26       ;; ZeroExtS R0,R0,#+26,#+26
+        LSRS     R0,R0,#+26
+        STRB     R0,[R4, #+2]
+        MOVS     R0,R6
+        LSRS     R0,R0,#+13
+        LSLS     R0,R0,#+29       ;; ZeroExtS R0,R0,#+29,#+29
+        LSRS     R0,R0,#+29
+        STRB     R0,[R4, #+0]
+        CMP      R5,#+0
         BNE      ??RTC_GetDate_0
         LDRB     R0,[R4, #+3]
         BL       RTC_Bcd2ToByte
@@ -844,16 +880,17 @@ RTC_GetDate:
         LDRB     R0,[R4, #+0]
         STRB     R0,[R4, #+0]
 ??RTC_GetDate_0:
-        POP      {R4,PC}          ;; return
+        POP      {R4-R6,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_SetAlarm:
-        PUSH     {R4-R6,LR}
-        MOVS     R5,R0
+        PUSH     {R0,R1,R4-R7,LR}
+        SUB      SP,SP,#+4
         MOVS     R4,R2
-        MOVS     R0,#+0
-        CMP      R5,#+0
+        MOVS     R7,#+0
+        LDR      R0,[SP, #+4]
+        CMP      R0,#+0
         BNE      ??RTC_SetAlarm_0
         LDR      R0,??DataTable19_1  ;; 0x40002808
         LDR      R0,[R0, #+0]
@@ -875,6 +912,7 @@ RTC_SetAlarm:
         BPL      ??RTC_SetAlarm_5
         LDRB     R0,[R4, #+0]
         BL       RTC_Bcd2ToByte
+        MOVS     R7,R0
         B        ??RTC_SetAlarm_6
 ??RTC_SetAlarm_5:
         MOVS     R0,#+0
@@ -885,12 +923,15 @@ RTC_SetAlarm:
         BNE      ??RTC_SetAlarm_7
         LDRB     R0,[R4, #+12]
         BL       RTC_Bcd2ToByte
+        MOVS     R7,R0
         B        ??RTC_SetAlarm_3
 ??RTC_SetAlarm_7:
         LDRB     R0,[R4, #+12]
         BL       RTC_Bcd2ToByte
+        MOVS     R7,R0
 ??RTC_SetAlarm_3:
-        CMP      R5,#+0
+        LDR      R0,[SP, #+4]
+        CMP      R0,#+0
         BEQ      ??RTC_SetAlarm_8
         LDRB     R0,[R4, #+0]
         LSLS     R0,R0,#+16
@@ -909,6 +950,7 @@ RTC_SetAlarm:
         ORRS     R1,R1,R0
         LDR      R0,[R4, #+4]
         ORRS     R0,R0,R1
+        MOVS     R7,R0
         B        ??RTC_SetAlarm_9
 ??RTC_SetAlarm_8:
         LDRB     R0,[R4, #+0]
@@ -937,19 +979,20 @@ RTC_SetAlarm:
         ORRS     R1,R1,R0
         LDR      R0,[R4, #+4]
         ORRS     R0,R0,R1
+        MOVS     R7,R0
 ??RTC_SetAlarm_9:
-        MOVS     R1,#+202
-        LDR      R2,??DataTable20  ;; 0x40002824
-        STR      R1,[R2, #+0]
-        MOVS     R1,#+83
-        LDR      R2,??DataTable20  ;; 0x40002824
-        STR      R1,[R2, #+0]
-        LDR      R1,??DataTable23  ;; 0x4000281c
+        MOVS     R0,#+202
+        LDR      R1,??DataTable19  ;; 0x40002824
         STR      R0,[R1, #+0]
+        MOVS     R0,#+83
+        LDR      R1,??DataTable19  ;; 0x40002824
+        STR      R0,[R1, #+0]
+        LDR      R0,??DataTable23  ;; 0x4000281c
+        STR      R7,[R0, #+0]
         MOVS     R0,#+255
-        LDR      R1,??DataTable20  ;; 0x40002824
+        LDR      R1,??DataTable19  ;; 0x40002824
         STR      R0,[R1, #+0]
-        POP      {R4-R6,PC}       ;; return
+        POP      {R0-R2,R4-R7,PC}  ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -985,59 +1028,61 @@ RTC_AlarmStructInit:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_GetAlarm:
-        PUSH     {R4,LR}
-        MOVS     R4,R2
-        MOVS     R1,#+0
-        LDR      R2,??DataTable23  ;; 0x4000281c
-        LDR      R2,[R2, #+0]
-        MOVS     R1,R2
-        MOVS     R2,R1
-        LSRS     R2,R2,#+16
-        LSLS     R2,R2,#+26       ;; ZeroExtS R2,R2,#+26,#+26
-        LSRS     R2,R2,#+26
-        STRB     R2,[R4, #+0]
-        MOVS     R2,R1
-        LSRS     R2,R2,#+8
-        LSLS     R2,R2,#+25       ;; ZeroExtS R2,R2,#+25,#+25
-        LSRS     R2,R2,#+25
-        STRB     R2,[R4, #+1]
-        MOVS     R2,R1
-        LSLS     R2,R2,#+25       ;; ZeroExtS R2,R2,#+25,#+25
-        LSRS     R2,R2,#+25
-        STRB     R2,[R4, #+2]
-        MOVS     R2,R1
-        LSRS     R2,R2,#+16
-        MOVS     R3,#+64
-        ANDS     R2,R2,R3
-        STRB     R2,[R4, #+3]
-        MOVS     R2,R1
-        LSRS     R2,R2,#+24
-        LSLS     R2,R2,#+26       ;; ZeroExtS R2,R2,#+26,#+26
-        LSRS     R2,R2,#+26
-        STRB     R2,[R4, #+12]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+23       ;; #+1073741824
-        ANDS     R2,R2,R1
-        STR      R2,[R4, #+8]
-        LDR      R2,??DataTable28  ;; 0x80808080
-        ANDS     R2,R2,R1
-        STR      R2,[R4, #+4]
-        CMP      R0,#+0
+        PUSH     {R3-R7,LR}
+        MOVS     R4,R0
+        MOVS     R7,R1
+        MOVS     R5,R2
+        MOVS     R6,#+0
+        LDR      R0,??DataTable23  ;; 0x4000281c
+        LDR      R0,[R0, #+0]
+        MOVS     R6,R0
+        MOVS     R0,R6
+        LSRS     R0,R0,#+16
+        LSLS     R0,R0,#+26       ;; ZeroExtS R0,R0,#+26,#+26
+        LSRS     R0,R0,#+26
+        STRB     R0,[R5, #+0]
+        MOVS     R0,R6
+        LSRS     R0,R0,#+8
+        LSLS     R0,R0,#+25       ;; ZeroExtS R0,R0,#+25,#+25
+        LSRS     R0,R0,#+25
+        STRB     R0,[R5, #+1]
+        MOVS     R0,R6
+        LSLS     R0,R0,#+25       ;; ZeroExtS R0,R0,#+25,#+25
+        LSRS     R0,R0,#+25
+        STRB     R0,[R5, #+2]
+        MOVS     R0,R6
+        LSRS     R0,R0,#+16
+        MOVS     R1,#+64
+        ANDS     R0,R0,R1
+        STRB     R0,[R5, #+3]
+        MOVS     R0,R6
+        LSRS     R0,R0,#+24
+        LSLS     R0,R0,#+26       ;; ZeroExtS R0,R0,#+26,#+26
+        LSRS     R0,R0,#+26
+        STRB     R0,[R5, #+12]
+        MOVS     R0,#+128
+        LSLS     R0,R0,#+23       ;; #+1073741824
+        ANDS     R0,R0,R6
+        STR      R0,[R5, #+8]
+        LDR      R0,??DataTable27  ;; 0x80808080
+        ANDS     R0,R0,R6
+        STR      R0,[R5, #+4]
+        CMP      R4,#+0
         BNE      ??RTC_GetAlarm_0
-        LDRB     R0,[R4, #+0]
+        LDRB     R0,[R5, #+0]
         BL       RTC_Bcd2ToByte
-        STRB     R0,[R4, #+0]
-        LDRB     R0,[R4, #+1]
+        STRB     R0,[R5, #+0]
+        LDRB     R0,[R5, #+1]
         BL       RTC_Bcd2ToByte
-        STRB     R0,[R4, #+1]
-        LDRB     R0,[R4, #+2]
+        STRB     R0,[R5, #+1]
+        LDRB     R0,[R5, #+2]
         BL       RTC_Bcd2ToByte
-        STRB     R0,[R4, #+2]
-        LDRB     R0,[R4, #+12]
+        STRB     R0,[R5, #+2]
+        LDRB     R0,[R5, #+12]
         BL       RTC_Bcd2ToByte
-        STRB     R0,[R4, #+12]
+        STRB     R0,[R5, #+12]
 ??RTC_GetAlarm_0:
-        POP      {R4,PC}          ;; return
+        POP      {R0,R4-R7,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -1055,110 +1100,121 @@ RTC_AlarmCmd:
         MOVS     R3,#+0
         MOVS     R0,#+0
         MOVS     R4,#+202
-        LDR      R5,??DataTable20  ;; 0x40002824
+        LDR      R5,??DataTable19  ;; 0x40002824
         STR      R4,[R5, #+0]
         MOVS     R4,#+83
-        LDR      R5,??DataTable20  ;; 0x40002824
+        LDR      R5,??DataTable19  ;; 0x40002824
         STR      R4,[R5, #+0]
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??RTC_AlarmCmd_0
-        LDR      R0,??DataTable19_1  ;; 0x40002808
-        LDR      R0,[R0, #+0]
-        ORRS     R2,R2,R0
-        LDR      R0,??DataTable19_1  ;; 0x40002808
-        STR      R2,[R0, #+0]
-        MOVS     R0,#+1
+        LDR      R4,??DataTable19_1  ;; 0x40002808
+        LDR      R4,[R4, #+0]
+        ORRS     R4,R4,R2
+        LDR      R5,??DataTable19_1  ;; 0x40002808
+        STR      R4,[R5, #+0]
+        MOVS     R4,#+1
+        MOVS     R0,R4
         B        ??RTC_AlarmCmd_1
 ??RTC_AlarmCmd_0:
-        LDR      R0,??DataTable19_1  ;; 0x40002808
-        LDR      R0,[R0, #+0]
-        BICS     R0,R0,R2
-        LDR      R1,??DataTable19_1  ;; 0x40002808
-        STR      R0,[R1, #+0]
+        LDR      R4,??DataTable19_1  ;; 0x40002808
+        LDR      R4,[R4, #+0]
+        BICS     R4,R4,R2
+        LDR      R5,??DataTable19_1  ;; 0x40002808
+        STR      R4,[R5, #+0]
 ??RTC_AlarmCmd_2:
-        LDR      R0,??DataTable27  ;; 0x4000280c
-        LDR      R0,[R0, #+0]
-        MOVS     R3,R2
-        LSRS     R3,R3,#+8
-        ANDS     R3,R3,R0
-        LDR      R0,[SP, #+0]
-        ADDS     R0,R0,#+1
-        STR      R0,[SP, #+0]
-        LDR      R0,[SP, #+0]
-        MOVS     R1,#+128
-        LSLS     R1,R1,#+7        ;; #+16384
-        CMP      R0,R1
+        LDR      R4,??DataTable26  ;; 0x4000280c
+        LDR      R4,[R4, #+0]
+        MOVS     R5,R2
+        LSRS     R5,R5,#+8
+        ANDS     R5,R5,R4
+        MOVS     R3,R5
+        LDR      R4,[SP, #+0]
+        ADDS     R4,R4,#+1
+        STR      R4,[SP, #+0]
+        LDR      R4,[SP, #+0]
+        MOVS     R5,#+128
+        LSLS     R5,R5,#+7        ;; #+16384
+        CMP      R4,R5
         BEQ      ??RTC_AlarmCmd_3
         CMP      R3,#+0
         BEQ      ??RTC_AlarmCmd_2
 ??RTC_AlarmCmd_3:
-        LDR      R0,??DataTable27  ;; 0x4000280c
-        LDR      R0,[R0, #+0]
-        MOVS     R1,R2
-        LSRS     R1,R1,#+8
-        ANDS     R1,R1,R0
-        CMP      R1,#+0
+        LDR      R4,??DataTable26  ;; 0x4000280c
+        LDR      R4,[R4, #+0]
+        MOVS     R5,R2
+        LSRS     R5,R5,#+8
+        ANDS     R5,R5,R4
+        CMP      R5,#+0
         BNE      ??RTC_AlarmCmd_4
-        MOVS     R0,#+0
+        MOVS     R4,#+0
+        MOVS     R0,R4
         B        ??RTC_AlarmCmd_1
 ??RTC_AlarmCmd_4:
-        MOVS     R0,#+1
+        MOVS     R4,#+1
+        MOVS     R0,R4
 ??RTC_AlarmCmd_1:
-        MOVS     R1,#+255
-        LDR      R2,??DataTable20  ;; 0x40002824
-        STR      R1,[R2, #+0]
+        MOVS     R4,#+255
+        LDR      R5,??DataTable19  ;; 0x40002824
+        STR      R4,[R5, #+0]
         UXTB     R0,R0
         POP      {R1,R4,R5,PC}    ;; return
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable15:
+        DC32     0x40002804
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_AlarmSubSecondConfig:
-        PUSH     {R4}
-        MOVS     R0,#+0
-        MOVS     R3,#+202
-        LDR      R4,??DataTable20  ;; 0x40002824
-        STR      R3,[R4, #+0]
-        MOVS     R3,#+83
-        LDR      R4,??DataTable20  ;; 0x40002824
-        STR      R3,[R4, #+0]
+        PUSH     {R4,R5}
+        MOVS     R3,#+0
+        MOVS     R4,#+202
+        LDR      R5,??DataTable19  ;; 0x40002824
+        STR      R4,[R5, #+0]
+        MOVS     R4,#+83
+        LDR      R5,??DataTable19  ;; 0x40002824
+        STR      R4,[R5, #+0]
         UXTB     R2,R2
-        LSLS     R2,R2,#+24
-        ORRS     R2,R2,R1
-        MOVS     R0,R2
-        LDR      R1,??DataTable30  ;; 0x40002844
-        STR      R0,[R1, #+0]
-        MOVS     R0,#+255
-        LDR      R1,??DataTable20  ;; 0x40002824
-        STR      R0,[R1, #+0]
-        POP      {R4}
+        LSLS     R4,R2,#+24
+        ORRS     R4,R4,R1
+        MOVS     R3,R4
+        LDR      R4,??DataTable29  ;; 0x40002844
+        STR      R3,[R4, #+0]
+        MOVS     R4,#+255
+        LDR      R5,??DataTable19  ;; 0x40002824
+        STR      R4,[R5, #+0]
+        POP      {R4,R5}
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_GetAlarmSubSecond:
+        MOVS     R1,R0
         MOVS     R0,#+0
-        LDR      R1,??DataTable30  ;; 0x40002844
-        LDR      R1,[R1, #+0]
-        LSLS     R1,R1,#+17       ;; ZeroExtS R1,R1,#+17,#+17
-        LSRS     R1,R1,#+17
-        MOVS     R0,R1
+        LDR      R2,??DataTable29  ;; 0x40002844
+        LDR      R2,[R2, #+0]
+        LSLS     R2,R2,#+17       ;; ZeroExtS R2,R2,#+17,#+17
+        LSRS     R2,R2,#+17
+        MOVS     R0,R2
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable17:
-        DC32     0x40002804
+        DC32     0xffff3f
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_DayLightSavingConfig:
         MOVS     R2,#+202
-        LDR      R3,??DataTable20  ;; 0x40002824
+        LDR      R3,??DataTable19  ;; 0x40002824
         STR      R2,[R3, #+0]
         MOVS     R2,#+83
-        LDR      R3,??DataTable20  ;; 0x40002824
+        LDR      R3,??DataTable19  ;; 0x40002824
         STR      R2,[R3, #+0]
         LDR      R2,??DataTable19_1  ;; 0x40002808
         LDR      R2,[R2, #+0]
@@ -1168,13 +1224,14 @@ RTC_DayLightSavingConfig:
         STR      R3,[R2, #+0]
         LDR      R2,??DataTable19_1  ;; 0x40002808
         LDR      R2,[R2, #+0]
-        ORRS     R1,R1,R0
-        ORRS     R1,R1,R2
-        LDR      R0,??DataTable19_1  ;; 0x40002808
-        STR      R1,[R0, #+0]
-        MOVS     R0,#+255
-        LDR      R1,??DataTable20  ;; 0x40002824
-        STR      R0,[R1, #+0]
+        MOVS     R3,R1
+        ORRS     R3,R3,R0
+        ORRS     R3,R3,R2
+        LDR      R2,??DataTable19_1  ;; 0x40002808
+        STR      R3,[R2, #+0]
+        MOVS     R2,#+255
+        LDR      R3,??DataTable19  ;; 0x40002824
+        STR      R2,[R3, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -1191,7 +1248,7 @@ RTC_GetStoreOperation:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable19:
-        DC32     0xffff3f
+        DC32     0x40002824
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -1203,10 +1260,10 @@ RTC_GetStoreOperation:
         THUMB
 RTC_OutputConfig:
         MOVS     R2,#+202
-        LDR      R3,??DataTable20  ;; 0x40002824
+        LDR      R3,??DataTable36  ;; 0x40002824
         STR      R2,[R3, #+0]
         MOVS     R2,#+83
-        LDR      R3,??DataTable20  ;; 0x40002824
+        LDR      R3,??DataTable36  ;; 0x40002824
         STR      R2,[R3, #+0]
         LDR      R2,??DataTable33  ;; 0x40002808
         LDR      R2,[R2, #+0]
@@ -1216,20 +1273,15 @@ RTC_OutputConfig:
         STR      R3,[R2, #+0]
         LDR      R2,??DataTable33  ;; 0x40002808
         LDR      R2,[R2, #+0]
-        ORRS     R1,R1,R0
-        ORRS     R1,R1,R2
-        LDR      R0,??DataTable33  ;; 0x40002808
-        STR      R1,[R0, #+0]
-        MOVS     R0,#+255
-        LDR      R1,??DataTable20  ;; 0x40002824
-        STR      R0,[R1, #+0]
+        MOVS     R3,R1
+        ORRS     R3,R3,R0
+        ORRS     R3,R3,R2
+        LDR      R2,??DataTable33  ;; 0x40002808
+        STR      R3,[R2, #+0]
+        MOVS     R2,#+255
+        LDR      R3,??DataTable36  ;; 0x40002824
+        STR      R2,[R3, #+0]
         BX       LR               ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable20:
-        DC32     0x40002824
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1244,25 +1296,25 @@ RTC_CalibOutputCmd:
         UXTB     R0,R0
         CMP      R0,#+0
         BEQ      ??RTC_CalibOutputCmd_0
-        LDR      R0,??DataTable33  ;; 0x40002808
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+128
-        LSLS     R1,R1,#+16       ;; #+8388608
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable33  ;; 0x40002808
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable33  ;; 0x40002808
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+128
+        LSLS     R2,R2,#+16       ;; #+8388608
+        ORRS     R2,R2,R1
+        LDR      R1,??DataTable33  ;; 0x40002808
+        STR      R2,[R1, #+0]
         B        ??RTC_CalibOutputCmd_1
 ??RTC_CalibOutputCmd_0:
-        LDR      R0,??DataTable33  ;; 0x40002808
-        LDR      R0,[R0, #+0]
-        LDR      R1,??DataTable36_1  ;; 0xff7fffff
-        ANDS     R1,R1,R0
-        LDR      R0,??DataTable33  ;; 0x40002808
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable33  ;; 0x40002808
+        LDR      R1,[R1, #+0]
+        LDR      R2,??DataTable35  ;; 0xff7fffff
+        ANDS     R2,R2,R1
+        LDR      R1,??DataTable33  ;; 0x40002808
+        STR      R2,[R1, #+0]
 ??RTC_CalibOutputCmd_1:
-        MOVS     R0,#+255
-        LDR      R1,??DataTable36  ;; 0x40002824
-        STR      R0,[R1, #+0]
+        MOVS     R1,#+255
+        LDR      R2,??DataTable36  ;; 0x40002824
+        STR      R1,[R2, #+0]
         POP      {PC}             ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -1276,18 +1328,18 @@ RTC_CalibOutputConfig:
         STR      R1,[R2, #+0]
         LDR      R1,??DataTable33  ;; 0x40002808
         LDR      R1,[R1, #+0]
-        LDR      R2,??DataTable36_2  ;; 0xfff7ffff
+        LDR      R2,??DataTable36_1  ;; 0xfff7ffff
         ANDS     R2,R2,R1
         LDR      R1,??DataTable33  ;; 0x40002808
         STR      R2,[R1, #+0]
         LDR      R1,??DataTable33  ;; 0x40002808
         LDR      R1,[R1, #+0]
-        ORRS     R0,R0,R1
-        LDR      R1,??DataTable33  ;; 0x40002808
-        STR      R0,[R1, #+0]
-        MOVS     R0,#+255
-        LDR      R1,??DataTable36  ;; 0x40002824
-        STR      R0,[R1, #+0]
+        ORRS     R1,R1,R0
+        LDR      R2,??DataTable33  ;; 0x40002808
+        STR      R1,[R2, #+0]
+        MOVS     R1,#+255
+        LDR      R2,??DataTable36  ;; 0x40002824
+        STR      R1,[R2, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -1303,39 +1355,41 @@ RTC_SmoothCalibConfig:
         MOVS     R5,#+83
         LDR      R6,??DataTable36  ;; 0x40002824
         STR      R5,[R6, #+0]
-        LDR      R5,??DataTable27  ;; 0x4000280c
+        LDR      R5,??DataTable26  ;; 0x4000280c
         LDR      R5,[R5, #+0]
         LSLS     R5,R5,#+15
-        BMI      ??RTC_SmoothCalibConfig_0
-        B        ??RTC_SmoothCalibConfig_1
-??RTC_SmoothCalibConfig_2:
-        ADDS     R4,R4,#+1
-??RTC_SmoothCalibConfig_0:
-        LDR      R0,??DataTable27  ;; 0x4000280c
-        LDR      R0,[R0, #+0]
-        LSLS     R0,R0,#+15
-        BPL      ??RTC_SmoothCalibConfig_1
-        MOVS     R0,#+128
-        LSLS     R0,R0,#+5        ;; #+4096
-        CMP      R4,R0
-        BNE      ??RTC_SmoothCalibConfig_2
+        BPL      ??RTC_SmoothCalibConfig_0
 ??RTC_SmoothCalibConfig_1:
-        LDR      R0,??DataTable27  ;; 0x4000280c
-        LDR      R0,[R0, #+0]
-        LSLS     R0,R0,#+15
-        BMI      ??RTC_SmoothCalibConfig_3
-        ORRS     R1,R1,R3
-        ORRS     R2,R2,R1
-        LDR      R0,??DataTable37  ;; 0x4000283c
-        STR      R2,[R0, #+0]
-        MOVS     R0,#+1
-        B        ??RTC_SmoothCalibConfig_4
+        LDR      R5,??DataTable26  ;; 0x4000280c
+        LDR      R5,[R5, #+0]
+        LSLS     R5,R5,#+15
+        BPL      ??RTC_SmoothCalibConfig_0
+        MOVS     R5,#+128
+        LSLS     R5,R5,#+5        ;; #+4096
+        CMP      R4,R5
+        BEQ      ??RTC_SmoothCalibConfig_0
+        ADDS     R4,R4,#+1
+        B        ??RTC_SmoothCalibConfig_1
+??RTC_SmoothCalibConfig_0:
+        LDR      R5,??DataTable26  ;; 0x4000280c
+        LDR      R5,[R5, #+0]
+        LSLS     R5,R5,#+15
+        BMI      ??RTC_SmoothCalibConfig_2
+        MOVS     R5,R1
+        ORRS     R5,R5,R3
+        ORRS     R5,R5,R2
+        LDR      R6,??DataTable37  ;; 0x4000283c
+        STR      R5,[R6, #+0]
+        MOVS     R5,#+1
+        MOVS     R0,R5
+        B        ??RTC_SmoothCalibConfig_3
+??RTC_SmoothCalibConfig_2:
+        MOVS     R5,#+0
+        MOVS     R0,R5
 ??RTC_SmoothCalibConfig_3:
-        MOVS     R0,#+0
-??RTC_SmoothCalibConfig_4:
-        MOVS     R1,#+255
-        LDR      R2,??DataTable36  ;; 0x40002824
-        STR      R1,[R2, #+0]
+        MOVS     R5,#+255
+        LDR      R6,??DataTable36  ;; 0x40002824
+        STR      R5,[R6, #+0]
         UXTB     R0,R0
         POP      {R4-R6,PC}       ;; return
 
@@ -1358,103 +1412,104 @@ RTC_TimeStampCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??RTC_TimeStampCmd_0
-        MOVS     R1,R2
+        MOVS     R3,R2
         MOVS     R2,#+128
         LSLS     R2,R2,#+4        ;; #+2048
         ORRS     R2,R2,R0
-        ORRS     R2,R2,R1
+        ORRS     R2,R2,R3
         B        ??RTC_TimeStampCmd_1
 ??RTC_TimeStampCmd_0:
-        ORRS     R0,R0,R2
-        MOVS     R2,R0
+        ORRS     R2,R2,R0
 ??RTC_TimeStampCmd_1:
-        MOVS     R0,#+202
-        LDR      R1,??DataTable36  ;; 0x40002824
-        STR      R0,[R1, #+0]
-        MOVS     R0,#+83
-        LDR      R1,??DataTable36  ;; 0x40002824
-        STR      R0,[R1, #+0]
-        LDR      R0,??DataTable33  ;; 0x40002808
-        STR      R2,[R0, #+0]
-        MOVS     R0,#+255
-        LDR      R1,??DataTable36  ;; 0x40002824
-        STR      R0,[R1, #+0]
+        MOVS     R3,#+202
+        LDR      R4,??DataTable36  ;; 0x40002824
+        STR      R3,[R4, #+0]
+        MOVS     R3,#+83
+        LDR      R4,??DataTable36  ;; 0x40002824
+        STR      R3,[R4, #+0]
+        LDR      R3,??DataTable33  ;; 0x40002808
+        STR      R2,[R3, #+0]
+        MOVS     R3,#+255
+        LDR      R4,??DataTable36  ;; 0x40002824
+        STR      R3,[R4, #+0]
         POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_GetTimeStamp:
-        PUSH     {R4-R6,LR}
-        MOVS     R4,R1
-        MOVS     R5,R2
-        MOVS     R1,#+0
-        MOVS     R2,#+0
-        LDR      R3,??DataTable38  ;; 0x40002830
-        LDR      R3,[R3, #+0]
-        LDR      R6,??DataTable38_1  ;; 0x7f7f7f
-        ANDS     R6,R6,R3
-        MOVS     R1,R6
-        LDR      R3,??DataTable38_2  ;; 0x40002834
-        LDR      R3,[R3, #+0]
-        LDR      R6,??DataTable40  ;; 0xffff3f
-        ANDS     R6,R6,R3
-        MOVS     R2,R6
-        MOVS     R3,R1
-        LSRS     R3,R3,#+16
-        LSLS     R3,R3,#+26       ;; ZeroExtS R3,R3,#+26,#+26
-        LSRS     R3,R3,#+26
-        STRB     R3,[R4, #+0]
-        MOVS     R3,R1
-        LSRS     R3,R3,#+8
-        LSLS     R3,R3,#+25       ;; ZeroExtS R3,R3,#+25,#+25
-        LSRS     R3,R3,#+25
-        STRB     R3,[R4, #+1]
-        MOVS     R3,R1
-        LSLS     R3,R3,#+25       ;; ZeroExtS R3,R3,#+25,#+25
-        LSRS     R3,R3,#+25
-        STRB     R3,[R4, #+2]
-        LSRS     R1,R1,#+16
-        MOVS     R3,#+64
-        ANDS     R1,R1,R3
-        STRB     R1,[R4, #+3]
-        MOVS     R1,#+0
-        STRB     R1,[R5, #+3]
-        MOVS     R1,R2
-        LSRS     R1,R1,#+8
-        LSLS     R1,R1,#+27       ;; ZeroExtS R1,R1,#+27,#+27
-        LSRS     R1,R1,#+27
-        STRB     R1,[R5, #+1]
-        MOVS     R1,R2
-        LSLS     R1,R1,#+26       ;; ZeroExtS R1,R1,#+26,#+26
-        LSRS     R1,R1,#+26
-        STRB     R1,[R5, #+2]
-        MOVS     R1,R2
-        LSRS     R1,R1,#+13
-        LSLS     R1,R1,#+29       ;; ZeroExtS R1,R1,#+29,#+29
-        LSRS     R1,R1,#+29
-        STRB     R1,[R5, #+0]
+        PUSH     {R0,R4-R7,LR}
+        MOVS     R7,R1
+        MOVS     R4,R2
+        MOVS     R5,#+0
+        MOVS     R6,#+0
+        LDR      R0,??DataTable38  ;; 0x40002830
+        LDR      R0,[R0, #+0]
+        LDR      R1,??DataTable38_1  ;; 0x7f7f7f
+        ANDS     R1,R1,R0
+        MOVS     R5,R1
+        LDR      R0,??DataTable38_2  ;; 0x40002834
+        LDR      R0,[R0, #+0]
+        LDR      R1,??DataTable40  ;; 0xffff3f
+        ANDS     R1,R1,R0
+        MOVS     R6,R1
+        MOVS     R0,R5
+        LSRS     R0,R0,#+16
+        LSLS     R0,R0,#+26       ;; ZeroExtS R0,R0,#+26,#+26
+        LSRS     R0,R0,#+26
+        STRB     R0,[R7, #+0]
+        MOVS     R0,R5
+        LSRS     R0,R0,#+8
+        LSLS     R0,R0,#+25       ;; ZeroExtS R0,R0,#+25,#+25
+        LSRS     R0,R0,#+25
+        STRB     R0,[R7, #+1]
+        MOVS     R0,R5
+        LSLS     R0,R0,#+25       ;; ZeroExtS R0,R0,#+25,#+25
+        LSRS     R0,R0,#+25
+        STRB     R0,[R7, #+2]
+        MOVS     R0,R5
+        LSRS     R0,R0,#+16
+        MOVS     R1,#+64
+        ANDS     R0,R0,R1
+        STRB     R0,[R7, #+3]
+        MOVS     R0,#+0
+        STRB     R0,[R4, #+3]
+        MOVS     R0,R6
+        LSRS     R0,R0,#+8
+        LSLS     R0,R0,#+27       ;; ZeroExtS R0,R0,#+27,#+27
+        LSRS     R0,R0,#+27
+        STRB     R0,[R4, #+1]
+        MOVS     R0,R6
+        LSLS     R0,R0,#+26       ;; ZeroExtS R0,R0,#+26,#+26
+        LSRS     R0,R0,#+26
+        STRB     R0,[R4, #+2]
+        MOVS     R0,R6
+        LSRS     R0,R0,#+13
+        LSLS     R0,R0,#+29       ;; ZeroExtS R0,R0,#+29,#+29
+        LSRS     R0,R0,#+29
+        STRB     R0,[R4, #+0]
+        LDR      R0,[SP, #+0]
         CMP      R0,#+0
         BNE      ??RTC_GetTimeStamp_0
-        LDRB     R0,[R4, #+0]
+        LDRB     R0,[R7, #+0]
         BL       RTC_Bcd2ToByte
-        STRB     R0,[R4, #+0]
+        STRB     R0,[R7, #+0]
+        LDRB     R0,[R7, #+1]
+        BL       RTC_Bcd2ToByte
+        STRB     R0,[R7, #+1]
+        LDRB     R0,[R7, #+2]
+        BL       RTC_Bcd2ToByte
+        STRB     R0,[R7, #+2]
         LDRB     R0,[R4, #+1]
         BL       RTC_Bcd2ToByte
         STRB     R0,[R4, #+1]
         LDRB     R0,[R4, #+2]
         BL       RTC_Bcd2ToByte
         STRB     R0,[R4, #+2]
-        LDRB     R0,[R5, #+1]
+        LDRB     R0,[R4, #+0]
         BL       RTC_Bcd2ToByte
-        STRB     R0,[R5, #+1]
-        LDRB     R0,[R5, #+2]
-        BL       RTC_Bcd2ToByte
-        STRB     R0,[R5, #+2]
-        LDRB     R0,[R5, #+0]
-        BL       RTC_Bcd2ToByte
-        STRB     R0,[R5, #+0]
+        STRB     R0,[R4, #+0]
 ??RTC_GetTimeStamp_0:
-        POP      {R4-R6,PC}       ;; return
+        POP      {R0,R4-R7,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1463,26 +1518,32 @@ RTC_GetTimeStampSubSecond:
         LDR      R0,[R0, #+0]
         BX       LR               ;; return
 
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable26:
+        DC32     0x4000280c
+
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_TamperTriggerConfig:
         PUSH     {LR}
         CMP      R1,#+0
         BNE      ??RTC_TamperTriggerConfig_0
-        LDR      R1,??DataTable42_1  ;; 0x40002840
-        LDR      R1,[R1, #+0]
-        LSLS     R0,R0,#+1
-        BICS     R1,R1,R0
-        LDR      R0,??DataTable42_1  ;; 0x40002840
-        STR      R1,[R0, #+0]
+        LDR      R2,??DataTable42_1  ;; 0x40002840
+        LDR      R2,[R2, #+0]
+        LSLS     R3,R0,#+1
+        BICS     R2,R2,R3
+        LDR      R3,??DataTable42_1  ;; 0x40002840
+        STR      R2,[R3, #+0]
         B        ??RTC_TamperTriggerConfig_1
 ??RTC_TamperTriggerConfig_0:
-        LDR      R1,??DataTable42_1  ;; 0x40002840
-        LDR      R1,[R1, #+0]
-        LSLS     R0,R0,#+1
-        ORRS     R0,R0,R1
-        LDR      R1,??DataTable42_1  ;; 0x40002840
-        STR      R0,[R1, #+0]
+        LDR      R2,??DataTable42_1  ;; 0x40002840
+        LDR      R2,[R2, #+0]
+        LSLS     R3,R0,#+1
+        ORRS     R3,R3,R2
+        LDR      R2,??DataTable42_1  ;; 0x40002840
+        STR      R3,[R2, #+0]
 ??RTC_TamperTriggerConfig_1:
         POP      {PC}             ;; return
 
@@ -1490,7 +1551,7 @@ RTC_TamperTriggerConfig:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable27:
-        DC32     0x4000280c
+        DC32     0x80808080
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1499,26 +1560,20 @@ RTC_TamperCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??RTC_TamperCmd_0
-        LDR      R1,??DataTable42_1  ;; 0x40002840
-        LDR      R1,[R1, #+0]
-        ORRS     R0,R0,R1
-        LDR      R1,??DataTable42_1  ;; 0x40002840
-        STR      R0,[R1, #+0]
+        LDR      R2,??DataTable42_1  ;; 0x40002840
+        LDR      R2,[R2, #+0]
+        ORRS     R2,R2,R0
+        LDR      R3,??DataTable42_1  ;; 0x40002840
+        STR      R2,[R3, #+0]
         B        ??RTC_TamperCmd_1
 ??RTC_TamperCmd_0:
-        LDR      R1,??DataTable42_1  ;; 0x40002840
-        LDR      R1,[R1, #+0]
-        BICS     R1,R1,R0
-        LDR      R0,??DataTable42_1  ;; 0x40002840
-        STR      R1,[R0, #+0]
+        LDR      R2,??DataTable42_1  ;; 0x40002840
+        LDR      R2,[R2, #+0]
+        BICS     R2,R2,R0
+        LDR      R3,??DataTable42_1  ;; 0x40002840
+        STR      R2,[R3, #+0]
 ??RTC_TamperCmd_1:
         POP      {PC}             ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable28:
-        DC32     0x80808080
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1531,10 +1586,16 @@ RTC_TamperFilterConfig:
         STR      R2,[R1, #+0]
         LDR      R1,??DataTable42_1  ;; 0x40002840
         LDR      R1,[R1, #+0]
-        ORRS     R0,R0,R1
-        LDR      R1,??DataTable42_1  ;; 0x40002840
-        STR      R0,[R1, #+0]
+        ORRS     R1,R1,R0
+        LDR      R2,??DataTable42_1  ;; 0x40002840
+        STR      R1,[R2, #+0]
         BX       LR               ;; return
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable29:
+        DC32     0x40002844
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1547,16 +1608,10 @@ RTC_TamperSamplingFreqConfig:
         STR      R2,[R1, #+0]
         LDR      R1,??DataTable42_1  ;; 0x40002840
         LDR      R1,[R1, #+0]
-        ORRS     R0,R0,R1
-        LDR      R1,??DataTable42_1  ;; 0x40002840
-        STR      R0,[R1, #+0]
+        ORRS     R1,R1,R0
+        LDR      R2,??DataTable42_1  ;; 0x40002840
+        STR      R1,[R2, #+0]
         BX       LR               ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable30:
-        DC32     0x40002844
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1569,9 +1624,9 @@ RTC_TamperPinsPrechargeDuration:
         STR      R2,[R1, #+0]
         LDR      R1,??DataTable42_1  ;; 0x40002840
         LDR      R1,[R1, #+0]
-        ORRS     R0,R0,R1
-        LDR      R1,??DataTable42_1  ;; 0x40002840
-        STR      R0,[R1, #+0]
+        ORRS     R1,R1,R0
+        LDR      R2,??DataTable42_1  ;; 0x40002840
+        STR      R1,[R2, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -1587,20 +1642,20 @@ RTC_TimeStampOnTamperDetectionCmd:
         UXTB     R0,R0
         CMP      R0,#+0
         BEQ      ??RTC_TimeStampOnTamperDetectionCmd_0
-        LDR      R0,??DataTable42_1  ;; 0x40002840
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+128
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable42_1  ;; 0x40002840
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable42_1  ;; 0x40002840
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+128
+        ORRS     R2,R2,R1
+        LDR      R1,??DataTable42_1  ;; 0x40002840
+        STR      R2,[R1, #+0]
         B        ??RTC_TimeStampOnTamperDetectionCmd_1
 ??RTC_TimeStampOnTamperDetectionCmd_0:
-        LDR      R0,??DataTable42_1  ;; 0x40002840
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+128
-        BICS     R0,R0,R1
         LDR      R1,??DataTable42_1  ;; 0x40002840
-        STR      R0,[R1, #+0]
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+128
+        BICS     R1,R1,R2
+        LDR      R2,??DataTable42_1  ;; 0x40002840
+        STR      R1,[R2, #+0]
 ??RTC_TimeStampOnTamperDetectionCmd_1:
         POP      {PC}             ;; return
 
@@ -1611,21 +1666,21 @@ RTC_TamperPullUpCmd:
         UXTB     R0,R0
         CMP      R0,#+0
         BEQ      ??RTC_TamperPullUpCmd_0
-        LDR      R0,??DataTable42_1  ;; 0x40002840
-        LDR      R0,[R0, #+0]
-        LDR      R1,??DataTable42_5  ;; 0xffff7fff
-        ANDS     R1,R1,R0
-        LDR      R0,??DataTable42_1  ;; 0x40002840
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable42_1  ;; 0x40002840
+        LDR      R1,[R1, #+0]
+        LDR      R2,??DataTable42_5  ;; 0xffff7fff
+        ANDS     R2,R2,R1
+        LDR      R1,??DataTable42_1  ;; 0x40002840
+        STR      R2,[R1, #+0]
         B        ??RTC_TamperPullUpCmd_1
 ??RTC_TamperPullUpCmd_0:
-        LDR      R0,??DataTable42_1  ;; 0x40002840
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+128
-        LSLS     R1,R1,#+8        ;; #+32768
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable42_1  ;; 0x40002840
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable42_1  ;; 0x40002840
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+128
+        LSLS     R2,R2,#+8        ;; #+32768
+        ORRS     R2,R2,R1
+        LDR      R1,??DataTable42_1  ;; 0x40002840
+        STR      R2,[R1, #+0]
 ??RTC_TamperPullUpCmd_1:
         POP      {PC}             ;; return
 
@@ -1651,11 +1706,11 @@ RTC_WriteBackupRegister:
         STR      R2,[SP, #+0]
         LDR      R2,[SP, #+0]
         MOVS     R3,#+4
-        MULS     R0,R3,R0
-        ADDS     R0,R2,R0
-        STR      R0,[SP, #+0]
-        LDR      R0,[SP, #+0]
-        STR      R1,[R0, #+0]
+        MULS     R3,R0,R3
+        ADDS     R2,R2,R3
+        STR      R2,[SP, #+0]
+        LDR      R2,[SP, #+0]
+        STR      R1,[R2, #+0]
         ADD      SP,SP,#+4
         BX       LR               ;; return
 
@@ -1663,19 +1718,26 @@ RTC_WriteBackupRegister:
         THUMB
 RTC_ReadBackupRegister:
         SUB      SP,SP,#+4
-        MOVS     R1,#+0
-        STR      R1,[SP, #+0]
-        LDR      R1,??DataTable42_6  ;; 0x40002850
-        STR      R1,[SP, #+0]
-        LDR      R1,[SP, #+0]
+        MOVS     R1,R0
+        MOVS     R0,#+0
+        STR      R0,[SP, #+0]
+        LDR      R0,??DataTable42_6  ;; 0x40002850
+        STR      R0,[SP, #+0]
+        LDR      R0,[SP, #+0]
         MOVS     R2,#+4
-        MULS     R0,R2,R0
-        ADDS     R0,R1,R0
+        MULS     R2,R1,R2
+        ADDS     R0,R0,R2
         STR      R0,[SP, #+0]
         LDR      R0,[SP, #+0]
         LDR      R0,[R0, #+0]
         ADD      SP,SP,#+4
         BX       LR               ;; return
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable35:
+        DC32     0xff7fffff
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1688,9 +1750,9 @@ RTC_OutputTypeConfig:
         STR      R2,[R1, #+0]
         LDR      R1,??DataTable42_1  ;; 0x40002840
         LDR      R1,[R1, #+0]
-        ORRS     R0,R0,R1
-        LDR      R1,??DataTable42_1  ;; 0x40002840
-        STR      R0,[R1, #+0]
+        ORRS     R1,R1,R0
+        LDR      R2,??DataTable42_1  ;; 0x40002840
+        STR      R1,[R2, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -1703,74 +1765,74 @@ RTC_OutputTypeConfig:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable36_1:
-        DC32     0xff7fffff
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable36_2:
         DC32     0xfff7ffff
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_SynchroShiftConfig:
-        PUSH     {R3-R5,LR}
-        MOVS     R2,R0
-        MOVS     R0,#+0
-        MOVS     R3,#+0
-        MOVS     R4,#+202
-        LDR      R5,??DataTable42_8  ;; 0x40002824
-        STR      R4,[R5, #+0]
-        MOVS     R4,#+83
-        LDR      R5,??DataTable42_8  ;; 0x40002824
-        STR      R4,[R5, #+0]
-        LDR      R4,??DataTable42_9  ;; 0x4000280c
-        LDR      R4,[R4, #+0]
-        LSLS     R4,R4,#+28
-        BMI      ??RTC_SynchroShiftConfig_0
-        B        ??RTC_SynchroShiftConfig_1
-??RTC_SynchroShiftConfig_2:
-        ADDS     R3,R3,#+1
-??RTC_SynchroShiftConfig_0:
+        PUSH     {R3-R7,LR}
+        MOVS     R4,R0
+        MOVS     R7,R1
+        MOVS     R5,#+0
+        MOVS     R6,#+0
+        MOVS     R0,#+202
+        LDR      R1,??DataTable42_8  ;; 0x40002824
+        STR      R0,[R1, #+0]
+        MOVS     R0,#+83
+        LDR      R1,??DataTable42_8  ;; 0x40002824
+        STR      R0,[R1, #+0]
         LDR      R0,??DataTable42_9  ;; 0x4000280c
         LDR      R0,[R0, #+0]
         LSLS     R0,R0,#+28
-        BPL      ??RTC_SynchroShiftConfig_1
-        MOVS     R0,#+128
-        LSLS     R0,R0,#+5        ;; #+4096
-        CMP      R3,R0
-        BNE      ??RTC_SynchroShiftConfig_2
+        BPL      ??RTC_SynchroShiftConfig_0
 ??RTC_SynchroShiftConfig_1:
         LDR      R0,??DataTable42_9  ;; 0x4000280c
         LDR      R0,[R0, #+0]
         LSLS     R0,R0,#+28
-        BMI      ??RTC_SynchroShiftConfig_3
+        BPL      ??RTC_SynchroShiftConfig_0
+        MOVS     R0,#+128
+        LSLS     R0,R0,#+5        ;; #+4096
+        CMP      R6,R0
+        BEQ      ??RTC_SynchroShiftConfig_0
+        ADDS     R6,R6,#+1
+        B        ??RTC_SynchroShiftConfig_1
+??RTC_SynchroShiftConfig_0:
+        LDR      R0,??DataTable42_9  ;; 0x4000280c
+        LDR      R0,[R0, #+0]
+        LSLS     R0,R0,#+28
+        BMI      ??RTC_SynchroShiftConfig_2
         LDR      R0,??DataTable42_10  ;; 0x40002808
         LDR      R0,[R0, #+0]
         LSLS     R0,R0,#+27
-        BMI      ??RTC_SynchroShiftConfig_4
-        ORRS     R2,R2,R1
-        LDR      R0,??DataTable42_11  ;; 0x4000282c
-        STR      R2,[R0, #+0]
+        BMI      ??RTC_SynchroShiftConfig_3
+        MOVS     R0,R4
+        ORRS     R0,R0,R7
+        LDR      R1,??DataTable42_11  ;; 0x4000282c
+        STR      R0,[R1, #+0]
         BL       RTC_WaitForSynchro
         CMP      R0,#+0
-        BNE      ??RTC_SynchroShiftConfig_5
+        BNE      ??RTC_SynchroShiftConfig_4
         MOVS     R0,#+0
-        B        ??RTC_SynchroShiftConfig_6
-??RTC_SynchroShiftConfig_5:
-        MOVS     R0,#+1
-        B        ??RTC_SynchroShiftConfig_6
+        MOVS     R5,R0
+        B        ??RTC_SynchroShiftConfig_5
 ??RTC_SynchroShiftConfig_4:
-        MOVS     R0,#+0
-        B        ??RTC_SynchroShiftConfig_6
+        MOVS     R0,#+1
+        MOVS     R5,R0
+        B        ??RTC_SynchroShiftConfig_5
 ??RTC_SynchroShiftConfig_3:
         MOVS     R0,#+0
-??RTC_SynchroShiftConfig_6:
-        MOVS     R1,#+255
-        LDR      R2,??DataTable42_8  ;; 0x40002824
-        STR      R1,[R2, #+0]
+        MOVS     R5,R0
+        B        ??RTC_SynchroShiftConfig_5
+??RTC_SynchroShiftConfig_2:
+        MOVS     R0,#+0
+        MOVS     R5,R0
+??RTC_SynchroShiftConfig_5:
+        MOVS     R0,#+255
+        LDR      R1,??DataTable42_8  ;; 0x40002824
+        STR      R0,[R1, #+0]
+        MOVS     R0,R5
         UXTB     R0,R0
-        POP      {R1,R4,R5,PC}    ;; return
+        POP      {R1,R4-R7,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -1787,53 +1849,54 @@ RTC_SynchroShiftConfig:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_ITConfig:
-        PUSH     {LR}
-        MOVS     R2,#+202
+        PUSH     {R4,LR}
+        MOVS     R2,R0
+        MOVS     R0,#+202
         LDR      R3,??DataTable42_8  ;; 0x40002824
-        STR      R2,[R3, #+0]
-        MOVS     R2,#+83
+        STR      R0,[R3, #+0]
+        MOVS     R0,#+83
         LDR      R3,??DataTable42_8  ;; 0x40002824
-        STR      R2,[R3, #+0]
+        STR      R0,[R3, #+0]
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??RTC_ITConfig_0
-        LDR      R1,??DataTable42_10  ;; 0x40002808
-        LDR      R1,[R1, #+0]
-        MOVS     R2,R0
+        LDR      R0,??DataTable42_10  ;; 0x40002808
+        LDR      R0,[R0, #+0]
+        MOVS     R3,R2
+        MOVS     R4,#+4
+        BICS     R3,R3,R4
+        ORRS     R3,R3,R0
+        LDR      R0,??DataTable42_10  ;; 0x40002808
+        STR      R3,[R0, #+0]
+        LDR      R0,??DataTable42_1  ;; 0x40002840
+        LDR      R0,[R0, #+0]
         MOVS     R3,#+4
-        BICS     R2,R2,R3
-        ORRS     R2,R2,R1
-        LDR      R1,??DataTable42_10  ;; 0x40002808
-        STR      R2,[R1, #+0]
-        LDR      R1,??DataTable42_1  ;; 0x40002840
-        LDR      R1,[R1, #+0]
-        MOVS     R2,#+4
-        ANDS     R0,R0,R2
-        ORRS     R0,R0,R1
-        LDR      R1,??DataTable42_1  ;; 0x40002840
-        STR      R0,[R1, #+0]
+        ANDS     R3,R3,R2
+        ORRS     R3,R3,R0
+        LDR      R0,??DataTable42_1  ;; 0x40002840
+        STR      R3,[R0, #+0]
         B        ??RTC_ITConfig_1
 ??RTC_ITConfig_0:
-        LDR      R1,??DataTable42_10  ;; 0x40002808
-        LDR      R2,[R1, #+0]
-        MOVS     R1,R0
-        MOVS     R3,#+4
-        BICS     R1,R1,R3
-        BICS     R2,R2,R1
-        LDR      R1,??DataTable42_10  ;; 0x40002808
-        STR      R2,[R1, #+0]
-        LDR      R1,??DataTable42_1  ;; 0x40002840
-        LDR      R1,[R1, #+0]
-        MOVS     R2,#+4
-        ANDS     R0,R0,R2
-        BICS     R1,R1,R0
+        LDR      R0,??DataTable42_10  ;; 0x40002808
+        LDR      R3,[R0, #+0]
+        MOVS     R0,R2
+        MOVS     R4,#+4
+        BICS     R0,R0,R4
+        BICS     R3,R3,R0
+        LDR      R0,??DataTable42_10  ;; 0x40002808
+        STR      R3,[R0, #+0]
         LDR      R0,??DataTable42_1  ;; 0x40002840
-        STR      R1,[R0, #+0]
+        LDR      R0,[R0, #+0]
+        MOVS     R3,#+4
+        ANDS     R3,R3,R2
+        BICS     R0,R0,R3
+        LDR      R3,??DataTable42_1  ;; 0x40002840
+        STR      R0,[R3, #+0]
 ??RTC_ITConfig_1:
         MOVS     R0,#+255
-        LDR      R1,??DataTable42_8  ;; 0x40002824
-        STR      R0,[R1, #+0]
-        POP      {PC}             ;; return
+        LDR      R3,??DataTable42_8  ;; 0x40002824
+        STR      R0,[R3, #+0]
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -1865,13 +1928,14 @@ RTC_GetFlagStatus:
         LDR      R4,??DataTable42_12  ;; 0x17978
         ANDS     R4,R4,R3
         MOVS     R2,R4
-        ANDS     R1,R1,R2
-        CMP      R1,#+0
+        TST      R2,R1
         BEQ      ??RTC_GetFlagStatus_0
-        MOVS     R0,#+1
+        MOVS     R3,#+1
+        MOVS     R0,R3
         B        ??RTC_GetFlagStatus_1
 ??RTC_GetFlagStatus_0:
-        MOVS     R0,#+0
+        MOVS     R3,#+0
+        MOVS     R0,R3
 ??RTC_GetFlagStatus_1:
         UXTB     R0,R0
         POP      {R4,PC}          ;; return
@@ -1879,18 +1943,18 @@ RTC_GetFlagStatus:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_ClearFlag:
-        LSLS     R0,R0,#+15       ;; ZeroExtS R0,R0,#+15,#+15
-        LSRS     R0,R0,#+15
-        MOVS     R1,#+128
-        ORRS     R1,R1,R0
-        MVNS     R0,R1
-        LDR      R1,??DataTable42_9  ;; 0x4000280c
-        LDR      R1,[R1, #+0]
+        LSLS     R1,R0,#+15       ;; ZeroExtS R1,R0,#+15,#+15
+        LSRS     R1,R1,#+15
         MOVS     R2,#+128
-        ANDS     R1,R1,R2
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable42_9  ;; 0x4000280c
-        STR      R1,[R0, #+0]
+        ORRS     R2,R2,R1
+        MVNS     R1,R2
+        LDR      R2,??DataTable42_9  ;; 0x4000280c
+        LDR      R2,[R2, #+0]
+        MOVS     R3,#+128
+        ANDS     R2,R2,R3
+        ORRS     R2,R2,R1
+        LDR      R1,??DataTable42_9  ;; 0x4000280c
+        STR      R2,[R1, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -1924,20 +1988,23 @@ RTC_GetITStatus:
         ANDS     R5,R5,R2
         ORRS     R5,R5,R4
         MOVS     R3,R5
-        LDR      R2,??DataTable42_9  ;; 0x4000280c
-        LDR      R4,[R2, #+0]
-        MOVS     R2,R1
-        LSRS     R2,R2,#+4
-        ANDS     R2,R2,R4
+        LDR      R4,??DataTable42_9  ;; 0x4000280c
+        LDR      R4,[R4, #+0]
+        MOVS     R5,R1
+        LSRS     R5,R5,#+4
+        ANDS     R5,R5,R4
+        MOVS     R2,R5
         CMP      R3,#+0
         BEQ      ??RTC_GetITStatus_0
-        UXTH     R0,R2
-        CMP      R0,#+0
+        UXTH     R4,R2
+        CMP      R4,#+0
         BEQ      ??RTC_GetITStatus_0
-        MOVS     R0,#+1
+        MOVS     R4,#+1
+        MOVS     R0,R4
         B        ??RTC_GetITStatus_1
 ??RTC_GetITStatus_0:
-        MOVS     R0,#+0
+        MOVS     R4,#+0
+        MOVS     R0,R4
 ??RTC_GetITStatus_1:
         UXTB     R0,R0
         POP      {R4-R6,PC}       ;; return
@@ -1945,20 +2012,23 @@ RTC_GetITStatus:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 RTC_ClearITPendingBit:
+        PUSH     {R4}
         MOVS     R1,#+0
-        LSRS     R0,R0,#+4
-        MOVS     R1,R0
-        UXTH     R0,R1
-        MOVS     R1,#+128
-        ORRS     R1,R1,R0
-        MVNS     R0,R1
-        LDR      R1,??DataTable42_9  ;; 0x4000280c
-        LDR      R1,[R1, #+0]
-        MOVS     R2,#+128
-        ANDS     R1,R1,R2
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable42_9  ;; 0x4000280c
-        STR      R1,[R0, #+0]
+        MOVS     R2,R0
+        LSRS     R2,R2,#+4
+        MOVS     R1,R2
+        UXTH     R2,R1
+        MOVS     R3,#+128
+        ORRS     R3,R3,R2
+        MVNS     R2,R3
+        LDR      R3,??DataTable42_9  ;; 0x4000280c
+        LDR      R3,[R3, #+0]
+        MOVS     R4,#+128
+        ANDS     R3,R3,R4
+        ORRS     R3,R3,R2
+        LDR      R2,??DataTable42_9  ;; 0x4000280c
+        STR      R3,[R2, #+0]
+        POP      {R4}
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -2044,14 +2114,14 @@ RTC_ClearITPendingBit:
 RTC_ByteToBcd2:
         PUSH     {LR}
         MOVS     R1,#+0
-        B        ??RTC_ByteToBcd2_0
-??RTC_ByteToBcd2_1:
-        ADDS     R1,R1,#+1
-        SUBS     R0,R0,#+10
 ??RTC_ByteToBcd2_0:
         UXTB     R0,R0
         CMP      R0,#+10
-        BGE      ??RTC_ByteToBcd2_1
+        BLT      ??RTC_ByteToBcd2_1
+        ADDS     R1,R1,#+1
+        SUBS     R0,R0,#+10
+        B        ??RTC_ByteToBcd2_0
+??RTC_ByteToBcd2_1:
         LSLS     R1,R1,#+4
         ORRS     R0,R0,R1
         UXTB     R0,R0
@@ -2086,9 +2156,9 @@ RTC_Bcd2ToByte:
 
         END
 // 
-// 3 066 bytes in section .text
+// 3 210 bytes in section .text
 // 
-// 3 066 bytes of CODE memory
+// 3 210 bytes of CODE memory
 //
 //Errors: none
 //Warnings: none

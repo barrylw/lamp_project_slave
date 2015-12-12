@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:42
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:22
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,12 +9,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\APP\sx1276-FskMisc.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -27,7 +27,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  
 //        G:\git_hub_lamp\lamp_slave_git\Debug\List\sx1276-FskMisc.s
@@ -85,24 +85,28 @@
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SX1276FskSetRFFrequency:
-        PUSH     {R7,LR}
-        LDR      R1,??DataTable6
-        STR      R0,[R1, #+0]
+        PUSH     {R4,LR}
+        MOVS     R4,R0
+        LDR      R0,??DataTable6
+        STR      R4,[R0, #+0]
+        MOVS     R0,R4
         BL       __aeabi_ui2d
         MOVS     R2,#+0
         LDR      R3,??DataTable6_1  ;; 0x404e8480
         BL       __aeabi_ddiv
         BL       __aeabi_d2uiz
-        MOVS     R1,R0
-        LSRS     R1,R1,#+16
-        LDR      R2,??DataTable6_2
-        LDR      R2,[R2, #+0]
-        STRB     R1,[R2, #+6]
-        MOVS     R1,R0
-        LSRS     R1,R1,#+8
-        LDR      R2,??DataTable6_2
-        LDR      R2,[R2, #+0]
-        STRB     R1,[R2, #+7]
+        MOVS     R4,R0
+        MOVS     R0,R4
+        LSRS     R0,R0,#+16
+        LDR      R1,??DataTable6_2
+        LDR      R1,[R1, #+0]
+        STRB     R0,[R1, #+6]
+        MOVS     R0,R4
+        LSRS     R0,R0,#+8
+        LDR      R1,??DataTable6_2
+        LDR      R1,[R1, #+0]
+        STRB     R0,[R1, #+7]
+        MOVS     R0,R4
         LDR      R1,??DataTable6_2
         LDR      R1,[R1, #+0]
         STRB     R0,[R1, #+8]
@@ -112,7 +116,7 @@ SX1276FskSetRFFrequency:
         ADDS     R1,R1,#+6
         MOVS     R0,#+6
         BL       SX1276WriteBuffer
-        POP      {R0,PC}          ;; return
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -199,20 +203,20 @@ SX1276FskRxCalibrate:
         ADDS     R1,R1,#+59
         MOVS     R0,#+59
         BL       SX1276Read
-        B        ??SX1276FskRxCalibrate_0
-??SX1276FskRxCalibrate_1:
-        LDR      R0,??DataTable6_2
-        LDR      R1,[R0, #+0]
-        ADDS     R1,R1,#+59
-        MOVS     R0,#+59
-        BL       SX1276Read
 ??SX1276FskRxCalibrate_0:
         LDR      R0,??DataTable6_2
         LDR      R0,[R0, #+0]
         ADDS     R0,R0,#+59
         LDRB     R0,[R0, #+0]
         LSLS     R0,R0,#+26
-        BMI      ??SX1276FskRxCalibrate_1
+        BPL      ??SX1276FskRxCalibrate_1
+        LDR      R0,??DataTable6_2
+        LDR      R1,[R0, #+0]
+        ADDS     R1,R1,#+59
+        MOVS     R0,#+59
+        BL       SX1276Read
+        B        ??SX1276FskRxCalibrate_0
+??SX1276FskRxCalibrate_1:
         MOV      R0,SP
         LDRB     R0,[R0, #+0]
         LDR      R1,??DataTable6_2
@@ -230,9 +234,11 @@ SX1276FskRxCalibrate:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SX1276FskSetBitrate:
-        PUSH     {R7,LR}
-        LDR      R1,??DataTable6
-        STR      R0,[R1, #+4]
+        PUSH     {R4,LR}
+        MOVS     R4,R0
+        LDR      R0,??DataTable6
+        STR      R4,[R0, #+4]
+        MOVS     R0,R4
         BL       __aeabi_ui2d
         MOVS     R2,R0
         MOVS     R3,R1
@@ -240,12 +246,14 @@ SX1276FskSetBitrate:
         LDR      R1,??DataTable9  ;; 0x417e8480
         BL       __aeabi_ddiv
         BL       __aeabi_d2iz
-        UXTH     R0,R0
-        MOVS     R1,R0
-        LSRS     R1,R1,#+8
-        LDR      R2,??DataTable6_2
-        LDR      R2,[R2, #+0]
-        STRB     R1,[R2, #+2]
+        MOVS     R4,R0
+        UXTH     R4,R4
+        MOVS     R0,R4
+        LSRS     R0,R0,#+8
+        LDR      R1,??DataTable6_2
+        LDR      R1,[R1, #+0]
+        STRB     R0,[R1, #+2]
+        MOVS     R0,R4
         LDR      R1,??DataTable6_2
         LDR      R1,[R1, #+0]
         STRB     R0,[R1, #+3]
@@ -255,7 +263,7 @@ SX1276FskSetBitrate:
         ADDS     R1,R1,#+2
         MOVS     R0,#+2
         BL       SX1276WriteBuffer
-        POP      {R0,PC}          ;; return
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -326,9 +334,10 @@ SX1276FskSetFdev:
         LDR      R1,??DataTable6_2
         LDR      R1,[R1, #+0]
         STRB     R0,[R1, #+4]
-        LDR      R0,??DataTable6_2
-        LDR      R0,[R0, #+0]
-        STRB     R4,[R0, #+5]
+        MOVS     R0,R4
+        LDR      R1,??DataTable6_2
+        LDR      R1,[R1, #+0]
+        STRB     R0,[R1, #+5]
         MOVS     R2,#+2
         LDR      R0,??DataTable6_2
         LDR      R1,[R0, #+0]
@@ -420,12 +429,14 @@ SX1276FskSetRFPower:
         SXTB     R4,R4
         CMP      R4,#+5
         BGE      ??SX1276FskSetRFPower_2
-        MOVS     R4,#+5
+        MOVS     R0,#+5
+        MOVS     R4,R0
 ??SX1276FskSetRFPower_2:
         SXTB     R4,R4
         CMP      R4,#+21
         BLT      ??SX1276FskSetRFPower_3
-        MOVS     R4,#+20
+        MOVS     R0,#+20
+        MOVS     R4,R0
 ??SX1276FskSetRFPower_3:
         LDR      R0,??DataTable11
         LDR      R0,[R0, #+0]
@@ -453,12 +464,14 @@ SX1276FskSetRFPower:
         SXTB     R4,R4
         CMP      R4,#+2
         BGE      ??SX1276FskSetRFPower_5
-        MOVS     R4,#+2
+        MOVS     R0,#+2
+        MOVS     R4,R0
 ??SX1276FskSetRFPower_5:
         SXTB     R4,R4
         CMP      R4,#+18
         BLT      ??SX1276FskSetRFPower_6
-        MOVS     R4,#+17
+        MOVS     R0,#+17
+        MOVS     R4,R0
 ??SX1276FskSetRFPower_6:
         LDR      R0,??DataTable11
         LDR      R0,[R0, #+0]
@@ -488,13 +501,15 @@ SX1276FskSetRFPower:
         MVNS     R0,R0            ;; #-1
         CMP      R4,R0
         BGE      ??SX1276FskSetRFPower_7
-        MOVS     R4,#+0
-        MVNS     R4,R4            ;; #-1
+        MOVS     R0,#+0
+        MVNS     R0,R0            ;; #-1
+        MOVS     R4,R0
 ??SX1276FskSetRFPower_7:
         SXTB     R4,R4
         CMP      R4,#+15
         BLT      ??SX1276FskSetRFPower_8
-        MOVS     R4,#+14
+        MOVS     R0,#+14
+        MOVS     R4,R0
 ??SX1276FskSetRFPower_8:
         LDR      R0,??DataTable11
         LDR      R0,[R0, #+0]
@@ -598,15 +613,17 @@ SX1276FskGetRFPower:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SX1276FskComputeRxBw:
-        PUSH     {R4-R6,LR}
-        MOVS     R6,R1
-        UXTB     R0,R0
-        BL       __aeabi_ui2d
+        PUSH     {R3-R7,LR}
         MOVS     R4,R0
         MOVS     R5,R1
-        UXTB     R6,R6
-        ADDS     R6,R6,#+2
-        MOVS     R0,R6
+        UXTB     R4,R4
+        MOVS     R0,R4
+        BL       __aeabi_ui2d
+        MOVS     R6,R0
+        MOVS     R7,R1
+        UXTB     R5,R5
+        MOVS     R0,R5
+        ADDS     R0,R0,#+2
         BL       __aeabi_i2d
         MOVS     R2,R0
         MOVS     R3,R1
@@ -614,8 +631,8 @@ SX1276FskComputeRxBw:
         MOVS     R1,#+128
         LSLS     R1,R1,#+23       ;; #+1073741824
         BL       pow
-        MOVS     R2,R4
-        MOVS     R3,R5
+        MOVS     R2,R6
+        MOVS     R3,R7
         BL       __aeabi_dmul
         MOVS     R2,R0
         MOVS     R3,R1
@@ -623,7 +640,7 @@ SX1276FskComputeRxBw:
         LDR      R1,??DataTable9  ;; 0x417e8480
         BL       __aeabi_ddiv
         BL       __aeabi_d2uiz
-        POP      {R4-R6,PC}       ;; return
+        POP      {R1,R4-R7,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -635,27 +652,35 @@ SX1276FskComputeRxBw:
         THUMB
 SX1276FskComputeRxBwMantExp:
         PUSH     {R0-R2,R4-R7,LR}
-        SUB      SP,SP,#+8
-        MOVS     R7,#+0
-        MOVS     R6,#+0
-        MOVS     R4,#+0
+        SUB      SP,SP,#+16
         MOVS     R5,#+0
+        MOVS     R4,#+0
+        MOVS     R6,#+0
+        MOVS     R7,#+0
         MOVS     R0,#+0
-        LDR      R1,??DataTable19  ;; 0x416312d0
-        MOV      R2,SP
+        LDR      R1,??DataTable18  ;; 0x416312d0
+        ADD      R2,SP,#+8
         STM      R2!,{R0,R1}
         SUBS     R2,R2,#+8
         MOVS     R0,#+0
-        MOVS     R7,R0
-        B        ??SX1276FskComputeRxBwMantExp_0
-??SX1276FskComputeRxBwMantExp_1:
-        UXTB     R6,R6
-        MOVS     R0,R6
-        BL       __aeabi_ui2d
+        MOVS     R5,R0
+??SX1276FskComputeRxBwMantExp_0:
+        UXTB     R5,R5
+        CMP      R5,#+8
+        BGE      ??SX1276FskComputeRxBwMantExp_1
+        MOVS     R0,#+16
         MOVS     R4,R0
-        MOVS     R5,R1
-        UXTB     R7,R7
-        MOVS     R0,R7
+??SX1276FskComputeRxBwMantExp_2:
+        UXTB     R4,R4
+        CMP      R4,#+25
+        BGE      ??SX1276FskComputeRxBwMantExp_3
+        UXTB     R4,R4
+        MOVS     R0,R4
+        BL       __aeabi_ui2d
+        STR      R0,[SP, #+0]
+        STR      R1,[SP, #+4]
+        UXTB     R5,R5
+        MOVS     R0,R5
         ADDS     R0,R0,#+2
         BL       __aeabi_i2d
         MOVS     R2,R0
@@ -664,91 +689,87 @@ SX1276FskComputeRxBwMantExp:
         MOVS     R1,#+128
         LSLS     R1,R1,#+23       ;; #+1073741824
         BL       pow
-        MOVS     R2,R4
-        MOVS     R3,R5
+        LDR      R2,[SP, #+0]
+        LDR      R3,[SP, #+4]
         BL       __aeabi_dmul
         MOVS     R2,R0
         MOVS     R3,R1
         MOVS     R0,#+0
         LDR      R1,??DataTable22  ;; 0x417e8480
         BL       __aeabi_ddiv
-        MOVS     R4,R0
-        MOVS     R5,R1
-        LDR      R0,[SP, #+8]
+        MOVS     R6,R0
+        MOVS     R7,R1
+        LDR      R0,[SP, #+16]
         BL       __aeabi_ui2d
         MOVS     R2,R0
         MOVS     R3,R1
-        MOVS     R0,R4
-        MOVS     R1,R5
+        MOVS     R0,R6
+        MOVS     R1,R7
         BL       __aeabi_dsub
         LSLS     R1,R1,#+1        ;; ZeroExtS R1,R1,#+1,#+1
         LSRS     R1,R1,#+1
-        MOV      R2,SP
+        ADD      R2,SP,#+8
         LDM      R2,{R2,R3}
         BL       __aeabi_cdcmple
-        BCS      ??SX1276FskComputeRxBwMantExp_2
-        LDR      R0,[SP, #+8]
+        BCS      ??SX1276FskComputeRxBwMantExp_4
+        LDR      R0,[SP, #+16]
         BL       __aeabi_ui2d
         MOVS     R2,R0
         MOVS     R3,R1
-        MOVS     R0,R4
-        MOVS     R1,R5
+        MOVS     R0,R6
+        MOVS     R1,R7
         BL       __aeabi_dsub
         LSLS     R1,R1,#+1        ;; ZeroExtS R1,R1,#+1,#+1
         LSRS     R1,R1,#+1
-        MOV      R2,SP
+        ADD      R2,SP,#+8
         STM      R2!,{R0,R1}
         SUBS     R2,R2,#+8
-        LDR      R0,[SP, #+12]
-        STRB     R6,[R0, #+0]
-        LDR      R0,[SP, #+16]
-        STRB     R7,[R0, #+0]
-??SX1276FskComputeRxBwMantExp_2:
-        ADDS     R6,R6,#+4
-??SX1276FskComputeRxBwMantExp_3:
-        UXTB     R6,R6
-        CMP      R6,#+25
-        BLT      ??SX1276FskComputeRxBwMantExp_1
-        ADDS     R7,R7,#+1
-??SX1276FskComputeRxBwMantExp_0:
-        UXTB     R7,R7
-        CMP      R7,#+8
-        BGE      ??SX1276FskComputeRxBwMantExp_4
-        MOVS     R6,#+16
-        B        ??SX1276FskComputeRxBwMantExp_3
+        LDR      R0,[SP, #+20]
+        STRB     R4,[R0, #+0]
+        LDR      R0,[SP, #+24]
+        STRB     R5,[R0, #+0]
 ??SX1276FskComputeRxBwMantExp_4:
-        ADD      SP,SP,#+20
+        ADDS     R4,R4,#+4
+        B        ??SX1276FskComputeRxBwMantExp_2
+??SX1276FskComputeRxBwMantExp_3:
+        ADDS     R5,R5,#+1
+        B        ??SX1276FskComputeRxBwMantExp_0
+??SX1276FskComputeRxBwMantExp_1:
+        ADD      SP,SP,#+28
         POP      {R4-R7,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SX1276FskSetDccBw:
-        PUSH     {R3-R5,LR}
-        MOVS     R5,R0
-        MOVS     R4,R2
+        PUSH     {R4-R6,LR}
+        SUB      SP,SP,#+8
+        MOVS     R4,R0
+        MOVS     R6,R1
+        MOVS     R5,R2
         MOVS     R0,#+0
-        MOV      R2,SP
-        STRB     R0,[R2, #+1]
+        MOV      R1,SP
+        STRB     R0,[R1, #+1]
         MOVS     R0,#+0
-        MOV      R2,SP
-        STRB     R0,[R2, #+0]
+        MOV      R1,SP
+        STRB     R0,[R1, #+0]
         LDR      R0,??DataTable11
         LDR      R0,[R0, #+0]
         ADDS     R0,R0,#+18
-        CMP      R5,R0
+        CMP      R4,R0
         BNE      ??SX1276FskSetDccBw_0
-        MOVS     R0,#+96
-        ANDS     R0,R0,R1
-        STRB     R0,[R5, #+0]
+        MOVS     R0,R6
+        MOVS     R1,#+96
+        ANDS     R1,R1,R0
+        STRB     R1,[R4, #+0]
         B        ??SX1276FskSetDccBw_1
 ??SX1276FskSetDccBw_0:
         MOVS     R0,#+0
-        STRB     R0,[R5, #+0]
+        STRB     R0,[R4, #+0]
 ??SX1276FskSetDccBw_1:
         MOV      R2,SP
         ADD      R1,SP,#+0
         ADDS     R1,R1,#+1
-        MOVS     R0,R4
+        MOVS     R0,R5
         BL       SX1276FskComputeRxBwMantExp
         MOV      R0,SP
         LDRB     R0,[R0, #+1]
@@ -760,16 +781,16 @@ SX1276FskSetDccBw:
         BEQ      ??SX1276FskSetDccBw_4
         B        ??SX1276FskSetDccBw_5
 ??SX1276FskSetDccBw_2:
-        LDRB     R0,[R5, #+0]
+        LDRB     R0,[R4, #+0]
         MOV      R1,SP
         LDRB     R1,[R1, #+0]
         LSLS     R1,R1,#+29       ;; ZeroExtS R1,R1,#+29,#+29
         LSRS     R1,R1,#+29
         ORRS     R1,R1,R0
-        STRB     R1,[R5, #+0]
+        STRB     R1,[R4, #+0]
         B        ??SX1276FskSetDccBw_6
 ??SX1276FskSetDccBw_3:
-        LDRB     R0,[R5, #+0]
+        LDRB     R0,[R4, #+0]
         MOV      R1,SP
         LDRB     R1,[R1, #+0]
         LSLS     R1,R1,#+29       ;; ZeroExtS R1,R1,#+29,#+29
@@ -777,10 +798,10 @@ SX1276FskSetDccBw:
         MOVS     R2,#+8
         ORRS     R2,R2,R1
         ORRS     R2,R2,R0
-        STRB     R2,[R5, #+0]
+        STRB     R2,[R4, #+0]
         B        ??SX1276FskSetDccBw_6
 ??SX1276FskSetDccBw_4:
-        LDRB     R0,[R5, #+0]
+        LDRB     R0,[R4, #+0]
         MOV      R1,SP
         LDRB     R1,[R1, #+0]
         LSLS     R1,R1,#+29       ;; ZeroExtS R1,R1,#+29,#+29
@@ -788,29 +809,29 @@ SX1276FskSetDccBw:
         MOVS     R2,#+16
         ORRS     R2,R2,R1
         ORRS     R2,R2,R0
-        STRB     R2,[R5, #+0]
+        STRB     R2,[R4, #+0]
         B        ??SX1276FskSetDccBw_6
 ??SX1276FskSetDccBw_5:
 ??SX1276FskSetDccBw_6:
         LDR      R0,??DataTable11
         LDR      R0,[R0, #+0]
         ADDS     R0,R0,#+18
-        CMP      R5,R0
+        CMP      R4,R0
         BNE      ??SX1276FskSetDccBw_7
-        LDRB     R1,[R5, #+0]
+        LDRB     R1,[R4, #+0]
         MOVS     R0,#+18
         BL       SX1276Write
         LDR      R0,??DataTable16
-        STR      R4,[R0, #+16]
+        STR      R5,[R0, #+16]
         B        ??SX1276FskSetDccBw_8
 ??SX1276FskSetDccBw_7:
-        LDRB     R1,[R5, #+0]
+        LDRB     R1,[R4, #+0]
         MOVS     R0,#+19
         BL       SX1276Write
         LDR      R0,??DataTable16
-        STR      R4,[R0, #+20]
+        STR      R5,[R0, #+20]
 ??SX1276FskSetDccBw_8:
-        POP      {R0,R4,R5,PC}    ;; return
+        POP      {R0,R1,R4-R6,PC}  ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -821,51 +842,57 @@ SX1276FskSetDccBw:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SX1276FskGetBw:
-        PUSH     {R4,LR}
-        MOVS     R4,R0
-        MOVS     R0,#+0
-        MOVS     R2,#+0
-        LDRB     R1,[R4, #+0]
-        ASRS     R1,R1,#+3
-        LSLS     R1,R1,#+30       ;; ZeroExtS R1,R1,#+30,#+30
-        LSRS     R1,R1,#+30
-        UXTB     R1,R1
-        CMP      R1,#+0
+        PUSH     {R4-R6,LR}
+        MOVS     R6,R0
+        MOVS     R4,#+0
+        MOVS     R5,#+0
+        LDRB     R0,[R6, #+0]
+        ASRS     R0,R0,#+3
+        LSLS     R0,R0,#+30       ;; ZeroExtS R0,R0,#+30,#+30
+        LSRS     R0,R0,#+30
+        UXTB     R0,R0
+        CMP      R0,#+0
         BEQ      ??SX1276FskGetBw_0
-        CMP      R1,#+2
+        CMP      R0,#+2
         BEQ      ??SX1276FskGetBw_1
         BCC      ??SX1276FskGetBw_2
         B        ??SX1276FskGetBw_3
 ??SX1276FskGetBw_0:
-        MOVS     R2,#+16
+        MOVS     R0,#+16
+        MOVS     R5,R0
         B        ??SX1276FskGetBw_4
 ??SX1276FskGetBw_2:
-        MOVS     R2,#+20
+        MOVS     R0,#+20
+        MOVS     R5,R0
         B        ??SX1276FskGetBw_4
 ??SX1276FskGetBw_1:
-        MOVS     R2,#+24
+        MOVS     R0,#+24
+        MOVS     R5,R0
         B        ??SX1276FskGetBw_4
 ??SX1276FskGetBw_3:
 ??SX1276FskGetBw_4:
-        LDRB     R0,[R4, #+0]
+        LDRB     R0,[R6, #+0]
         LSLS     R1,R0,#+29       ;; ZeroExtS R1,R0,#+29,#+29
         LSRS     R1,R1,#+29
-        MOVS     R0,R2
+        MOVS     R0,R5
         UXTB     R0,R0
         BL       SX1276FskComputeRxBw
-        LDR      R1,??DataTable26
-        LDR      R1,[R1, #+0]
-        ADDS     R1,R1,#+18
-        CMP      R4,R1
+        MOVS     R4,R0
+        LDR      R0,??DataTable26
+        LDR      R0,[R0, #+0]
+        ADDS     R0,R0,#+18
+        CMP      R6,R0
         BNE      ??SX1276FskGetBw_5
+        MOVS     R0,R4
         LDR      R1,??DataTable16
         STR      R0,[R1, #+16]
         B        ??SX1276FskGetBw_6
 ??SX1276FskGetBw_5:
+        MOVS     R0,R4
         LDR      R1,??DataTable16
         STR      R0,[R1, #+20]
 ??SX1276FskGetBw_6:
-        POP      {R4,PC}          ;; return
+        POP      {R4-R6,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1015,6 +1042,12 @@ SX1276FskGetPayloadLength:
         LDRB     R0,[R0, #+26]
         POP      {R1,PC}          ;; return
 
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable18:
+        DC32     0x416312d0
+
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SX1276FskSetPa20dBm:
@@ -1059,12 +1092,6 @@ SX1276FskSetPa20dBm:
         BL       SX1276Write
         POP      {R4,PC}          ;; return
 
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable19:
-        DC32     0x416312d0
-
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SX1276FskGetPa20dBm:
@@ -1105,10 +1132,10 @@ SX1276FskSetPAOutput:
         LDRB     R0,[R0, #+9]
         LSLS     R0,R0,#+25       ;; ZeroExtS R0,R0,#+25,#+25
         LSRS     R0,R0,#+25
-        ORRS     R4,R4,R0
-        LDR      R0,??DataTable26
-        LDR      R0,[R0, #+0]
-        STRB     R4,[R0, #+9]
+        ORRS     R0,R0,R4
+        LDR      R1,??DataTable26
+        LDR      R1,[R1, #+0]
+        STRB     R0,[R1, #+9]
         LDR      R0,??DataTable26
         LDR      R0,[R0, #+0]
         LDRB     R1,[R0, #+9]
@@ -1271,9 +1298,7 @@ SX1276FskCalibreateTemp:
         PUSH     {R4,LR}
         MOVS     R4,R0
         BL       SX1276FskGetRawTemp
-        MOVS     R1,R0
-        MOVS     R0,R4
-        SUBS     R0,R0,R1
+        SUBS     R0,R4,R0
         SXTB     R0,R0
         POP      {R4,PC}          ;; return
 
@@ -1300,9 +1325,9 @@ SX1276FskGetTemp:
 
         END
 // 
-// 2 166 bytes in section .text
+// 2 216 bytes in section .text
 // 
-// 2 166 bytes of CODE memory
+// 2 216 bytes of CODE memory
 //
 //Errors: none
 //Warnings: none

@@ -54,6 +54,7 @@ void read_adc(void);
 void reset_8209c(void);
 void read_gdflash(void);
 void set_local_addr(void);
+void read_local_addr(void);
 void write_finish();
 /** @addtogroup  APL Debug Command
   * @{
@@ -77,11 +78,9 @@ static const ST_DEBUG_COMMAND CmdList[] =
   {"readft",read_reg_all},
   {"tx",send_packet},
   {"rx",receive_packet},
-  {"contious",contious_mode_rx},
   {"radioreset",radio_reset},
   {"hopchannel",changeHopChannel},
   {"read8209c",read_8209c_reg},
-  {"sethfconst",set_8209c_hfconst},
   {"set8209c",set_8209c_Reg},
   {"setgain",cal_power_gain},
   {"setangle",cal_power_angle},
@@ -96,8 +95,8 @@ static const ST_DEBUG_COMMAND CmdList[] =
   {"factor",read_factor},
   {"dbsave",debug_save},
   {"adc",read_adc},
-  {"update",read_gdflash},
   {"setaddr",set_local_addr},
+  {"getaddr",read_local_addr},
   {"flashfinish",write_finish},
 
 };
@@ -457,13 +456,6 @@ void receive_packet(void)
   #endif
 }
 
-void contious_mode_rx(void)
-{
-  #ifndef USE_LORA_MODE
-  start_continuous_mode();
-  #endif
-}
-
 void radio_reset(void)
 {
   hal_InitRF();
@@ -500,14 +492,7 @@ void read_8209c_reg(void)
   }
  
   read_8209c_regs( reg , &dat);
-#if 0
-   printf("reg %x = ",reg);
-   for (u8 i = 0; i < length; i++)
-   {
-      printf("%x ",(dat>>(8*(length -i-1)))&0xFF);
-   }
-   printf("\r\n");
-#endif 
+
   printf("reg %x = 0x%x\r\n",reg, dat);
 }
 
@@ -542,28 +527,11 @@ void set_8209c_Reg(void)
   config_8209c_reg(reg, dat);
 }
 
-void set_8209c_hfconst(void)
-{
-  u8 buf[2];
-  
-   u16 dat;
- 
-  Getu16Parameter(&dat, 1);
-  
-  buf[0] = (u8)((dat>>8)&0xFF);
-  buf[1] = (u8)(dat & 0xFF);
-  
-  rn8209c_write_byte(CMDREG, WRITE_ENABLE);
-  
-  rn8209c_write(ADHFConst, buf, 2);
-  
-  rn8209c_write_byte(CMDREG, WRITE_DISABLE);
-  
-  rn8209c_papameter.HFConst = dat;
-}
+
 
 void cal_power_gain(void)
 {
+#if 0
   u8 str[8];
   float val;
   int   valint;
@@ -590,11 +558,13 @@ void cal_power_gain(void)
   rn8209c_write_byte(CMDREG, WRITE_DISABLE);
   
   rn8209c_papameter.GPQA = valint;
+#endif
   
 }
 
 void cal_power_angle(void)
 {
+  #if 0
   u8 str[8];
   float val;
   float vals;
@@ -635,10 +605,13 @@ void cal_power_angle(void)
   }
   
   config_8209c_reg(ADQPHSCAL , qphscal);
+  #endif
 }
+
 
 void set_8209c_Kx(void)
 {
+#if 0
     u32 intVal;
 
     read_8209c_regs(ADURMS,&intVal);
@@ -647,12 +620,13 @@ void set_8209c_Kx(void)
     read_8209c_regs(ADIARMS,&intVal);
     rn8209c_papameter.KIa =  intVal;    // 直接保存寄存器值，到时候再计算 I = 0.5/rn8209c_papameter.KIa * reggValue；
     
-    rn8209c_papameter.Kp = (float)(3221550000000*1000000.0/(4294967296.0*rn8209c_papameter.HFConst*rn8209c_papameter.EC));//uW
-  
+    //rn8209c_papameter.Kp = (float)(3221550000000*1000000.0/(4294967296.0*rn8209c_papameter.HFConst*rn8209c_papameter.EC));//uW
+    rn8209c_papameter.Kp   =  23.59;    //手动计算
     rn8209c_papameter.energyAPulse = 0;
     rn8209c_papameter.energyA      = 0;
     rn8209c_papameter.PFcount      = 0;
     rn8209c_papameter.calibration  = 1;
+    
     
     read_8209c_regs(ADPowerPA,&intVal);
     if (intVal & 0x80000000)
@@ -669,6 +643,21 @@ void set_8209c_Kx(void)
     FLASH_ErasePage(FLASH_ELC_SAVE_ADDRESS);
     
     process_start(&start_time_detect_process, NULL);
+#endif
+    
+    rn8209c_papameter.PStart       = 72;
+    rn8209c_papameter.GPQA         = 9165;
+    rn8209c_papameter.PhsA         = 25;
+    rn8209c_papameter.Ku           = 1188111;  
+    rn8209c_papameter.KIa          = 100500;
+    rn8209c_papameter.Kp           = 23.59;    //手动计算
+    rn8209c_papameter.energyAPulse = 0;
+    rn8209c_papameter.energyA      = 0;
+    rn8209c_papameter.PFcount      = 0;
+    rn8209c_papameter.calibration  = 1;
+    
+    save_8209c_params();
+    FLASH_ErasePage(FLASH_ELC_SAVE_ADDRESS);
 }
 
 void read_param_all(void)
@@ -774,11 +763,12 @@ void reset_8209c(void)
   rn8209c_reset();
 }
 
+#if 0
 void read_gdflash(void)
 {
  printf_params();
 }
-
+#endif
 
 
 u16 find_string16_len(char * str)
@@ -850,7 +840,9 @@ void change_string_to_arry16(char * input, char *output)
 void set_local_addr(void)
 {
    char str[20];
-   u8 temp[3] = {0,0,0};
+   u8   flashtemp[8];
+   u16  crcvalue;
+   u8   temp[3] = {0,0,0};
 
    GetStringParameter(str, 1);
    
@@ -861,6 +853,20 @@ void set_local_addr(void)
      if ( (find_string16_len(str)) == 12)
      {
         change_string_to_arry16(str,  local_addr);
+        crcvalue = GetCRC16(local_addr, 6);
+        memcpy(flashtemp, local_addr, 6);
+        flashtemp[6] = (u8)(crcvalue & 0xFF);
+        flashtemp[7] = (u8)(crcvalue >>8 & 0xFF);
+        
+        if (FLASH_ErasePage(FLASH_LOCAL_ADDR_ADDRESS) == FLASH_COMPLETE)
+        {
+            FLASH_Write_chars( FLASH_LOCAL_ADDR_ADDRESS,  flashtemp, 8);
+        }  
+        memset(flashtemp, 0,8);
+        memcpy(flashtemp, (u8*)FLASH_LOCAL_ADDR_ADDRESS, 8);
+        
+        printf("local_addr 0x%.2x%.2x%.2x%.2x%.2x%.2x\r\n",local_addr[0],local_addr[1],local_addr[2], \
+           local_addr[3],local_addr[4],local_addr[5]); 
      }
      else
      {
@@ -869,8 +875,14 @@ void set_local_addr(void)
    }
    else
    {
-     printf("input have not start 0x\r\n");
+     printf("input haven't start at 0x\r\n");
    }
+}
+
+void read_local_addr(void)
+{
+    printf("local_addr 0x%.2x%.2x%.2x%.2x%.2x%.2x\r\n",local_addr[0],local_addr[1],local_addr[2], \
+           local_addr[3],local_addr[4],local_addr[5]);
 }
 
 void write_finish(void)

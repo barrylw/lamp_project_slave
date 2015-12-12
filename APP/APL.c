@@ -67,7 +67,7 @@ __root const Manufacturer_Version aplVersion =
   {'B', 'R'},//厂商代码 
   {'2', '3'},//芯片代码
    0x30, 0x01, 0x14,//日月年
-  {0x00, 0x06}//版本
+  {0x00, 0x00}//版本
 };
 
 
@@ -128,11 +128,13 @@ PROCESS_THREAD(apl_update_process, ev, data)
             buf = (u8*)data;                          
             get_packet_info(buf, &st_update_packet);
 
-            if (st_update_packet.version == (aplVersion.version[0]*256 + aplVersion.version[1]) )
+            /*
+            if (st_update_packet.version == (aplVersion.version[0] + aplVersion.version[1]*256) )
             {
                 printf("the same version\r\n");
                 continue; //升级包序号错误
             }
+            */
             
             if (st_update_packet.current_packet_No >= st_update_packet.total_packets )
             {
@@ -596,7 +598,10 @@ void FLASH_Write_update_page(u16 packetNo, u8 * Data, u8 length)
   GDflash_write(packet_start_addr, Data, length);
   __enable_irq();
 }
-
+  
+  
+  
+#if 0
 /*****************************************************************************
  *
 将收到的数据按照包的方式，依次存入正确的位置，每个包的长度为64字节，除了最后一个包可能是变长
@@ -623,7 +628,7 @@ void printf_params(void)
 
 
 
-#if 0
+
 u8 modify_update_flash_params(u8 params)
 {
   u32 startADDR = UPDATE_FLASH_PARAMETER_DDR;

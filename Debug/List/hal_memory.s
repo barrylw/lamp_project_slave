@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:31
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:10
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,12 +9,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\APP\hal_memory.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -27,7 +27,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\hal_memory.s
 //
@@ -67,53 +67,56 @@ hal_InitMemoryVariable:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 OS_MemInit:
-        PUSH     {R7,LR}
+        PUSH     {R3-R5,LR}
         MOVS     R1,#+100
         LDR      R0,??DataTable1
         BL       OS_MemClr
-        MOVS     R1,#+0
-        B        ??OS_MemInit_0
-??OS_MemInit_1:
-        UXTH     R1,R1
-        MOVS     R0,#+20
-        MULS     R0,R1,R0
-        LDR      R2,??DataTable1
-        ADDS     R0,R2,R0
-        UXTH     R1,R1
-        MOVS     R2,#+20
-        MULS     R2,R1,R2
-        LDR      R3,??DataTable1
-        ADDS     R2,R3,R2
-        ADDS     R2,R2,#+20
-        STR      R2,[R0, #+4]
-        ADDS     R1,R1,#+1
+        MOVS     R0,#+0
+        MOVS     R5,R0
 ??OS_MemInit_0:
-        UXTH     R1,R1
-        CMP      R1,#+4
-        BCC      ??OS_MemInit_1
-        UXTH     R1,R1
+        UXTH     R5,R5
+        CMP      R5,#+4
+        BCS      ??OS_MemInit_1
+        UXTH     R5,R5
         MOVS     R0,#+20
-        MULS     R0,R1,R0
+        MULS     R0,R5,R0
         LDR      R1,??DataTable1
         ADDS     R0,R1,R0
-        MOVS     R1,#+0
-        STR      R1,[R0, #+4]
+        MOVS     R4,R0
+        UXTH     R5,R5
+        MOVS     R0,#+20
+        MULS     R0,R5,R0
+        LDR      R1,??DataTable1
+        ADDS     R0,R1,R0
+        ADDS     R0,R0,#+20
+        STR      R0,[R4, #+4]
+        ADDS     R5,R5,#+1
+        B        ??OS_MemInit_0
+??OS_MemInit_1:
+        UXTH     R5,R5
+        MOVS     R0,#+20
+        MULS     R0,R5,R0
+        LDR      R1,??DataTable1
+        ADDS     R0,R1,R0
+        MOVS     R4,R0
+        MOVS     R0,#+0
+        STR      R0,[R4, #+4]
         LDR      R0,??DataTable1
         LDR      R1,??DataTable1_1
         STR      R0,[R1, #+0]
-        POP      {R0,PC}          ;; return
+        POP      {R0,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 OSMemCreate:
-        PUSH     {R0,R1,R3-R7,LR}
-        MOVS     R5,R0
-        MOVS     R4,R2
-        MOVS     R7,#+0
+        PUSH     {R0-R7,LR}
+        SUB      SP,SP,#+12
+        MOVS     R6,#+0
         BL       OS_CPU_SR_Save
-        MOVS     R7,R0
+        MOVS     R6,R0
         LDR      R0,??DataTable1_1
-        LDR      R6,[R0, #+0]
+        LDR      R0,[R0, #+0]
+        MOVS     R7,R0
         LDR      R0,??DataTable1_1
         LDR      R0,[R0, #+0]
         CMP      R0,#+0
@@ -124,45 +127,57 @@ OSMemCreate:
         LDR      R1,??DataTable1_1
         STR      R0,[R1, #+0]
 ??OSMemCreate_0:
-        MOVS     R0,R7
+        MOVS     R0,R6
         BL       OS_CPU_SR_Restore
-        CMP      R6,#+0
+        CMP      R7,#+0
         BNE      ??OSMemCreate_1
         MOVS     R0,#+90
-        LDR      R1,[SP, #+8]
+        LDR      R1,[SP, #+24]
         STRB     R0,[R1, #+0]
         MOVS     R0,#+0
         B        ??OSMemCreate_2
 ??OSMemCreate_1:
-        MOVS     R1,R5
-        MOVS     R0,R5
-        LDR      R2,[SP, #+4]
-        SUBS     R2,R2,#+1
-        MOVS     R3,#+0
+        LDR      R0,[SP, #+12]
+        STR      R0,[SP, #+0]
+        LDR      R0,[SP, #+12]
+        MOVS     R4,R0
+        LDR      R0,[SP, #+16]
+        SUBS     R0,R0,#+1
+        STR      R0,[SP, #+4]
+        MOVS     R0,#+0
+        MOVS     R5,R0
+??OSMemCreate_3:
+        LDR      R0,[SP, #+4]
+        CMP      R5,R0
+        BCS      ??OSMemCreate_4
+        LDR      R0,[SP, #+20]
+        ADDS     R4,R4,R0
+        LDR      R0,[SP, #+0]
+        STR      R4,[R0, #+0]
+        STR      R4,[SP, #+0]
+        ADDS     R5,R5,#+1
         B        ??OSMemCreate_3
 ??OSMemCreate_4:
-        ADDS     R0,R0,R4
-        STR      R0,[R1, #+0]
-        MOVS     R1,R0
-        ADDS     R3,R3,#+1
-??OSMemCreate_3:
-        CMP      R3,R2
-        BCC      ??OSMemCreate_4
         MOVS     R0,#+0
+        LDR      R1,[SP, #+0]
         STR      R0,[R1, #+0]
-        STR      R5,[R6, #+0]
-        STR      R5,[R6, #+4]
-        LDR      R0,[SP, #+4]
-        STR      R0,[R6, #+16]
-        LDR      R0,[SP, #+4]
-        STR      R0,[R6, #+12]
-        STR      R4,[R6, #+8]
+        LDR      R0,[SP, #+12]
+        STR      R0,[R7, #+0]
+        LDR      R0,[SP, #+12]
+        STR      R0,[R7, #+4]
+        LDR      R0,[SP, #+16]
+        STR      R0,[R7, #+16]
+        LDR      R0,[SP, #+16]
+        STR      R0,[R7, #+12]
+        LDR      R0,[SP, #+20]
+        STR      R0,[R7, #+8]
         MOVS     R0,#+0
-        LDR      R1,[SP, #+8]
+        LDR      R1,[SP, #+24]
         STRB     R0,[R1, #+0]
-        MOVS     R0,R6
+        MOVS     R0,R7
 ??OSMemCreate_2:
-        POP      {R1-R7,PC}       ;; return
+        ADD      SP,SP,#+28
+        POP      {R4-R7,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -180,31 +195,32 @@ OSMemCreate:
         THUMB
 OSMemGet:
         PUSH     {R3-R7,LR}
-        MOVS     R5,R0
-        MOVS     R4,R1
+        MOVS     R4,R0
+        MOVS     R7,R1
         MOVS     R6,#+0
         BL       OS_CPU_SR_Save
         MOVS     R6,R0
-        LDR      R0,[R5, #+16]
+        LDR      R0,[R4, #+16]
         CMP      R0,#+0
         BEQ      ??OSMemGet_0
-        LDR      R7,[R5, #+4]
-        LDR      R0,[R7, #+0]
-        STR      R0,[R5, #+4]
-        LDR      R0,[R5, #+16]
+        LDR      R0,[R4, #+4]
+        MOVS     R5,R0
+        LDR      R0,[R5, #+0]
+        STR      R0,[R4, #+4]
+        LDR      R0,[R4, #+16]
         SUBS     R0,R0,#+1
-        STR      R0,[R5, #+16]
+        STR      R0,[R4, #+16]
         MOVS     R0,R6
         BL       OS_CPU_SR_Restore
         MOVS     R0,#+0
-        STRB     R0,[R4, #+0]
-        MOVS     R0,R7
+        STRB     R0,[R7, #+0]
+        MOVS     R0,R5
         B        ??OSMemGet_1
 ??OSMemGet_0:
         MOVS     R0,R6
         BL       OS_CPU_SR_Restore
         MOVS     R0,#+93
-        STRB     R0,[R4, #+0]
+        STRB     R0,[R7, #+0]
         MOVS     R0,#+0
 ??OSMemGet_1:
         POP      {R1,R4-R7,PC}    ;; return
@@ -271,33 +287,33 @@ OSMemQuery:
         THUMB
 OS_MemCopy:
         PUSH     {LR}
-        B        ??OS_MemCopy_0
-??OS_MemCopy_1:
+??OS_MemCopy_0:
+        UXTH     R2,R2
+        CMP      R2,#+0
+        BEQ      ??OS_MemCopy_1
         LDRB     R3,[R1, #+0]
         STRB     R3,[R0, #+0]
         ADDS     R1,R1,#+1
         ADDS     R0,R0,#+1
         SUBS     R2,R2,#+1
-??OS_MemCopy_0:
-        UXTH     R2,R2
-        CMP      R2,#+0
-        BNE      ??OS_MemCopy_1
+        B        ??OS_MemCopy_0
+??OS_MemCopy_1:
         POP      {PC}             ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 OS_MemClr:
         PUSH     {LR}
-        B        ??OS_MemClr_0
-??OS_MemClr_1:
+??OS_MemClr_0:
+        UXTH     R1,R1
+        CMP      R1,#+0
+        BEQ      ??OS_MemClr_1
         MOVS     R2,#+0
         STRB     R2,[R0, #+0]
         ADDS     R0,R0,#+1
         SUBS     R1,R1,#+1
-??OS_MemClr_0:
-        UXTH     R1,R1
-        CMP      R1,#+0
-        BNE      ??OS_MemClr_1
+        B        ??OS_MemClr_0
+??OS_MemClr_1:
         POP      {PC}             ;; return
 
         SECTION `.iar_vfe_header`:DATA:NOALLOC:NOROOT(2)
@@ -314,9 +330,9 @@ OS_MemClr:
         END
 // 
 // 104 bytes in section .bss
-// 400 bytes in section .text
+// 432 bytes in section .text
 // 
-// 400 bytes of CODE memory
+// 432 bytes of CODE memory
 // 104 bytes of DATA memory
 //
 //Errors: none

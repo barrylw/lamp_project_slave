@@ -172,6 +172,7 @@
           <state>STM32F030X8</state>
           <state>AUTOSTART_ENABLE</state>
           <state>PRINTF_DEBUG</state>
+          <state>USE_LORA_MODE</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -331,7 +332,7 @@
         </option>
         <option>
           <name>CCOptLevel</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CCOptStrategy</name>
@@ -340,7 +341,7 @@
         </option>
         <option>
           <name>CCOptLevelSlave</name>
-          <state>1</state>
+          <state>0</state>
         </option>
         <option>
           <name>CompilerMisraRules98</name>
@@ -607,7 +608,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>APP06.bin</state>
+          <state>slaveAPP01.bin</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>

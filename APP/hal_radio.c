@@ -60,7 +60,7 @@ extern u8 tedtbuf[];
 extern const Manufacturer_Version aplVersion;
 struct etimer timer_rf; 
 
-u8 local_addr[6]    = {0x0b, 0x9a, 0x09, 0x03, 0x00, 0x11};
+u8 local_addr[6]    = {0xFE, 0xFF, 0xFF, 0xFF, 0xFF, 0xFE};
 u8 bordcast_addr[6] = {0x99, 0x99, 0x99, 0x99, 0x99, 0x99};
 
 
@@ -374,20 +374,22 @@ PROCESS_THREAD(hal_RF_process, ev, data)
            }
            printf("\r\n");
            
-         g_RF_LoRa.rf_DataBuffer[0] =   hal_get_equal_RxPacketRssi();
+#if 0
+        g_RF_LoRa.rf_DataBuffer[0] =   hal_get_equal_RxPacketRssi();
           
         #ifndef USE_LORA_MODE
         SX1276Fsk_Send_Packet(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_RxPacketSize);
         #else
         SX1276LoRa_Send_Packet(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_RxPacketSize);
         #endif
+#endif
          
           if (g_RF_LoRa.rf_DataBufferValid)
           {
               //etimer_stop(&timer_rf);                                 //此处如果不在中断函数中处理，就要在进程函数中处理
               hal_ToggleLED(TXD_LED);
               g_RF_LoRa.rf_DataBufferValid = false;
-              //apl_ProcessRadioCmd();
+              apl_ProcessRadioCmd();
           }
         }
     }
@@ -1276,6 +1278,20 @@ void hal_sRF_Transmit(u8 *pBuffer, u8 length, u8 channel)
   SX1276LoRa_Send_Packet(pBuffer,length);
 }
 
+
+void read_addr(u8 *addrbuf)
+{
+   u16 crcval;
+   u8  temp[8];
+   memcpy(temp, (u8*)FLASH_LOCAL_ADDR_ADDRESS, 8);
+   
+   crcval = temp[6] + temp[7]*256;
+   
+   if (crcval == GetCRC16(temp,6))
+   {
+     memcpy(addrbuf, temp, 6);
+   }
+}
 /*****************************************************************************
  Prototype    : hal_InitRF
  Description  : none
@@ -1295,6 +1311,7 @@ void hal_InitRF(void)
 #else
   SX1276_lora_init(false);
 #endif
+  read_addr(local_addr);
   printf("reset RF\r\n");
 }
 

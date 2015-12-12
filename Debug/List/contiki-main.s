@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:28:36
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  13:18:39
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,12 +9,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\APP\contiki-main.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -27,7 +27,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\contiki-main.s
 //
@@ -114,8 +114,9 @@ VectorTable:
 main:
         PUSH     {R7,LR}
         MOVS     R0,#+0
-        B        ??main_0
-??main_1:
+??main_0:
+        CMP      R0,#+48
+        BCS      ??main_1
         LSLS     R1,R0,#+2
         LDR      R2,??DataTable0  ;; 0x8001000
         LDR      R1,[R1, R2]
@@ -125,27 +126,26 @@ main:
         LSLS     R3,R3,#+22       ;; #+536870912
         STR      R1,[R3, R2]
         ADDS     R0,R0,#+1
-??main_0:
-        CMP      R0,#+48
-        BCC      ??main_1
+        B        ??main_0
+??main_1:
         MOVS     R1,#+1
         MOVS     R0,#+1
         BL       RCC_APB2PeriphClockCmd
         MOVS     R0,#+3
         BL       SYSCFG_MemoryRemapConfig
         MOVS     R0,#+0
-        B        ??main_2
-??main_3:
+??main_2:
+        UXTB     R0,R0
+        CMP      R0,#+150
+        BGE      ??main_3
         MOVS     R1,R0
         ADDS     R1,R1,#+1
         UXTB     R0,R0
         LDR      R2,??DataTable0_1
         STRB     R1,[R2, R0]
         ADDS     R0,R0,#+1
-??main_2:
-        UXTB     R0,R0
-        CMP      R0,#+150
-        BLT      ??main_3
+        B        ??main_2
+??main_3:
         BL       InitVariable
         BL       InitHardware
         BL       gpio_per_init

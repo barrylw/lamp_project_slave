@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:30
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:08
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,12 +9,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\core\sys\etimer.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -27,7 +27,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\etimer.s
 //
@@ -76,7 +76,7 @@ etimer_process:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 update_time:
-        PUSH     {R4,LR}
+        PUSH     {R4-R6,LR}
         LDR      R0,??DataTable6
         LDR      R0,[R0, #+0]
         CMP      R0,#+0
@@ -87,35 +87,39 @@ update_time:
         B        ??update_time_1
 ??update_time_0:
         BL       clock_time
-        LDR      R1,??DataTable6
-        LDR      R1,[R1, #+0]
-        LDR      R2,[R1, #+0]
-        LDR      R3,[R1, #+4]
-        ADDS     R2,R2,R3
-        SUBS     R2,R2,R0
-        LDR      R1,[R1, #+8]
+        MOVS     R5,R0
+        LDR      R0,??DataTable6
+        LDR      R0,[R0, #+0]
+        MOVS     R6,R0
+        LDR      R0,[R6, #+0]
+        LDR      R1,[R6, #+4]
+        ADDS     R0,R0,R1
+        SUBS     R0,R0,R5
+        MOVS     R4,R0
+        LDR      R6,[R6, #+8]
+??update_time_2:
+        CMP      R6,#+0
+        BEQ      ??update_time_3
+        LDR      R0,[R6, #+0]
+        LDR      R1,[R6, #+4]
+        ADDS     R0,R0,R1
+        SUBS     R0,R0,R5
+        CMP      R0,R4
+        BCS      ??update_time_4
+        LDR      R0,[R6, #+0]
+        LDR      R1,[R6, #+4]
+        ADDS     R0,R0,R1
+        SUBS     R0,R0,R5
+        MOVS     R4,R0
+??update_time_4:
+        LDR      R6,[R6, #+8]
         B        ??update_time_2
 ??update_time_3:
-        LDR      R3,[R1, #+0]
-        LDR      R4,[R1, #+4]
-        ADDS     R3,R3,R4
-        SUBS     R3,R3,R0
-        CMP      R3,R2
-        BCS      ??update_time_4
-        LDR      R2,[R1, #+0]
-        LDR      R3,[R1, #+4]
-        ADDS     R2,R2,R3
-        SUBS     R2,R2,R0
-??update_time_4:
-        LDR      R1,[R1, #+8]
-??update_time_2:
-        CMP      R1,#+0
-        BNE      ??update_time_3
-        ADDS     R0,R0,R2
+        ADDS     R0,R5,R4
         LDR      R1,??DataTable6_1
         STR      R0,[R1, #+0]
 ??update_time_1:
-        POP      {R4,PC}          ;; return
+        POP      {R4-R6,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -149,92 +153,95 @@ process_thread_etimer_process:
         CMP      R7,#+135
         BNE      ??process_thread_etimer_process_6
         LDR      R0,[SP, #+0]
-        B        ??process_thread_etimer_process_7
-??process_thread_etimer_process_8:
+??process_thread_etimer_process_7:
+        LDR      R1,??DataTable6
+        LDR      R1,[R1, #+0]
+        CMP      R1,#+0
+        BEQ      ??process_thread_etimer_process_8
+        LDR      R1,??DataTable6
+        LDR      R1,[R1, #+0]
+        LDR      R1,[R1, #+12]
+        CMP      R1,R0
+        BNE      ??process_thread_etimer_process_8
         LDR      R1,??DataTable6
         LDR      R1,[R1, #+0]
         LDR      R1,[R1, #+8]
         LDR      R2,??DataTable6
         STR      R1,[R2, #+0]
-??process_thread_etimer_process_7:
+        B        ??process_thread_etimer_process_7
+??process_thread_etimer_process_8:
         LDR      R1,??DataTable6
         LDR      R1,[R1, #+0]
         CMP      R1,#+0
         BEQ      ??process_thread_etimer_process_9
         LDR      R1,??DataTable6
         LDR      R1,[R1, #+0]
+        MOVS     R5,R1
+??process_thread_etimer_process_10:
+        LDR      R1,[R5, #+8]
+        CMP      R1,#+0
+        BEQ      ??process_thread_etimer_process_9
+        LDR      R1,[R5, #+8]
         LDR      R1,[R1, #+12]
         CMP      R1,R0
-        BEQ      ??process_thread_etimer_process_8
-??process_thread_etimer_process_9:
-        LDR      R1,??DataTable6
-        LDR      R1,[R1, #+0]
-        CMP      R1,#+0
-        BEQ      ??process_thread_etimer_process_10
-        LDR      R1,??DataTable6
-        LDR      R5,[R1, #+0]
-        B        ??process_thread_etimer_process_11
-??process_thread_etimer_process_12:
+        BNE      ??process_thread_etimer_process_11
         LDR      R1,[R5, #+8]
         LDR      R1,[R1, #+8]
         STR      R1,[R5, #+8]
+        B        ??process_thread_etimer_process_10
 ??process_thread_etimer_process_11:
-        LDR      R1,[R5, #+8]
-        CMP      R1,#+0
-        BEQ      ??process_thread_etimer_process_10
-        LDR      R1,[R5, #+8]
-        LDR      R1,[R1, #+12]
-        CMP      R1,R0
-        BEQ      ??process_thread_etimer_process_12
         LDR      R5,[R5, #+8]
-        B        ??process_thread_etimer_process_11
-??process_thread_etimer_process_10:
+        B        ??process_thread_etimer_process_10
+??process_thread_etimer_process_9:
         B        ??process_thread_etimer_process_3
 ??process_thread_etimer_process_6:
         UXTB     R7,R7
         CMP      R7,#+130
-        BEQ      ??process_thread_etimer_process_13
-        B        ??process_thread_etimer_process_3
-??process_thread_etimer_process_14:
-        LDR      R0,[R5, #+8]
-        LDR      R1,??DataTable6
-        STR      R0,[R1, #+0]
-??process_thread_etimer_process_15:
+        BNE      ??process_thread_etimer_process_3
+??process_thread_etimer_process_12:
         MOVS     R0,#+0
-        STR      R0,[R5, #+8]
-        BL       update_time
-??process_thread_etimer_process_13:
-        MOVS     R4,#+0
+        MOVS     R4,R0
         LDR      R0,??DataTable6
-        LDR      R5,[R0, #+0]
-        B        ??process_thread_etimer_process_16
-??process_thread_etimer_process_17:
-        BL       etimer_request_poll
-??process_thread_etimer_process_18:
-        MOVS     R4,R5
-        LDR      R5,[R5, #+8]
-??process_thread_etimer_process_16:
+        LDR      R0,[R0, #+0]
+        MOVS     R5,R0
+??process_thread_etimer_process_13:
         CMP      R5,#+0
         BEQ      ??process_thread_etimer_process_3
         MOVS     R0,R5
         BL       timer_expired
         CMP      R0,#+0
-        BEQ      ??process_thread_etimer_process_18
+        BEQ      ??process_thread_etimer_process_14
         MOVS     R2,R5
         MOVS     R1,#+136
         LDR      R0,[R5, #+12]
         BL       process_post
         CMP      R0,#+0
-        BNE      ??process_thread_etimer_process_17
+        BNE      ??process_thread_etimer_process_15
         MOVS     R0,#+0
         STR      R0,[R5, #+12]
         CMP      R4,#+0
-        BEQ      ??process_thread_etimer_process_14
+        BEQ      ??process_thread_etimer_process_16
         LDR      R0,[R5, #+8]
         STR      R0,[R4, #+8]
-        B        ??process_thread_etimer_process_15
+        B        ??process_thread_etimer_process_17
+??process_thread_etimer_process_16:
+        LDR      R0,[R5, #+8]
+        LDR      R1,??DataTable6
+        STR      R0,[R1, #+0]
+??process_thread_etimer_process_17:
+        MOVS     R0,#+0
+        STR      R0,[R5, #+8]
+        BL       update_time
+        B        ??process_thread_etimer_process_12
+??process_thread_etimer_process_15:
+        BL       etimer_request_poll
+??process_thread_etimer_process_14:
+        MOVS     R4,R5
+        LDR      R5,[R5, #+8]
+        B        ??process_thread_etimer_process_13
 ??process_thread_etimer_process_2:
-        MOVS     R1,#+0
+        MOVS     R0,#+0
+        MOVS     R1,R0
         MOVS     R0,#+0
         STRH     R0,[R6, #+0]
         MOVS     R0,#+3
@@ -252,7 +259,7 @@ etimer_request_poll:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 add_timer:
-        PUSH     {R4,LR}
+        PUSH     {R3-R5,LR}
         MOVS     R4,R0
         BL       etimer_request_poll
         LDR      R0,[R4, #+12]
@@ -260,19 +267,20 @@ add_timer:
         BEQ      ??add_timer_0
         LDR      R0,??DataTable6
         LDR      R0,[R0, #+0]
-        B        ??add_timer_1
-??add_timer_2:
-        LDR      R0,[R0, #+8]
+        MOVS     R5,R0
 ??add_timer_1:
-        CMP      R0,#+0
+        CMP      R5,#+0
         BEQ      ??add_timer_0
-        CMP      R0,R4
+        CMP      R5,R4
         BNE      ??add_timer_2
         LDR      R0,??DataTable6_3
         LDR      R0,[R0, #+0]
         STR      R0,[R4, #+12]
         BL       update_time
         B        ??add_timer_3
+??add_timer_2:
+        LDR      R5,[R5, #+8]
+        B        ??add_timer_1
 ??add_timer_0:
         LDR      R0,??DataTable6_3
         LDR      R0,[R0, #+0]
@@ -284,18 +292,20 @@ add_timer:
         STR      R4,[R0, #+0]
         BL       update_time
 ??add_timer_3:
-        POP      {R4,PC}          ;; return
+        POP      {R0,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 etimer_set:
-        PUSH     {R4,LR}
-        MOVS     R4,R0
-        MOVS     R0,R4
+        PUSH     {R3-R5,LR}
+        MOVS     R5,R0
+        MOVS     R4,R1
+        MOVS     R1,R4
+        MOVS     R0,R5
         BL       timer_set
-        MOVS     R0,R4
+        MOVS     R0,R5
         BL       add_timer
-        POP      {R4,PC}          ;; return
+        POP      {R0,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -322,12 +332,14 @@ etimer_restart:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 etimer_adjust:
-        PUSH     {R7,LR}
-        LDR      R2,[R0, #+0]
-        ADDS     R1,R2,R1
-        STR      R1,[R0, #+0]
+        PUSH     {R3-R5,LR}
+        MOVS     R5,R0
+        MOVS     R4,R1
+        LDR      R0,[R5, #+0]
+        ADDS     R0,R0,R4
+        STR      R0,[R5, #+0]
         BL       update_time
-        POP      {R0,PC}          ;; return
+        POP      {R0,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -392,7 +404,7 @@ etimer_next_expiration_time:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 etimer_stop:
-        PUSH     {R4,LR}
+        PUSH     {R3-R5,LR}
         MOVS     R4,R0
         LDR      R0,??DataTable6
         LDR      R0,[R0, #+0]
@@ -408,27 +420,27 @@ etimer_stop:
 ??etimer_stop_0:
         LDR      R0,??DataTable6
         LDR      R0,[R0, #+0]
+        MOVS     R5,R0
+??etimer_stop_2:
+        CMP      R5,#+0
+        BEQ      ??etimer_stop_3
+        LDR      R0,[R5, #+8]
+        CMP      R0,R4
+        BEQ      ??etimer_stop_3
+        LDR      R5,[R5, #+8]
         B        ??etimer_stop_2
 ??etimer_stop_3:
-        LDR      R0,[R0, #+8]
-??etimer_stop_2:
-        CMP      R0,#+0
-        BEQ      ??etimer_stop_4
-        LDR      R1,[R0, #+8]
-        CMP      R1,R4
-        BNE      ??etimer_stop_3
-??etimer_stop_4:
-        CMP      R0,#+0
+        CMP      R5,#+0
         BEQ      ??etimer_stop_1
-        LDR      R1,[R4, #+8]
-        STR      R1,[R0, #+8]
+        LDR      R0,[R4, #+8]
+        STR      R0,[R5, #+8]
         BL       update_time
 ??etimer_stop_1:
         MOVS     R0,#+0
         STR      R0,[R4, #+8]
         MOVS     R0,#+0
         STR      R0,[R4, #+12]
-        POP      {R4,PC}          ;; return
+        POP      {R0,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -457,10 +469,14 @@ etimer_stop:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 etimer_remodify:
-        PUSH     {R7,LR}
+        PUSH     {R3-R5,LR}
+        MOVS     R5,R0
+        MOVS     R4,R1
+        MOVS     R1,R4
+        MOVS     R0,R5
         BL       timer_set
         BL       update_time
-        POP      {R0,PC}          ;; return
+        POP      {R0,R4,R5,PC}    ;; return
 
         SECTION `.iar_vfe_header`:DATA:NOALLOC:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -483,9 +499,9 @@ etimer_remodify:
 //   8 bytes in section .bss
 //  16 bytes in section .data
 //  12 bytes in section .rodata
-// 590 bytes in section .text
+// 626 bytes in section .text
 // 
-// 590 bytes of CODE  memory
+// 626 bytes of CODE  memory
 //  12 bytes of CONST memory
 //  24 bytes of DATA  memory
 //

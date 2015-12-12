@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:36
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:16
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -10,12 +10,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\src\stm32f0xx_cec.c
 //        -D USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -28,7 +28,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\stm32f0xx_cec.s
 //
@@ -95,8 +95,8 @@ CEC_Init:
         LDR      R2,[R0, #+24]
         ORRS     R2,R2,R3
         ORRS     R2,R2,R1
-        LDR      R0,??DataTable13  ;; 0x40007804
-        STR      R2,[R0, #+0]
+        LDR      R1,??DataTable13  ;; 0x40007804
+        STR      R2,[R1, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -125,20 +125,20 @@ CEC_Cmd:
         UXTB     R0,R0
         CMP      R0,#+0
         BEQ      ??CEC_Cmd_0
-        LDR      R0,??DataTable13_2  ;; 0x40007800
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+1
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable13_2  ;; 0x40007800
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable13_2  ;; 0x40007800
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+1
+        ORRS     R2,R2,R1
+        LDR      R1,??DataTable13_2  ;; 0x40007800
+        STR      R2,[R1, #+0]
         B        ??CEC_Cmd_1
 ??CEC_Cmd_0:
-        LDR      R0,??DataTable13_2  ;; 0x40007800
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+1
-        BICS     R0,R0,R1
         LDR      R1,??DataTable13_2  ;; 0x40007800
-        STR      R0,[R1, #+0]
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+1
+        BICS     R1,R1,R2
+        LDR      R2,??DataTable13_2  ;; 0x40007800
+        STR      R1,[R2, #+0]
 ??CEC_Cmd_1:
         POP      {PC}             ;; return
 
@@ -149,37 +149,39 @@ CEC_ListenModeCmd:
         UXTB     R0,R0
         CMP      R0,#+0
         BEQ      ??CEC_ListenModeCmd_0
-        LDR      R0,??DataTable13  ;; 0x40007804
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+128
-        LSLS     R1,R1,#+24       ;; #-2147483648
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable13  ;; 0x40007804
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable13  ;; 0x40007804
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+128
+        LSLS     R2,R2,#+24       ;; #-2147483648
+        ORRS     R2,R2,R1
+        LDR      R1,??DataTable13  ;; 0x40007804
+        STR      R2,[R1, #+0]
         B        ??CEC_ListenModeCmd_1
 ??CEC_ListenModeCmd_0:
-        LDR      R0,??DataTable13  ;; 0x40007804
-        LDR      R0,[R0, #+0]
-        LSLS     R0,R0,#+1        ;; ZeroExtS R0,R0,#+1,#+1
-        LSRS     R0,R0,#+1
         LDR      R1,??DataTable13  ;; 0x40007804
-        STR      R0,[R1, #+0]
+        LDR      R1,[R1, #+0]
+        LSLS     R1,R1,#+1        ;; ZeroExtS R1,R1,#+1,#+1
+        LSRS     R1,R1,#+1
+        LDR      R2,??DataTable13  ;; 0x40007804
+        STR      R1,[R2, #+0]
 ??CEC_ListenModeCmd_1:
         POP      {PC}             ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 CEC_OwnAddressConfig:
-        MOVS     R1,#+0
-        MOVS     R2,#+1
+        MOVS     R1,R0
+        MOVS     R2,#+0
+        MOVS     R3,#+1
+        MOVS     R0,R1
         ADDS     R0,R0,#+16
-        LSLS     R2,R2,R0
-        MOVS     R1,R2
+        LSLS     R3,R3,R0
+        MOVS     R2,R3
         LDR      R0,??DataTable13  ;; 0x40007804
         LDR      R0,[R0, #+0]
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable13  ;; 0x40007804
-        STR      R1,[R0, #+0]
+        ORRS     R0,R0,R2
+        LDR      R3,??DataTable13  ;; 0x40007804
+        STR      R0,[R3, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -235,23 +237,23 @@ CEC_ITConfig:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??CEC_ITConfig_0
-        LDR      R1,??DataTable13_5  ;; 0x40007814
-        LDR      R1,[R1, #+0]
+        LDR      R2,??DataTable13_5  ;; 0x40007814
+        LDR      R2,[R2, #+0]
         UXTH     R0,R0
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable13_5  ;; 0x40007814
-        STR      R1,[R0, #+0]
+        ORRS     R2,R2,R0
+        LDR      R3,??DataTable13_5  ;; 0x40007814
+        STR      R2,[R3, #+0]
         B        ??CEC_ITConfig_1
 ??CEC_ITConfig_0:
-        MOVS     R1,R0
-        UXTH     R1,R1
-        MVNS     R0,R1
-        LDR      R1,??DataTable13_5  ;; 0x40007814
-        LDR      R1,[R1, #+0]
+        MOVS     R2,R0
+        UXTH     R2,R2
+        MVNS     R0,R2
+        LDR      R2,??DataTable13_5  ;; 0x40007814
+        LDR      R2,[R2, #+0]
         UXTH     R0,R0
-        ANDS     R1,R1,R0
-        LDR      R0,??DataTable13_5  ;; 0x40007814
-        STR      R1,[R0, #+0]
+        ANDS     R2,R2,R0
+        LDR      R3,??DataTable13_5  ;; 0x40007814
+        STR      R2,[R3, #+0]
 ??CEC_ITConfig_1:
         POP      {PC}             ;; return
 
@@ -267,10 +269,12 @@ CEC_GetFlagStatus:
         ANDS     R2,R2,R1
         CMP      R2,#+0
         BEQ      ??CEC_GetFlagStatus_0
-        MOVS     R0,#+1
+        MOVS     R2,#+1
+        MOVS     R0,R2
         B        ??CEC_GetFlagStatus_1
 ??CEC_GetFlagStatus_0:
-        MOVS     R0,#+0
+        MOVS     R2,#+0
+        MOVS     R0,R2
 ??CEC_GetFlagStatus_1:
         UXTB     R0,R0
         POP      {PC}             ;; return
@@ -302,10 +306,12 @@ CEC_GetITStatus:
         BEQ      ??CEC_GetITStatus_0
         CMP      R2,#+0
         BEQ      ??CEC_GetITStatus_0
-        MOVS     R0,#+1
+        MOVS     R3,#+1
+        MOVS     R0,R3
         B        ??CEC_GetITStatus_1
 ??CEC_GetITStatus_0:
-        MOVS     R0,#+0
+        MOVS     R3,#+0
+        MOVS     R0,R3
 ??CEC_GetITStatus_1:
         UXTB     R0,R0
         POP      {PC}             ;; return
@@ -373,9 +379,9 @@ CEC_ClearITPendingBit:
 
         END
 // 
-// 408 bytes in section .text
+// 420 bytes in section .text
 // 
-// 408 bytes of CODE memory
+// 420 bytes of CODE memory
 //
 //Errors: none
 //Warnings: none

@@ -85,6 +85,7 @@ typedef struct
 #define FLASH_PARAMETER_ADDRESS                        0x0800FC00   //计量参数保存地址
 #define FLASH_ELC_SAVE_ADDRESS                         0x0800F800   //电量参数保存地址
 #define FLASH_UPDATE_PARAMS_ADDRESS                    0x0800F400   //升级参数保存地址
+#define FLASH_LOCAL_ADDR_ADDRESS                       0x0800F000   //本地地址保存地址
     
     
 #define FLASH_API_PAGES                                4

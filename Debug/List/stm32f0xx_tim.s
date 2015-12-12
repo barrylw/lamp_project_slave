@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:41
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:21
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -10,12 +10,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\src\stm32f0xx_tim.c
 //        -D USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -28,7 +28,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\stm32f0xx_tim.s
 //
@@ -133,9 +133,10 @@
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 TIM_DeInit:
-        PUSH     {R7,LR}
-        LDR      R1,??DataTable8  ;; 0x40012c00
-        CMP      R0,R1
+        PUSH     {R4,LR}
+        MOVS     R4,R0
+        LDR      R0,??DataTable8  ;; 0x40012c00
+        CMP      R4,R0
         BNE      ??TIM_DeInit_0
         MOVS     R1,#+1
         MOVS     R0,#+128
@@ -147,9 +148,9 @@ TIM_DeInit:
         BL       RCC_APB2PeriphResetCmd
         B        ??TIM_DeInit_1
 ??TIM_DeInit_0:
-        MOVS     R1,#+128
-        LSLS     R1,R1,#+23       ;; #+1073741824
-        CMP      R0,R1
+        MOVS     R0,#+128
+        LSLS     R0,R0,#+23       ;; #+1073741824
+        CMP      R4,R0
         BNE      ??TIM_DeInit_2
         MOVS     R1,#+1
         MOVS     R0,#+1
@@ -159,8 +160,8 @@ TIM_DeInit:
         BL       RCC_APB1PeriphResetCmd
         B        ??TIM_DeInit_1
 ??TIM_DeInit_2:
-        LDR      R1,??DataTable8_1  ;; 0x40000400
-        CMP      R0,R1
+        LDR      R0,??DataTable8_1  ;; 0x40000400
+        CMP      R4,R0
         BNE      ??TIM_DeInit_3
         MOVS     R1,#+1
         MOVS     R0,#+2
@@ -170,8 +171,8 @@ TIM_DeInit:
         BL       RCC_APB1PeriphResetCmd
         B        ??TIM_DeInit_1
 ??TIM_DeInit_3:
-        LDR      R1,??DataTable8_2  ;; 0x40001000
-        CMP      R0,R1
+        LDR      R0,??DataTable8_2  ;; 0x40001000
+        CMP      R4,R0
         BNE      ??TIM_DeInit_4
         MOVS     R1,#+1
         MOVS     R0,#+16
@@ -181,8 +182,8 @@ TIM_DeInit:
         BL       RCC_APB1PeriphResetCmd
         B        ??TIM_DeInit_1
 ??TIM_DeInit_4:
-        LDR      R1,??DataTable8_3  ;; 0x40002000
-        CMP      R0,R1
+        LDR      R0,??DataTable8_3  ;; 0x40002000
+        CMP      R4,R0
         BNE      ??TIM_DeInit_5
         MOVS     R1,#+1
         MOVS     R0,#+128
@@ -194,8 +195,8 @@ TIM_DeInit:
         BL       RCC_APB1PeriphResetCmd
         B        ??TIM_DeInit_1
 ??TIM_DeInit_5:
-        LDR      R1,??DataTable8_4  ;; 0x40014000
-        CMP      R0,R1
+        LDR      R0,??DataTable8_4  ;; 0x40014000
+        CMP      R4,R0
         BNE      ??TIM_DeInit_6
         MOVS     R1,#+1
         MOVS     R0,#+128
@@ -207,8 +208,8 @@ TIM_DeInit:
         BL       RCC_APB2PeriphResetCmd
         B        ??TIM_DeInit_1
 ??TIM_DeInit_6:
-        LDR      R1,??DataTable9  ;; 0x40014400
-        CMP      R0,R1
+        LDR      R0,??DataTable9  ;; 0x40014400
+        CMP      R4,R0
         BNE      ??TIM_DeInit_7
         MOVS     R1,#+1
         MOVS     R0,#+128
@@ -220,8 +221,8 @@ TIM_DeInit:
         BL       RCC_APB2PeriphResetCmd
         B        ??TIM_DeInit_1
 ??TIM_DeInit_7:
-        LDR      R1,??DataTable10  ;; 0x40014800
-        CMP      R0,R1
+        LDR      R0,??DataTable10  ;; 0x40014800
+        CMP      R4,R0
         BNE      ??TIM_DeInit_1
         MOVS     R1,#+1
         MOVS     R0,#+128
@@ -232,7 +233,7 @@ TIM_DeInit:
         LSLS     R0,R0,#+11       ;; #+262144
         BL       RCC_APB2PeriphResetCmd
 ??TIM_DeInit_1:
-        POP      {R0,PC}          ;; return
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -270,28 +271,28 @@ TIM_TimeBaseInit:
         ORRS     R2,R2,R3
 ??TIM_TimeBaseInit_2:
         STRH     R2,[R0, #+0]
-        LDR      R2,[R1, #+4]
-        STR      R2,[R0, #+44]
-        LDRH     R2,[R1, #+0]
-        STRH     R2,[R0, #+40]
-        LDR      R2,??DataTable8  ;; 0x40012c00
-        CMP      R0,R2
+        LDR      R3,[R1, #+4]
+        STR      R3,[R0, #+44]
+        LDRH     R3,[R1, #+0]
+        STRH     R3,[R0, #+40]
+        LDR      R3,??DataTable8  ;; 0x40012c00
+        CMP      R0,R3
         BEQ      ??TIM_TimeBaseInit_3
-        LDR      R2,??DataTable8_4  ;; 0x40014000
-        CMP      R0,R2
+        LDR      R3,??DataTable8_4  ;; 0x40014000
+        CMP      R0,R3
         BEQ      ??TIM_TimeBaseInit_3
-        LDR      R2,??DataTable9  ;; 0x40014400
-        CMP      R0,R2
+        LDR      R3,??DataTable9  ;; 0x40014400
+        CMP      R0,R3
         BEQ      ??TIM_TimeBaseInit_3
-        LDR      R2,??DataTable10  ;; 0x40014800
-        CMP      R0,R2
+        LDR      R3,??DataTable10  ;; 0x40014800
+        CMP      R0,R3
         BNE      ??TIM_TimeBaseInit_4
 ??TIM_TimeBaseInit_3:
-        LDRB     R1,[R1, #+10]
-        STRH     R1,[R0, #+48]
+        LDRB     R3,[R1, #+10]
+        STRH     R3,[R0, #+48]
 ??TIM_TimeBaseInit_4:
-        MOVS     R1,#+1
-        STRH     R1,[R0, #+20]
+        MOVS     R3,#+1
+        STRH     R3,[R0, #+20]
         POP      {PC}             ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -326,8 +327,7 @@ TIM_CounterModeConfig:
         MOVS     R3,R2
         LDR      R2,??DataTable9_1  ;; 0xff8f
         ANDS     R2,R2,R3
-        ORRS     R1,R1,R2
-        MOVS     R2,R1
+        ORRS     R2,R2,R1
         STRH     R2,[R0, #+0]
         BX       LR               ;; return
 
@@ -362,16 +362,16 @@ TIM_UpdateDisableConfig:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??TIM_UpdateDisableConfig_0
-        LDRH     R1,[R0, #+0]
-        MOVS     R2,#+2
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        MOVS     R3,#+2
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+0]
         B        ??TIM_UpdateDisableConfig_1
 ??TIM_UpdateDisableConfig_0:
-        LDRH     R1,[R0, #+0]
-        LDR      R2,??DataTable12  ;; 0xfffd
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        LDR      R3,??DataTable12  ;; 0xfffd
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+0]
 ??TIM_UpdateDisableConfig_1:
         POP      {PC}             ;; return
 
@@ -382,16 +382,16 @@ TIM_UpdateRequestConfig:
         UXTH     R1,R1
         CMP      R1,#+0
         BEQ      ??TIM_UpdateRequestConfig_0
-        LDRH     R1,[R0, #+0]
-        MOVS     R2,#+4
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        MOVS     R3,#+4
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+0]
         B        ??TIM_UpdateRequestConfig_1
 ??TIM_UpdateRequestConfig_0:
-        LDRH     R1,[R0, #+0]
-        LDR      R2,??DataTable12_1  ;; 0xfffb
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        LDR      R3,??DataTable12_1  ;; 0xfffb
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+0]
 ??TIM_UpdateRequestConfig_1:
         POP      {PC}             ;; return
 
@@ -402,16 +402,16 @@ TIM_ARRPreloadConfig:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??TIM_ARRPreloadConfig_0
-        LDRH     R1,[R0, #+0]
-        MOVS     R2,#+128
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        MOVS     R3,#+128
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+0]
         B        ??TIM_ARRPreloadConfig_1
 ??TIM_ARRPreloadConfig_0:
-        LDRH     R1,[R0, #+0]
-        LDR      R2,??DataTable12_2  ;; 0xff7f
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        LDR      R3,??DataTable12_2  ;; 0xff7f
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+0]
 ??TIM_ARRPreloadConfig_1:
         POP      {PC}             ;; return
 
@@ -423,8 +423,8 @@ TIM_SelectOnePulseMode:
         ANDS     R3,R3,R2
         STRH     R3,[R0, #+0]
         LDRH     R2,[R0, #+0]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+0]
+        ORRS     R2,R2,R1
+        STRH     R2,[R0, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -435,8 +435,8 @@ TIM_SetClockDivision:
         ANDS     R3,R3,R2
         STRH     R3,[R0, #+0]
         LDRH     R2,[R0, #+0]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+0]
+        ORRS     R2,R2,R1
+        STRH     R2,[R0, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -446,16 +446,16 @@ TIM_Cmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??TIM_Cmd_0
-        LDRH     R1,[R0, #+0]
-        MOVS     R2,#+1
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        MOVS     R3,#+1
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+0]
         B        ??TIM_Cmd_1
 ??TIM_Cmd_0:
-        LDRH     R1,[R0, #+0]
-        LDR      R2,??DataTable12_4  ;; 0xfffe
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        LDR      R3,??DataTable12_4  ;; 0xfffe
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+0]
 ??TIM_Cmd_1:
         POP      {PC}             ;; return
 
@@ -503,10 +503,10 @@ TIM_BDTRConfig:
         ORRS     R2,R2,R3
         LDRH     R3,[R1, #+10]
         ORRS     R3,R3,R2
-        LDRH     R1,[R1, #+12]
-        ORRS     R1,R1,R3
-        ADDS     R0,R0,#+68
-        STRH     R1,[R0, #+0]
+        LDRH     R2,[R1, #+12]
+        ORRS     R2,R2,R3
+        MOVS     R3,#+68
+        STRH     R2,[R0, R3]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -535,21 +535,21 @@ TIM_CtrlPWMOutputs:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??TIM_CtrlPWMOutputs_0
-        MOVS     R1,#+68
-        LDRH     R1,[R0, R1]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+8        ;; #+32768
-        ORRS     R2,R2,R1
-        ADDS     R0,R0,#+68
-        STRH     R2,[R0, #+0]
+        MOVS     R2,#+68
+        LDRH     R2,[R0, R2]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+8        ;; #+32768
+        ORRS     R3,R3,R2
+        MOVS     R2,#+68
+        STRH     R3,[R0, R2]
         B        ??TIM_CtrlPWMOutputs_1
 ??TIM_CtrlPWMOutputs_0:
-        MOVS     R1,#+68
-        LDRH     R1,[R0, R1]
-        LSLS     R1,R1,#+17       ;; ZeroExtS R1,R1,#+17,#+17
-        LSRS     R1,R1,#+17
-        ADDS     R0,R0,#+68
-        STRH     R1,[R0, #+0]
+        MOVS     R2,#+68
+        LDRH     R2,[R0, R2]
+        LSLS     R2,R2,#+17       ;; ZeroExtS R2,R2,#+17,#+17
+        LSRS     R2,R2,#+17
+        MOVS     R3,#+68
+        STRH     R2,[R0, R3]
 ??TIM_CtrlPWMOutputs_1:
         POP      {PC}             ;; return
 
@@ -614,10 +614,10 @@ TIM_OC1Init:
         LDRH     R3,[R1, #+4]
         ORRS     R3,R3,R5
         MOVS     R5,R4
-        LDR      R4,??DataTable15  ;; 0xfeff
+        LDR      R4,??DataTable16  ;; 0xfeff
         ANDS     R4,R4,R5
         MOVS     R5,R4
-        LDR      R4,??DataTable22  ;; 0xfdff
+        LDR      R4,??DataTable23  ;; 0xfdff
         ANDS     R4,R4,R5
         MOVS     R5,R4
         LDRH     R4,[R1, #+16]
@@ -628,8 +628,8 @@ TIM_OC1Init:
 ??TIM_OC1Init_1:
         STRH     R4,[R0, #+4]
         STRH     R2,[R0, #+24]
-        LDR      R1,[R1, #+8]
-        STR      R1,[R0, #+52]
+        LDR      R5,[R1, #+8]
+        STR      R5,[R0, #+52]
         STRH     R3,[R0, #+32]
         POP      {R4-R6,PC}       ;; return
 
@@ -659,7 +659,7 @@ TIM_OC2Init:
         MOVS     R3,#+0
         MOVS     R4,#+0
         LDRH     R5,[R0, #+32]
-        LDR      R6,??DataTable17  ;; 0xffef
+        LDR      R6,??DataTable18  ;; 0xffef
         ANDS     R6,R6,R5
         STRH     R6,[R0, #+32]
         LDRH     R5,[R0, #+32]
@@ -669,17 +669,17 @@ TIM_OC2Init:
         LDRH     R5,[R0, #+24]
         MOVS     R2,R5
         MOVS     R5,R2
-        LDR      R2,??DataTable18  ;; 0x8fff
+        LDR      R2,??DataTable19  ;; 0x8fff
         ANDS     R2,R2,R5
         MOVS     R5,R2
-        LDR      R2,??DataTable19  ;; 0xfcff
+        LDR      R2,??DataTable19_1  ;; 0xfcff
         ANDS     R2,R2,R5
         MOVS     R5,R2
         LDRH     R2,[R1, #+0]
         LSLS     R2,R2,#+8
         ORRS     R2,R2,R5
         MOVS     R5,R3
-        LDR      R3,??DataTable19_1  ;; 0xffdf
+        LDR      R3,??DataTable20  ;; 0xffdf
         ANDS     R3,R3,R5
         MOVS     R5,R3
         LDRH     R3,[R1, #+12]
@@ -697,7 +697,7 @@ TIM_OC2Init:
         BNE      ??TIM_OC2Init_1
 ??TIM_OC2Init_0:
         MOVS     R5,R4
-        LDR      R4,??DataTable22_1  ;; 0xfbff
+        LDR      R4,??DataTable22  ;; 0xfbff
         ANDS     R4,R4,R5
         MOVS     R5,R4
         LDRH     R4,[R1, #+16]
@@ -714,14 +714,14 @@ TIM_OC2Init:
         LSLS     R3,R3,#+4
         ORRS     R3,R3,R5
         MOVS     R5,R3
-        LDR      R3,??DataTable24  ;; 0xffbf
+        LDR      R3,??DataTable25  ;; 0xffbf
         ANDS     R3,R3,R5
         MOVS     R5,R3
         LDRH     R3,[R1, #+4]
         LSLS     R3,R3,#+4
         ORRS     R3,R3,R5
         MOVS     R5,R4
-        LDR      R4,??DataTable27  ;; 0xf7ff
+        LDR      R4,??DataTable28  ;; 0xf7ff
         ANDS     R4,R4,R5
         MOVS     R5,R4
         LDRH     R4,[R1, #+18]
@@ -730,8 +730,8 @@ TIM_OC2Init:
 ??TIM_OC2Init_1:
         STRH     R4,[R0, #+4]
         STRH     R2,[R0, #+24]
-        LDR      R1,[R1, #+8]
-        STR      R1,[R0, #+56]
+        LDR      R5,[R1, #+8]
+        STR      R5,[R0, #+56]
         STRH     R3,[R0, #+32]
         POP      {R4-R6,PC}       ;; return
 
@@ -749,7 +749,7 @@ TIM_OC3Init:
         MOVS     R3,#+0
         MOVS     R4,#+0
         LDRH     R5,[R0, #+32]
-        LDR      R6,??DataTable15  ;; 0xfeff
+        LDR      R6,??DataTable16  ;; 0xfeff
         ANDS     R6,R6,R5
         STRH     R6,[R0, #+32]
         LDRH     R5,[R0, #+32]
@@ -759,7 +759,7 @@ TIM_OC3Init:
         LDRH     R5,[R0, #+28]
         MOVS     R2,R5
         MOVS     R5,R2
-        LDR      R2,??DataTable27_1  ;; 0xff8f
+        LDR      R2,??DataTable27  ;; 0xff8f
         ANDS     R2,R2,R5
         MOVS     R5,R2
         LDR      R2,??DataTable12_5  ;; 0xfffc
@@ -768,7 +768,7 @@ TIM_OC3Init:
         LDRH     R2,[R1, #+0]
         ORRS     R2,R2,R5
         MOVS     R5,R3
-        LDR      R3,??DataTable22  ;; 0xfdff
+        LDR      R3,??DataTable23  ;; 0xfdff
         ANDS     R3,R3,R5
         MOVS     R5,R3
         LDRH     R3,[R1, #+12]
@@ -782,24 +782,24 @@ TIM_OC3Init:
         CMP      R0,R5
         BNE      ??TIM_OC3Init_0
         MOVS     R5,R3
-        LDR      R3,??DataTable27  ;; 0xf7ff
+        LDR      R3,??DataTable28  ;; 0xf7ff
         ANDS     R3,R3,R5
         MOVS     R5,R3
         LDRH     R3,[R1, #+14]
         LSLS     R3,R3,#+8
         ORRS     R3,R3,R5
         MOVS     R5,R3
-        LDR      R3,??DataTable22_1  ;; 0xfbff
+        LDR      R3,??DataTable22  ;; 0xfbff
         ANDS     R3,R3,R5
         MOVS     R5,R3
         LDRH     R3,[R1, #+4]
         LSLS     R3,R3,#+8
         ORRS     R3,R3,R5
         MOVS     R5,R4
-        LDR      R4,??DataTable30  ;; 0xefff
+        LDR      R4,??DataTable31  ;; 0xefff
         ANDS     R4,R4,R5
         MOVS     R5,R4
-        LDR      R4,??DataTable31  ;; 0xdfff
+        LDR      R4,??DataTable33  ;; 0xdfff
         ANDS     R4,R4,R5
         MOVS     R5,R4
         LDRH     R4,[R1, #+16]
@@ -812,8 +812,8 @@ TIM_OC3Init:
 ??TIM_OC3Init_0:
         STRH     R4,[R0, #+4]
         STRH     R2,[R0, #+28]
-        LDR      R1,[R1, #+8]
-        STR      R1,[R0, #+60]
+        LDR      R5,[R1, #+8]
+        STR      R5,[R0, #+60]
         STRH     R3,[R0, #+32]
         POP      {R4-R6,PC}       ;; return
 
@@ -825,7 +825,7 @@ TIM_OC4Init:
         MOVS     R3,#+0
         MOVS     R4,#+0
         LDRH     R5,[R0, #+32]
-        LDR      R6,??DataTable30  ;; 0xefff
+        LDR      R6,??DataTable31  ;; 0xefff
         ANDS     R6,R6,R5
         STRH     R6,[R0, #+32]
         LDRH     R5,[R0, #+32]
@@ -835,17 +835,17 @@ TIM_OC4Init:
         LDRH     R5,[R0, #+28]
         MOVS     R2,R5
         MOVS     R5,R2
-        LDR      R2,??DataTable18  ;; 0x8fff
+        LDR      R2,??DataTable19  ;; 0x8fff
         ANDS     R2,R2,R5
         MOVS     R5,R2
-        LDR      R2,??DataTable19  ;; 0xfcff
+        LDR      R2,??DataTable19_1  ;; 0xfcff
         ANDS     R2,R2,R5
         MOVS     R5,R2
         LDRH     R2,[R1, #+0]
         LSLS     R2,R2,#+8
         ORRS     R2,R2,R5
         MOVS     R5,R3
-        LDR      R3,??DataTable31  ;; 0xdfff
+        LDR      R3,??DataTable33  ;; 0xdfff
         ANDS     R3,R3,R5
         MOVS     R5,R3
         LDRH     R3,[R1, #+12]
@@ -868,8 +868,8 @@ TIM_OC4Init:
 ??TIM_OC4Init_0:
         STRH     R4,[R0, #+4]
         STRH     R2,[R0, #+28]
-        LDR      R1,[R1, #+8]
-        STR      R1,[R0, #+64]
+        LDR      R5,[R1, #+8]
+        STR      R5,[R0, #+64]
         STRH     R3,[R0, #+32]
         POP      {R4-R6,PC}       ;; return
 
@@ -939,16 +939,16 @@ TIM_OCStructInit:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 TIM_SelectOCxM:
-        PUSH     {R4,R5,LR}
-        MOVS     R3,#+0
+        PUSH     {R4-R6,LR}
         MOVS     R4,#+0
-        MOVS     R3,R0
-        ADDS     R3,R3,#+24
+        MOVS     R3,#+0
+        MOVS     R4,R0
+        ADDS     R4,R4,#+24
         MOVS     R5,#+1
         LSLS     R5,R5,R1
-        MOVS     R4,R5
+        MOVS     R3,R5
         LDRH     R5,[R0, #+32]
-        BICS     R5,R5,R4
+        BICS     R5,R5,R3
         STRH     R5,[R0, #+32]
         UXTH     R1,R1
         CMP      R1,#+0
@@ -957,37 +957,37 @@ TIM_SelectOCxM:
         CMP      R1,#+8
         BNE      ??TIM_SelectOCxM_1
 ??TIM_SelectOCxM_0:
-        MOVS     R0,R1
-        UXTH     R0,R0
-        LSRS     R0,R0,#+1
-        UXTH     R0,R0
-        ADDS     R3,R3,R0
-        LDR      R0,[R3, #+0]
-        MOVS     R1,#+112
-        BICS     R0,R0,R1
-        STR      R0,[R3, #+0]
-        LDR      R0,[R3, #+0]
+        MOVS     R5,R1
+        UXTH     R5,R5
+        LSRS     R5,R5,#+1
+        UXTH     R5,R5
+        ADDS     R4,R4,R5
+        LDR      R5,[R4, #+0]
+        MOVS     R6,#+112
+        BICS     R5,R5,R6
+        STR      R5,[R4, #+0]
+        LDR      R5,[R4, #+0]
         UXTH     R2,R2
-        ORRS     R0,R0,R2
-        STR      R0,[R3, #+0]
+        ORRS     R5,R5,R2
+        STR      R5,[R4, #+0]
         B        ??TIM_SelectOCxM_2
 ??TIM_SelectOCxM_1:
-        SUBS     R0,R1,#+4
-        UXTH     R0,R0
-        LSRS     R0,R0,#+1
-        UXTH     R0,R0
-        ADDS     R3,R3,R0
-        LDR      R0,[R3, #+0]
-        LDR      R1,??DataTable37  ;; 0xffff8fff
-        ANDS     R1,R1,R0
-        STR      R1,[R3, #+0]
-        LDR      R0,[R3, #+0]
-        LSLS     R1,R2,#+8
-        UXTH     R1,R1
-        ORRS     R0,R0,R1
-        STR      R0,[R3, #+0]
+        SUBS     R5,R1,#+4
+        UXTH     R5,R5
+        LSRS     R5,R5,#+1
+        UXTH     R5,R5
+        ADDS     R4,R4,R5
+        LDR      R5,[R4, #+0]
+        LDR      R6,??DataTable37  ;; 0xffff8fff
+        ANDS     R6,R6,R5
+        STR      R6,[R4, #+0]
+        LDR      R5,[R4, #+0]
+        LSLS     R6,R2,#+8
+        UXTH     R6,R6
+        ORRS     R5,R5,R6
+        STR      R5,[R4, #+0]
 ??TIM_SelectOCxM_2:
-        POP      {R4,R5,PC}       ;; return
+        POP      {R4-R6,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -1026,10 +1026,9 @@ TIM_ForcedOC1Config:
         LDRH     R3,[R0, #+24]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable27_1  ;; 0xff8f
+        LDR      R2,??DataTable27  ;; 0xff8f
         ANDS     R2,R2,R3
-        ORRS     R1,R1,R2
-        MOVS     R2,R1
+        ORRS     R2,R2,R1
         STRH     R2,[R0, #+24]
         BX       LR               ;; return
 
@@ -1040,19 +1039,13 @@ TIM_ForcedOC2Config:
         LDRH     R3,[R0, #+24]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable18  ;; 0x8fff
+        LDR      R2,??DataTable19  ;; 0x8fff
         ANDS     R2,R2,R3
         MOVS     R3,R2
         LSLS     R2,R1,#+8
         ORRS     R2,R2,R3
         STRH     R2,[R0, #+24]
         BX       LR               ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable15:
-        DC32     0xfeff
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1061,12 +1054,17 @@ TIM_ForcedOC3Config:
         LDRH     R3,[R0, #+28]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable27_1  ;; 0xff8f
+        LDR      R2,??DataTable27  ;; 0xff8f
         ANDS     R2,R2,R3
-        ORRS     R1,R1,R2
-        MOVS     R2,R1
+        ORRS     R2,R2,R1
         STRH     R2,[R0, #+28]
         BX       LR               ;; return
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable16:
+        DC32     0xfeff
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1075,19 +1073,13 @@ TIM_ForcedOC4Config:
         LDRH     R3,[R0, #+28]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable18  ;; 0x8fff
+        LDR      R2,??DataTable19  ;; 0x8fff
         ANDS     R2,R2,R3
         MOVS     R3,R2
         LSLS     R2,R1,#+8
         ORRS     R2,R2,R3
         STRH     R2,[R0, #+28]
         BX       LR               ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable17:
-        DC32     0xffef
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1096,16 +1088,16 @@ TIM_CCPreloadControl:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??TIM_CCPreloadControl_0
-        LDRH     R1,[R0, #+4]
-        MOVS     R2,#+1
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        MOVS     R3,#+1
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+4]
         B        ??TIM_CCPreloadControl_1
 ??TIM_CCPreloadControl_0:
-        LDRH     R1,[R0, #+4]
-        LDR      R2,??DataTable37_1  ;; 0xfffe
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        LDR      R3,??DataTable37_1  ;; 0xfffe
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+4]
 ??TIM_CCPreloadControl_1:
         POP      {PC}             ;; return
 
@@ -1113,7 +1105,7 @@ TIM_CCPreloadControl:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable18:
-        DC32     0x8fff
+        DC32     0xffef
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1124,8 +1116,7 @@ TIM_OC1PreloadConfig:
         MOVS     R3,R2
         LDR      R2,??DataTable37_2  ;; 0xfff7
         ANDS     R2,R2,R3
-        ORRS     R1,R1,R2
-        MOVS     R2,R1
+        ORRS     R2,R2,R1
         STRH     R2,[R0, #+24]
         BX       LR               ;; return
 
@@ -1133,13 +1124,13 @@ TIM_OC1PreloadConfig:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable19:
-        DC32     0xfcff
+        DC32     0x8fff
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable19_1:
-        DC32     0xffdf
+        DC32     0xfcff
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1148,13 +1139,19 @@ TIM_OC2PreloadConfig:
         LDRH     R3,[R0, #+24]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable28  ;; 0xf7ff
+        LDR      R2,??DataTable30  ;; 0xf7ff
         ANDS     R2,R2,R3
         MOVS     R3,R2
         LSLS     R2,R1,#+8
         ORRS     R2,R2,R3
         STRH     R2,[R0, #+24]
         BX       LR               ;; return
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable20:
+        DC32     0xffdf
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1165,8 +1162,7 @@ TIM_OC3PreloadConfig:
         MOVS     R3,R2
         LDR      R2,??DataTable37_2  ;; 0xfff7
         ANDS     R2,R2,R3
-        ORRS     R1,R1,R2
-        MOVS     R2,R1
+        ORRS     R2,R2,R1
         STRH     R2,[R0, #+28]
         BX       LR               ;; return
 
@@ -1177,7 +1173,7 @@ TIM_OC4PreloadConfig:
         LDRH     R3,[R0, #+28]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable28  ;; 0xf7ff
+        LDR      R2,??DataTable30  ;; 0xf7ff
         ANDS     R2,R2,R3
         MOVS     R3,R2
         LSLS     R2,R1,#+8
@@ -1189,12 +1185,6 @@ TIM_OC4PreloadConfig:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable22:
-        DC32     0xfdff
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable22_1:
         DC32     0xfbff
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -1204,12 +1194,17 @@ TIM_OC1FastConfig:
         LDRH     R3,[R0, #+24]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable40  ;; 0xfffb
+        LDR      R2,??DataTable41  ;; 0xfffb
         ANDS     R2,R2,R3
-        ORRS     R1,R1,R2
-        MOVS     R2,R1
+        ORRS     R2,R2,R1
         STRH     R2,[R0, #+24]
         BX       LR               ;; return
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable23:
+        DC32     0xfdff
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1218,19 +1213,13 @@ TIM_OC2FastConfig:
         LDRH     R3,[R0, #+24]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable41  ;; 0xfbff
+        LDR      R2,??DataTable41_1  ;; 0xfbff
         ANDS     R2,R2,R3
         MOVS     R3,R2
         LSLS     R2,R1,#+8
         ORRS     R2,R2,R3
         STRH     R2,[R0, #+24]
         BX       LR               ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable24:
-        DC32     0xffbf
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1239,12 +1228,17 @@ TIM_OC3FastConfig:
         LDRH     R3,[R0, #+28]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable40  ;; 0xfffb
+        LDR      R2,??DataTable41  ;; 0xfffb
         ANDS     R2,R2,R3
-        ORRS     R1,R1,R2
-        MOVS     R2,R1
+        ORRS     R2,R2,R1
         STRH     R2,[R0, #+28]
         BX       LR               ;; return
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable25:
+        DC32     0xffbf
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1253,7 +1247,7 @@ TIM_OC4FastConfig:
         LDRH     R3,[R0, #+28]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable41  ;; 0xfbff
+        LDR      R2,??DataTable41_1  ;; 0xfbff
         ANDS     R2,R2,R3
         MOVS     R3,R2
         LSLS     R2,R1,#+8
@@ -1268,10 +1262,9 @@ TIM_ClearOC1Ref:
         LDRH     R3,[R0, #+24]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable41_1  ;; 0xff7f
+        LDR      R2,??DataTable41_2  ;; 0xff7f
         ANDS     R2,R2,R3
-        ORRS     R1,R1,R2
-        MOVS     R2,R1
+        ORRS     R2,R2,R1
         STRH     R2,[R0, #+24]
         BX       LR               ;; return
 
@@ -1279,12 +1272,6 @@ TIM_ClearOC1Ref:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable27:
-        DC32     0xf7ff
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable27_1:
         DC32     0xff8f
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -1308,10 +1295,9 @@ TIM_ClearOC3Ref:
         LDRH     R3,[R0, #+28]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable41_1  ;; 0xff7f
+        LDR      R2,??DataTable41_2  ;; 0xff7f
         ANDS     R2,R2,R3
-        ORRS     R1,R1,R2
-        MOVS     R2,R1
+        ORRS     R2,R2,R1
         STRH     R2,[R0, #+28]
         BX       LR               ;; return
 
@@ -1342,10 +1328,9 @@ TIM_OC1PolarityConfig:
         LDRH     R3,[R0, #+32]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable42  ;; 0xfffd
+        LDR      R2,??DataTable41_3  ;; 0xfffd
         ANDS     R2,R2,R3
-        ORRS     R1,R1,R2
-        MOVS     R2,R1
+        ORRS     R2,R2,R1
         STRH     R2,[R0, #+32]
         BX       LR               ;; return
 
@@ -1358,8 +1343,7 @@ TIM_OC1NPolarityConfig:
         MOVS     R3,R2
         LDR      R2,??DataTable37_2  ;; 0xfff7
         ANDS     R2,R2,R3
-        ORRS     R1,R1,R2
-        MOVS     R2,R1
+        ORRS     R2,R2,R1
         STRH     R2,[R0, #+32]
         BX       LR               ;; return
 
@@ -1367,7 +1351,7 @@ TIM_OC1NPolarityConfig:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable30:
-        DC32     0xefff
+        DC32     0xf7ff
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1388,7 +1372,7 @@ TIM_OC2PolarityConfig:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable31:
-        DC32     0xdfff
+        DC32     0xefff
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1397,7 +1381,7 @@ TIM_OC2NPolarityConfig:
         LDRH     R3,[R0, #+32]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable41_1  ;; 0xff7f
+        LDR      R2,??DataTable41_2  ;; 0xff7f
         ANDS     R2,R2,R3
         MOVS     R3,R2
         LSLS     R2,R1,#+4
@@ -1419,6 +1403,12 @@ TIM_OC3PolarityConfig:
         ORRS     R2,R2,R3
         STRH     R2,[R0, #+32]
         BX       LR               ;; return
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable33:
+        DC32     0xdfff
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1442,19 +1432,13 @@ TIM_OC4PolarityConfig:
         LDRH     R3,[R0, #+32]
         MOVS     R2,R3
         MOVS     R3,R2
-        LDR      R2,??DataTable35  ;; 0xdfff
+        LDR      R2,??DataTable36_1  ;; 0xdfff
         ANDS     R2,R2,R3
         MOVS     R3,R2
         LSLS     R2,R1,#+12
         ORRS     R2,R2,R3
         STRH     R2,[R0, #+32]
         BX       LR               ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable35:
-        DC32     0xdfff
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1464,8 +1448,8 @@ TIM_SelectOCREFClear:
         ANDS     R3,R3,R2
         STRH     R3,[R0, #+8]
         LDRH     R2,[R0, #+8]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+8]
+        ORRS     R2,R2,R1
+        STRH     R2,[R0, #+8]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -1474,10 +1458,16 @@ TIM_SelectOCREFClear:
 ??DataTable36:
         DC32     0xbfff
 
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable36_1:
+        DC32     0xdfff
+
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 TIM_CCxCmd:
-        PUSH     {R4}
+        PUSH     {R4,R5}
         MOVS     R3,#+0
         MOVS     R4,#+1
         LSLS     R4,R4,R1
@@ -1485,18 +1475,19 @@ TIM_CCxCmd:
         LDRH     R4,[R0, #+32]
         BICS     R4,R4,R3
         STRH     R4,[R0, #+32]
-        LDRH     R3,[R0, #+32]
+        LDRH     R4,[R0, #+32]
         UXTH     R2,R2
-        LSLS     R2,R2,R1
-        ORRS     R2,R2,R3
-        STRH     R2,[R0, #+32]
-        POP      {R4}
+        MOVS     R5,R2
+        LSLS     R5,R5,R1
+        ORRS     R5,R5,R4
+        STRH     R5,[R0, #+32]
+        POP      {R4,R5}
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 TIM_CCxNCmd:
-        PUSH     {R4}
+        PUSH     {R4,R5}
         MOVS     R3,#+0
         MOVS     R4,#+4
         LSLS     R4,R4,R1
@@ -1504,12 +1495,13 @@ TIM_CCxNCmd:
         LDRH     R4,[R0, #+32]
         BICS     R4,R4,R3
         STRH     R4,[R0, #+32]
-        LDRH     R3,[R0, #+32]
+        LDRH     R4,[R0, #+32]
         UXTH     R2,R2
-        LSLS     R2,R2,R1
-        ORRS     R2,R2,R3
-        STRH     R2,[R0, #+32]
-        POP      {R4}
+        MOVS     R5,R2
+        LSLS     R5,R5,R1
+        ORRS     R5,R5,R4
+        STRH     R5,[R0, #+32]
+        POP      {R4,R5}
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -1519,16 +1511,16 @@ TIM_SelectCOM:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??TIM_SelectCOM_0
-        LDRH     R1,[R0, #+4]
-        MOVS     R2,#+4
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        MOVS     R3,#+4
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+4]
         B        ??TIM_SelectCOM_1
 ??TIM_SelectCOM_0:
-        LDRH     R1,[R0, #+4]
-        LDR      R2,??DataTable40  ;; 0xfffb
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        LDR      R3,??DataTable41  ;; 0xfffb
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+4]
 ??TIM_SelectCOM_1:
         POP      {PC}             ;; return
 
@@ -1625,66 +1617,70 @@ TIM_ICStructInit:
         THUMB
 TIM_PWMIConfig:
         PUSH     {R3-R7,LR}
-        MOVS     R7,R0
-        MOVS     R6,R1
-        MOVS     R5,#+0
-        MOVS     R4,#+1
-        LDRH     R0,[R6, #+2]
+        MOVS     R5,R0
+        MOVS     R4,R1
+        MOVS     R7,#+0
+        MOVS     R6,#+1
+        LDRH     R0,[R4, #+2]
         CMP      R0,#+0
         BNE      ??TIM_PWMIConfig_0
-        MOVS     R5,#+2
+        MOVS     R0,#+2
+        MOVS     R7,R0
         B        ??TIM_PWMIConfig_1
 ??TIM_PWMIConfig_0:
-        MOVS     R5,#+0
+        MOVS     R0,#+0
+        MOVS     R7,R0
 ??TIM_PWMIConfig_1:
-        LDRH     R0,[R6, #+4]
+        LDRH     R0,[R4, #+4]
         CMP      R0,#+1
         BNE      ??TIM_PWMIConfig_2
-        MOVS     R4,#+2
+        MOVS     R0,#+2
+        MOVS     R6,R0
         B        ??TIM_PWMIConfig_3
 ??TIM_PWMIConfig_2:
-        MOVS     R4,#+1
+        MOVS     R0,#+1
+        MOVS     R6,R0
 ??TIM_PWMIConfig_3:
-        LDRH     R0,[R6, #+0]
+        LDRH     R0,[R4, #+0]
         CMP      R0,#+0
         BNE      ??TIM_PWMIConfig_4
-        LDRH     R3,[R6, #+8]
-        LDRH     R2,[R6, #+4]
-        LDRH     R1,[R6, #+2]
-        MOVS     R0,R7
+        LDRH     R3,[R4, #+8]
+        LDRH     R2,[R4, #+4]
+        LDRH     R1,[R4, #+2]
+        MOVS     R0,R5
         BL       TI1_Config
-        LDRH     R1,[R6, #+6]
-        MOVS     R0,R7
+        LDRH     R1,[R4, #+6]
+        MOVS     R0,R5
         BL       TIM_SetIC1Prescaler
-        LDRH     R3,[R6, #+8]
-        MOVS     R2,R4
+        LDRH     R3,[R4, #+8]
+        MOVS     R2,R6
         UXTH     R2,R2
-        MOVS     R1,R5
+        MOVS     R1,R7
         UXTH     R1,R1
-        MOVS     R0,R7
+        MOVS     R0,R5
         BL       TI2_Config
-        LDRH     R1,[R6, #+6]
-        MOVS     R0,R7
+        LDRH     R1,[R4, #+6]
+        MOVS     R0,R5
         BL       TIM_SetIC2Prescaler
         B        ??TIM_PWMIConfig_5
 ??TIM_PWMIConfig_4:
-        LDRH     R3,[R6, #+8]
-        LDRH     R2,[R6, #+4]
-        LDRH     R1,[R6, #+2]
-        MOVS     R0,R7
+        LDRH     R3,[R4, #+8]
+        LDRH     R2,[R4, #+4]
+        LDRH     R1,[R4, #+2]
+        MOVS     R0,R5
         BL       TI2_Config
-        LDRH     R1,[R6, #+6]
-        MOVS     R0,R7
+        LDRH     R1,[R4, #+6]
+        MOVS     R0,R5
         BL       TIM_SetIC2Prescaler
-        LDRH     R3,[R6, #+8]
-        MOVS     R2,R4
+        LDRH     R3,[R4, #+8]
+        MOVS     R2,R6
         UXTH     R2,R2
-        MOVS     R1,R5
+        MOVS     R1,R7
         UXTH     R1,R1
-        MOVS     R0,R7
+        MOVS     R0,R5
         BL       TI1_Config
-        LDRH     R1,[R6, #+6]
-        MOVS     R0,R7
+        LDRH     R1,[R4, #+6]
+        MOVS     R0,R5
         BL       TIM_SetIC1Prescaler
 ??TIM_PWMIConfig_5:
         POP      {R0,R4-R7,PC}    ;; return
@@ -1721,8 +1717,8 @@ TIM_SetIC1Prescaler:
         ANDS     R3,R3,R2
         STRH     R3,[R0, #+24]
         LDRH     R2,[R0, #+24]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+24]
+        ORRS     R2,R2,R1
+        STRH     R2,[R0, #+24]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -1733,9 +1729,9 @@ TIM_SetIC2Prescaler:
         ANDS     R3,R3,R2
         STRH     R3,[R0, #+24]
         LDRH     R2,[R0, #+24]
-        LSLS     R1,R1,#+8
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+24]
+        LSLS     R3,R1,#+8
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+24]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -1746,15 +1742,9 @@ TIM_SetIC3Prescaler:
         ANDS     R3,R3,R2
         STRH     R3,[R0, #+28]
         LDRH     R2,[R0, #+28]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+28]
+        ORRS     R2,R2,R1
+        STRH     R2,[R0, #+28]
         BX       LR               ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable40:
-        DC32     0xfffb
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1764,22 +1754,34 @@ TIM_SetIC4Prescaler:
         ANDS     R3,R3,R2
         STRH     R3,[R0, #+28]
         LDRH     R2,[R0, #+28]
-        LSLS     R1,R1,#+8
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+28]
+        LSLS     R3,R1,#+8
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+28]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable41:
-        DC32     0xfbff
+        DC32     0xfffb
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable41_1:
+        DC32     0xfbff
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable41_2:
         DC32     0xff7f
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable41_3:
+        DC32     0xfffd
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1788,14 +1790,14 @@ TIM_ITConfig:
         UXTB     R2,R2
         CMP      R2,#+0
         BEQ      ??TIM_ITConfig_0
-        LDRH     R2,[R0, #+12]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+12]
+        LDRH     R3,[R0, #+12]
+        ORRS     R3,R3,R1
+        STRH     R3,[R0, #+12]
         B        ??TIM_ITConfig_1
 ??TIM_ITConfig_0:
-        LDRH     R2,[R0, #+12]
-        BICS     R2,R2,R1
-        STRH     R2,[R0, #+12]
+        LDRH     R3,[R0, #+12]
+        BICS     R3,R3,R1
+        STRH     R3,[R0, #+12]
 ??TIM_ITConfig_1:
         POP      {PC}             ;; return
 
@@ -1811,13 +1813,15 @@ TIM_GetFlagStatus:
         PUSH     {LR}
         MOVS     R2,R0
         MOVS     R0,#+0
-        LDRH     R2,[R2, #+16]
-        TST      R2,R1
+        LDRH     R3,[R2, #+16]
+        TST      R3,R1
         BEQ      ??TIM_GetFlagStatus_0
-        MOVS     R0,#+1
+        MOVS     R3,#+1
+        MOVS     R0,R3
         B        ??TIM_GetFlagStatus_1
 ??TIM_GetFlagStatus_0:
-        MOVS     R0,#+0
+        MOVS     R3,#+0
+        MOVS     R0,R3
 ??TIM_GetFlagStatus_1:
         UXTB     R0,R0
         POP      {PC}             ;; return
@@ -1841,19 +1845,21 @@ TIM_GetITStatus:
         LDRH     R5,[R2, #+16]
         ANDS     R5,R5,R1
         MOVS     R3,R5
-        LDRH     R2,[R2, #+12]
-        ANDS     R1,R1,R2
-        MOVS     R4,R1
+        LDRH     R5,[R2, #+12]
+        ANDS     R5,R5,R1
+        MOVS     R4,R5
         UXTH     R3,R3
         CMP      R3,#+0
         BEQ      ??TIM_GetITStatus_0
         UXTH     R4,R4
         CMP      R4,#+0
         BEQ      ??TIM_GetITStatus_0
-        MOVS     R0,#+1
+        MOVS     R5,#+1
+        MOVS     R0,R5
         B        ??TIM_GetITStatus_1
 ??TIM_GetITStatus_0:
-        MOVS     R0,#+0
+        MOVS     R5,#+0
+        MOVS     R0,R5
 ??TIM_GetITStatus_1:
         UXTB     R0,R0
         POP      {R4,R5,PC}       ;; return
@@ -1869,9 +1875,12 @@ TIM_ClearITPendingBit:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 TIM_DMAConfig:
-        ORRS     R2,R2,R1
-        ADDS     R0,R0,#+72
-        STRH     R2,[R0, #+0]
+        PUSH     {R4}
+        MOVS     R3,R2
+        ORRS     R3,R3,R1
+        MOVS     R4,#+72
+        STRH     R3,[R0, R4]
+        POP      {R4}
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -1881,14 +1890,14 @@ TIM_DMACmd:
         UXTB     R2,R2
         CMP      R2,#+0
         BEQ      ??TIM_DMACmd_0
-        LDRH     R2,[R0, #+12]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+12]
+        LDRH     R3,[R0, #+12]
+        ORRS     R3,R3,R1
+        STRH     R3,[R0, #+12]
         B        ??TIM_DMACmd_1
 ??TIM_DMACmd_0:
-        LDRH     R2,[R0, #+12]
-        BICS     R2,R2,R1
-        STRH     R2,[R0, #+12]
+        LDRH     R3,[R0, #+12]
+        BICS     R3,R3,R1
+        STRH     R3,[R0, #+12]
 ??TIM_DMACmd_1:
         POP      {PC}             ;; return
 
@@ -1899,24 +1908,18 @@ TIM_SelectCCDMA:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??TIM_SelectCCDMA_0
-        LDRH     R1,[R0, #+4]
-        MOVS     R2,#+8
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        MOVS     R3,#+8
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+4]
         B        ??TIM_SelectCCDMA_1
 ??TIM_SelectCCDMA_0:
-        LDRH     R1,[R0, #+4]
-        LDR      R2,??DataTable54  ;; 0xfff7
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        LDR      R3,??DataTable54  ;; 0xfff7
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+4]
 ??TIM_SelectCCDMA_1:
         POP      {PC}             ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable42:
-        DC32     0xfffd
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1948,41 +1951,48 @@ TIM_InternalClockConfig:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 TIM_ITRxExternalClockConfig:
-        PUSH     {R4,LR}
-        MOVS     R4,R0
+        PUSH     {R3-R5,LR}
+        MOVS     R5,R0
+        MOVS     R4,R1
+        MOVS     R1,R4
         UXTH     R1,R1
-        MOVS     R0,R4
+        MOVS     R0,R5
         BL       TIM_SelectInputTrigger
-        LDRH     R0,[R4, #+8]
+        LDRH     R0,[R5, #+8]
         MOVS     R1,#+7
         ORRS     R1,R1,R0
-        STRH     R1,[R4, #+8]
-        POP      {R4,PC}          ;; return
+        STRH     R1,[R5, #+8]
+        POP      {R0,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 TIM_TIxExternalClockConfig:
-        PUSH     {R3-R5,LR}
+        PUSH     {R3-R7,LR}
         MOVS     R4,R0
-        MOVS     R5,R1
-        MOVS     R1,R2
-        UXTH     R5,R5
-        CMP      R5,#+96
+        MOVS     R6,R1
+        MOVS     R5,R2
+        MOVS     R7,R3
+        UXTH     R6,R6
+        CMP      R6,#+96
         BNE      ??TIM_TIxExternalClockConfig_0
+        MOVS     R3,R7
         UXTH     R3,R3
         MOVS     R2,#+1
+        MOVS     R1,R5
         UXTH     R1,R1
         MOVS     R0,R4
         BL       TI2_Config
         B        ??TIM_TIxExternalClockConfig_1
 ??TIM_TIxExternalClockConfig_0:
+        MOVS     R3,R7
         UXTH     R3,R3
         MOVS     R2,#+1
+        MOVS     R1,R5
         UXTH     R1,R1
         MOVS     R0,R4
         BL       TI1_Config
 ??TIM_TIxExternalClockConfig_1:
-        MOVS     R1,R5
+        MOVS     R1,R6
         UXTH     R1,R1
         MOVS     R0,R4
         BL       TIM_SelectInputTrigger
@@ -1990,17 +2000,22 @@ TIM_TIxExternalClockConfig:
         MOVS     R1,#+7
         ORRS     R1,R1,R0
         STRH     R1,[R4, #+8]
-        POP      {R0,R4,R5,PC}    ;; return
+        POP      {R0,R4-R7,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 TIM_ETRClockMode1Config:
-        PUSH     {R3-R5,LR}
+        PUSH     {R1,R4-R7,LR}
         MOVS     R5,R0
+        MOVS     R7,R2
+        MOVS     R6,R3
         MOVS     R4,#+0
+        MOVS     R3,R6
         UXTH     R3,R3
+        MOVS     R2,R7
         UXTH     R2,R2
-        UXTH     R1,R1
+        MOV      R0,SP
+        LDRH     R1,[R0, #+0]
         MOVS     R0,R5
         BL       TIM_ETRConfig
         LDRH     R0,[R5, #+8]
@@ -2018,15 +2033,21 @@ TIM_ETRClockMode1Config:
         MOVS     R4,#+112
         ORRS     R4,R4,R0
         STRH     R4,[R5, #+8]
-        POP      {R0,R4,R5,PC}    ;; return
+        POP      {R0,R4-R7,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 TIM_ETRClockMode2Config:
-        PUSH     {R4,LR}
+        PUSH     {R3-R7,LR}
         MOVS     R4,R0
+        MOVS     R7,R1
+        MOVS     R6,R2
+        MOVS     R5,R3
+        MOVS     R3,R5
         UXTH     R3,R3
+        MOVS     R2,R6
         UXTH     R2,R2
+        MOVS     R1,R7
         UXTH     R1,R1
         MOVS     R0,R4
         BL       TIM_ETRConfig
@@ -2035,7 +2056,7 @@ TIM_ETRClockMode2Config:
         LSLS     R1,R1,#+7        ;; #+16384
         ORRS     R1,R1,R0
         STRH     R1,[R4, #+8]
-        POP      {R4,PC}          ;; return
+        POP      {R0,R4-R7,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -2046,8 +2067,7 @@ TIM_SelectInputTrigger:
         MOVS     R3,R2
         LDR      R2,??DataTable54_2  ;; 0xff8f
         ANDS     R2,R2,R3
-        ORRS     R1,R1,R2
-        MOVS     R2,R1
+        ORRS     R2,R2,R1
         STRH     R2,[R0, #+8]
         BX       LR               ;; return
 
@@ -2059,8 +2079,8 @@ TIM_SelectOutputTrigger:
         ANDS     R3,R3,R2
         STRH     R3,[R0, #+4]
         LDRH     R2,[R0, #+4]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+4]
+        ORRS     R2,R2,R1
+        STRH     R2,[R0, #+4]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -2071,8 +2091,8 @@ TIM_SelectSlaveMode:
         ANDS     R3,R3,R2
         STRH     R3,[R0, #+8]
         LDRH     R2,[R0, #+8]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+8]
+        ORRS     R2,R2,R1
+        STRH     R2,[R0, #+8]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -2083,8 +2103,8 @@ TIM_SelectMasterSlaveMode:
         ANDS     R3,R3,R2
         STRH     R3,[R0, #+8]
         LDRH     R2,[R0, #+8]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+8]
+        ORRS     R2,R2,R1
+        STRH     R2,[R0, #+8]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -2120,22 +2140,21 @@ TIM_EncoderInterfaceConfig:
         MOVS     R7,R4
         LDR      R4,??DataTable54_1  ;; 0xfff8
         ANDS     R4,R4,R7
-        ORRS     R1,R1,R4
-        MOVS     R4,R1
-        MOVS     R1,R5
+        ORRS     R4,R4,R1
+        MOVS     R7,R5
         LDR      R5,??DataTable54_4  ;; 0xfcfc
-        ANDS     R5,R5,R1
-        MOVS     R1,R5
+        ANDS     R5,R5,R7
+        MOVS     R7,R5
         MOVS     R5,#+255
         ADDS     R5,R5,#+2        ;; #+257
-        ORRS     R5,R5,R1
-        MOVS     R1,R6
+        ORRS     R5,R5,R7
+        MOVS     R7,R6
         LDR      R6,??DataTable54_5  ;; 0xff55
-        ANDS     R6,R6,R1
-        MOVS     R1,R6
+        ANDS     R6,R6,R7
+        MOVS     R7,R6
         LSLS     R6,R3,#+4
         ORRS     R6,R6,R2
-        ORRS     R6,R6,R1
+        ORRS     R6,R6,R7
         STRH     R4,[R0, #+8]
         STRH     R5,[R0, #+24]
         STRH     R6,[R0, #+32]
@@ -2149,24 +2168,24 @@ TIM_SelectHallSensor:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??TIM_SelectHallSensor_0
-        LDRH     R1,[R0, #+4]
-        MOVS     R2,#+128
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        MOVS     R3,#+128
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+4]
         B        ??TIM_SelectHallSensor_1
 ??TIM_SelectHallSensor_0:
-        LDRH     R1,[R0, #+4]
-        LDR      R2,??DataTable54_3  ;; 0xff7f
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        LDR      R3,??DataTable54_3  ;; 0xff7f
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+4]
 ??TIM_SelectHallSensor_1:
         POP      {PC}             ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 TIM_RemapConfig:
-        ADDS     R0,R0,#+80
-        STRH     R1,[R0, #+0]
+        MOVS     R2,#+80
+        STRH     R1,[R0, R2]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -2190,13 +2209,13 @@ TI1_Config:
         LSLS     R4,R3,#+4
         ORRS     R4,R4,R2
         ORRS     R4,R4,R6
-        MOVS     R2,R5
+        MOVS     R6,R5
         LDR      R5,??DataTable54_8  ;; 0xfff5
-        ANDS     R5,R5,R2
-        MOVS     R2,R5
+        ANDS     R5,R5,R6
+        MOVS     R6,R5
         MOVS     R5,#+1
         ORRS     R5,R5,R1
-        ORRS     R5,R5,R2
+        ORRS     R5,R5,R6
         STRH     R4,[R0, #+24]
         STRH     R5,[R0, #+32]
         POP      {R4-R7}
@@ -2205,43 +2224,39 @@ TI1_Config:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 TI2_Config:
-        PUSH     {R0,R4-R7}
-        MOVS     R0,#+0
+        PUSH     {R1,R4-R7}
+        MOVS     R1,#+0
         MOVS     R4,#+0
         MOVS     R5,#+0
-        LDR      R6,[SP, #+0]
-        LDRH     R7,[R6, #+32]
-        LDR      R6,??DataTable54_9  ;; 0xffef
-        ANDS     R6,R6,R7
-        LDR      R7,[SP, #+0]
-        STRH     R6,[R7, #+32]
-        LDR      R6,[SP, #+0]
-        LDRH     R6,[R6, #+24]
-        MOVS     R0,R6
-        LDR      R6,[SP, #+0]
-        LDRH     R6,[R6, #+32]
+        LDRH     R6,[R0, #+32]
+        LDR      R7,??DataTable54_9  ;; 0xffef
+        ANDS     R7,R7,R6
+        STRH     R7,[R0, #+32]
+        LDRH     R6,[R0, #+24]
+        MOVS     R1,R6
+        LDRH     R6,[R0, #+32]
         MOVS     R4,R6
-        LSLS     R1,R1,#+4
-        MOVS     R5,R1
-        MOVS     R1,R0
-        LDR      R0,??DataTable54_10  ;; 0xcff
-        ANDS     R0,R0,R1
-        MOVS     R1,R0
-        LSLS     R0,R3,#+12
-        ORRS     R0,R0,R1
-        MOVS     R1,R0
-        LSLS     R0,R2,#+8
-        ORRS     R0,R0,R1
-        MOVS     R1,R4
+        MOV      R6,SP
+        LDRH     R6,[R6, #+0]
+        LSLS     R6,R6,#+4
+        MOVS     R5,R6
+        MOVS     R6,R1
+        LDR      R1,??DataTable54_10  ;; 0xcff
+        ANDS     R1,R1,R6
+        MOVS     R6,R1
+        LSLS     R1,R3,#+12
+        ORRS     R1,R1,R6
+        MOVS     R6,R1
+        LSLS     R1,R2,#+8
+        ORRS     R1,R1,R6
+        MOVS     R6,R4
         LDR      R4,??DataTable54_11  ;; 0xff5f
-        ANDS     R4,R4,R1
-        MOVS     R1,R4
+        ANDS     R4,R4,R6
+        MOVS     R6,R4
         MOVS     R4,#+16
         ORRS     R4,R4,R5
-        ORRS     R4,R4,R1
-        LDR      R1,[SP, #+0]
-        STRH     R0,[R1, #+24]
-        LDR      R0,[SP, #+0]
+        ORRS     R4,R4,R6
+        STRH     R1,[R0, #+24]
         STRH     R4,[R0, #+32]
         POP      {R0,R4-R7}
         BX       LR               ;; return
@@ -2261,42 +2276,38 @@ TI2_Config:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 TI3_Config:
-        PUSH     {R0,R4-R7}
-        MOVS     R0,#+0
+        PUSH     {R1,R4-R7}
+        MOVS     R1,#+0
         MOVS     R4,#+0
         MOVS     R5,#+0
-        LDR      R6,[SP, #+0]
-        LDRH     R7,[R6, #+32]
-        LDR      R6,??DataTable54_12  ;; 0xfeff
-        ANDS     R6,R6,R7
-        LDR      R7,[SP, #+0]
-        STRH     R6,[R7, #+32]
-        LDR      R6,[SP, #+0]
-        LDRH     R6,[R6, #+28]
-        MOVS     R0,R6
-        LDR      R6,[SP, #+0]
-        LDRH     R6,[R6, #+32]
+        LDRH     R6,[R0, #+32]
+        LDR      R7,??DataTable54_12  ;; 0xfeff
+        ANDS     R7,R7,R6
+        STRH     R7,[R0, #+32]
+        LDRH     R6,[R0, #+28]
+        MOVS     R1,R6
+        LDRH     R6,[R0, #+32]
         MOVS     R4,R6
-        LSLS     R1,R1,#+8
-        MOVS     R5,R1
-        MOVS     R1,R0
-        LDR      R0,??DataTable54_7  ;; 0xff0c
-        ANDS     R0,R0,R1
-        MOVS     R1,R0
-        LSLS     R0,R3,#+4
-        ORRS     R0,R0,R2
-        ORRS     R0,R0,R1
-        MOVS     R1,R4
+        MOV      R6,SP
+        LDRH     R6,[R6, #+0]
+        LSLS     R6,R6,#+8
+        MOVS     R5,R6
+        MOVS     R6,R1
+        LDR      R1,??DataTable54_7  ;; 0xff0c
+        ANDS     R1,R1,R6
+        MOVS     R6,R1
+        LSLS     R1,R3,#+4
+        ORRS     R1,R1,R2
+        ORRS     R1,R1,R6
+        MOVS     R6,R4
         LDR      R4,??DataTable54_13  ;; 0xf5ff
-        ANDS     R4,R4,R1
-        MOVS     R1,R4
+        ANDS     R4,R4,R6
+        MOVS     R6,R4
         MOVS     R4,#+128
         LSLS     R4,R4,#+1        ;; #+256
         ORRS     R4,R4,R5
-        ORRS     R4,R4,R1
-        LDR      R1,[SP, #+0]
-        STRH     R0,[R1, #+28]
-        LDR      R0,[SP, #+0]
+        ORRS     R4,R4,R6
+        STRH     R1,[R0, #+28]
         STRH     R4,[R0, #+32]
         POP      {R0,R4-R7}
         BX       LR               ;; return
@@ -2304,44 +2315,40 @@ TI3_Config:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 TI4_Config:
-        PUSH     {R0,R4-R7}
-        MOVS     R0,#+0
+        PUSH     {R1,R4-R7}
+        MOVS     R1,#+0
         MOVS     R4,#+0
         MOVS     R5,#+0
-        LDR      R6,[SP, #+0]
-        LDRH     R7,[R6, #+32]
-        LDR      R6,??DataTable54_14  ;; 0xefff
-        ANDS     R6,R6,R7
-        LDR      R7,[SP, #+0]
-        STRH     R6,[R7, #+32]
-        LDR      R6,[SP, #+0]
-        LDRH     R6,[R6, #+28]
-        MOVS     R0,R6
-        LDR      R6,[SP, #+0]
-        LDRH     R6,[R6, #+32]
+        LDRH     R6,[R0, #+32]
+        LDR      R7,??DataTable54_14  ;; 0xefff
+        ANDS     R7,R7,R6
+        STRH     R7,[R0, #+32]
+        LDRH     R6,[R0, #+28]
+        MOVS     R1,R6
+        LDRH     R6,[R0, #+32]
         MOVS     R4,R6
-        LSLS     R1,R1,#+12
-        MOVS     R5,R1
-        MOVS     R1,R0
-        LDR      R0,??DataTable54_10  ;; 0xcff
-        ANDS     R0,R0,R1
-        MOVS     R1,R0
-        LSLS     R0,R2,#+8
-        ORRS     R0,R0,R1
-        MOVS     R1,R0
-        LSLS     R0,R3,#+12
-        ORRS     R0,R0,R1
-        MOVS     R1,R4
+        MOV      R6,SP
+        LDRH     R6,[R6, #+0]
+        LSLS     R6,R6,#+12
+        MOVS     R5,R6
+        MOVS     R6,R1
+        LDR      R1,??DataTable54_10  ;; 0xcff
+        ANDS     R1,R1,R6
+        MOVS     R6,R1
+        LSLS     R1,R2,#+8
+        ORRS     R1,R1,R6
+        MOVS     R6,R1
+        LSLS     R1,R3,#+12
+        ORRS     R1,R1,R6
+        MOVS     R6,R4
         LDR      R4,??DataTable54_15  ;; 0x5fff
-        ANDS     R4,R4,R1
-        MOVS     R1,R4
+        ANDS     R4,R4,R6
+        MOVS     R6,R4
         MOVS     R4,#+128
         LSLS     R4,R4,#+5        ;; #+4096
         ORRS     R4,R4,R5
-        ORRS     R4,R4,R1
-        LDR      R1,[SP, #+0]
-        STRH     R0,[R1, #+28]
-        LDR      R0,[SP, #+0]
+        ORRS     R4,R4,R6
+        STRH     R1,[R0, #+28]
         STRH     R4,[R0, #+32]
         POP      {R0,R4-R7}
         BX       LR               ;; return
@@ -2455,9 +2462,9 @@ TI4_Config:
 
         END
 // 
-// 3 356 bytes in section .text
+// 3 370 bytes in section .text
 // 
-// 3 356 bytes of CODE memory
+// 3 370 bytes of CODE memory
 //
 //Errors: none
 //Warnings: none

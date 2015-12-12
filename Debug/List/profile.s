@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:34
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:15
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,12 +9,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\core\sys\profile.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -27,7 +27,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\profile.s
 //
@@ -146,7 +146,7 @@ profile_init:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 profile_episode_start:
-        PUSH     {R7,LR}
+        PUSH     {R4,LR}
         LDR      R0,??DataTable4
         BL       timetable_clear
         LDR      R0,??DataTable4_1
@@ -157,33 +157,36 @@ profile_episode_start:
         MOVS     R1,#+127
         LDR      R0,??DataTable4
         BL       timetable_entry
-        CMP      R0,#+0
+        MOVS     R4,R0
+        CMP      R4,#+0
         BEQ      ??profile_episode_start_0
-        MOVS     R1,#+0
-        STR      R1,[R0, #+0]
+        MOVS     R0,#+0
+        STR      R0,[R4, #+0]
 ??profile_episode_start_0:
         MOVS     R1,#+127
         LDR      R0,??DataTable4_1
         BL       timetable_entry
-        CMP      R0,#+0
+        MOVS     R4,R0
+        CMP      R4,#+0
         BEQ      ??profile_episode_start_1
-        MOVS     R1,#+0
-        STR      R1,[R0, #+0]
+        MOVS     R0,#+0
+        STR      R0,[R4, #+0]
 ??profile_episode_start_1:
-        POP      {R0,PC}          ;; return
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 profile_episode_end:
-        PUSH     {R4,LR}
+        PUSH     {R3-R5,LR}
         BL       clock_time
-        MOVS     R4,R0
+        MOVS     R5,R0
         MOVS     R1,#+127
         LDR      R0,??DataTable4
         BL       timetable_entry
-        CMP      R0,#+0
+        MOVS     R4,R0
+        CMP      R4,#+0
         BEQ      ??profile_episode_end_0
-        LDR      R0,[R0, #+0]
+        LDR      R0,[R4, #+0]
         CMP      R0,#+0
         BEQ      ??profile_episode_end_0
         LDR      R0,??DataTable4_3
@@ -196,10 +199,10 @@ profile_episode_end:
         STR      R0,[R1, #+0]
         B        ??profile_episode_end_1
 ??profile_episode_end_0:
-        UXTH     R4,R4
+        UXTH     R5,R5
         LDR      R0,??DataTable4_2
         LDRH     R0,[R0, #+0]
-        SUBS     R0,R4,R0
+        SUBS     R0,R5,R0
         CMP      R0,#+110
         BLT      ??profile_episode_end_2
         LDR      R0,??DataTable4_5
@@ -220,63 +223,68 @@ profile_episode_end:
         LDR      R1,??DataTable4_4
         STR      R0,[R1, #+0]
 ??profile_episode_end_1:
-        POP      {R4,PC}          ;; return
+        POP      {R0,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 find_aggregate:
-        PUSH     {R4,LR}
-        MOVS     R2,#+0
-        B        ??find_aggregate_0
-??find_aggregate_1:
-        ADDS     R2,R2,#+1
+        PUSH     {R4,R5,LR}
+        MOVS     R2,R0
+        MOVS     R0,#+0
+        MOVS     R3,R0
 ??find_aggregate_0:
-        LDR      R3,[R0, #+4]
-        CMP      R2,R3
-        BGE      ??find_aggregate_2
-        MOVS     R3,#+12
-        MULS     R3,R2,R3
-        LDR      R4,[R0, #+0]
-        LDR      R3,[R4, R3]
-        CMP      R3,R1
-        BNE      ??find_aggregate_1
-        MOVS     R1,#+12
-        MULS     R2,R1,R2
-        LDR      R0,[R0, #+0]
-        ADDS     R0,R0,R2
+        LDR      R0,[R2, #+4]
+        CMP      R3,R0
+        BGE      ??find_aggregate_1
+        MOVS     R0,#+12
+        MULS     R0,R3,R0
+        LDR      R4,[R2, #+0]
+        LDR      R0,[R4, R0]
+        CMP      R0,R1
+        BNE      ??find_aggregate_2
+        MOVS     R0,#+12
+        MULS     R3,R0,R3
+        LDR      R0,[R2, #+0]
+        ADDS     R0,R0,R3
         B        ??find_aggregate_3
 ??find_aggregate_2:
-        LDR      R1,[R0, #+8]
-        CMP      R2,R1
+        ADDS     R3,R3,#+1
+        B        ??find_aggregate_0
+??find_aggregate_1:
+        LDR      R0,[R2, #+8]
+        CMP      R3,R0
         BNE      ??find_aggregate_4
         MOVS     R0,#+0
         B        ??find_aggregate_3
 ??find_aggregate_4:
-        MOVS     R1,#+0
-        LDR      R2,[R0, #+4]
-        MOVS     R3,#+12
-        MULS     R2,R3,R2
-        LDR      R3,[R0, #+0]
-        STR      R1,[R3, R2]
-        LDR      R1,[R0, #+4]
-        MOVS     R2,R1
-        ADDS     R2,R2,#+1
-        STR      R2,[R0, #+4]
-        MOVS     R2,#+12
-        MULS     R1,R2,R1
-        LDR      R0,[R0, #+0]
-        ADDS     R0,R0,R1
+        MOVS     R0,#+0
+        LDR      R4,[R2, #+4]
+        MOVS     R5,#+12
+        MULS     R4,R5,R4
+        LDR      R5,[R2, #+0]
+        STR      R0,[R5, R4]
+        LDR      R0,[R2, #+4]
+        MOVS     R4,R0
+        ADDS     R4,R4,#+1
+        STR      R4,[R2, #+4]
+        MOVS     R4,#+12
+        MULS     R0,R4,R0
+        LDR      R2,[R2, #+0]
+        ADDS     R0,R2,R0
 ??find_aggregate_3:
-        POP      {R4,PC}          ;; return
+        POP      {R4,R5,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 profile_aggregate_print_detailed:
         PUSH     {R3-R5,LR}
         LDR      R5,??DataTable4_6
-        MOVS     R4,#+0
-        B        ??profile_aggregate_print_detailed_0
-??profile_aggregate_print_detailed_1:
+        MOVS     R0,#+0
+        MOVS     R4,R0
+??profile_aggregate_print_detailed_0:
+        LDR      R0,[R5, #+4]
+        CMP      R4,R0
+        BGE      ??profile_aggregate_print_detailed_1
         MOVS     R0,#+12
         MULS     R0,R4,R0
         LDR      R1,[R5, #+0]
@@ -306,10 +314,8 @@ profile_aggregate_print_detailed:
         LDR      R0,??DataTable4_7
         BL       printf
         ADDS     R4,R4,#+1
-??profile_aggregate_print_detailed_0:
-        LDR      R0,[R5, #+4]
-        CMP      R4,R0
-        BLT      ??profile_aggregate_print_detailed_1
+        B        ??profile_aggregate_print_detailed_0
+??profile_aggregate_print_detailed_1:
         LDR      R3,[R5, #+4]
         MOVS     R0,#+12
         MULS     R3,R0,R3
@@ -322,80 +328,89 @@ profile_aggregate_print_detailed:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 profile_aggregate_compute_detailed:
-        PUSH     {R3-R7,LR}
+        PUSH     {R4-R7,LR}
+        SUB      SP,SP,#+12
         LDR      R7,??DataTable4_6
-        LDR      R4,??DataTable4_9
+        LDR      R6,??DataTable4_9
         LDR      R0,??DataTable4
         BL       timetable_ptr
-        STR      R0,[SP, #+0]
-        LDR      R0,??DataTable4
-        LDR      R0,[R0, #+0]
-        LDRH     R6,[R0, #+4]
-        MOVS     R5,#+0
-        B        ??profile_aggregate_compute_detailed_0
-??profile_aggregate_compute_detailed_1:
-        LDR      R1,[R0, #+8]
-        MOVS     R2,#+8
-        MULS     R2,R5,R2
-        LDR      R3,[R4, #+0]
-        ADDS     R2,R3,R2
-        LDRH     R2,[R2, #+4]
-        UXTH     R6,R6
-        SUBS     R2,R2,R6
-        LDR      R3,??DataTable4_10
-        LDRH     R3,[R3, #+0]
-        SUBS     R2,R2,R3
-        ADDS     R1,R1,R2
-        STR      R1,[R0, #+8]
-        LDRH     R1,[R0, #+4]
-        ADDS     R1,R1,#+1
-        STRH     R1,[R0, #+4]
-??profile_aggregate_compute_detailed_2:
-        MOVS     R0,#+8
-        MULS     R0,R5,R0
-        LDR      R1,[R4, #+0]
-        ADDS     R0,R1,R0
-        LDRH     R6,[R0, #+4]
-        ADDS     R5,R5,#+1
+        STR      R0,[SP, #+4]
+        MOV      R0,SP
+        LDR      R1,??DataTable4
+        LDR      R1,[R1, #+0]
+        LDRH     R1,[R1, #+4]
+        STRH     R1,[R0, #+0]
+        MOVS     R0,#+0
+        MOVS     R4,R0
 ??profile_aggregate_compute_detailed_0:
-        LDR      R0,[SP, #+0]
-        CMP      R5,R0
-        BGE      ??profile_aggregate_compute_detailed_3
+        LDR      R0,[SP, #+4]
+        CMP      R4,R0
+        BGE      ??profile_aggregate_compute_detailed_1
         MOVS     R0,#+8
-        MULS     R0,R5,R0
+        MULS     R0,R4,R0
         LDR      R1,??DataTable4
         LDR      R1,[R1, #+0]
         LDR      R1,[R1, R0]
         MOVS     R0,R7
         BL       find_aggregate
-        CMP      R0,#+0
+        MOVS     R5,R0
+        CMP      R5,#+0
         BEQ      ??profile_aggregate_compute_detailed_2
-        LDR      R1,[R0, #+0]
-        CMP      R1,#+0
-        BNE      ??profile_aggregate_compute_detailed_1
+        LDR      R0,[R5, #+0]
+        CMP      R0,#+0
+        BNE      ??profile_aggregate_compute_detailed_3
+        MOVS     R0,#+8
+        MULS     R0,R4,R0
+        LDR      R1,[R6, #+0]
+        ADDS     R0,R1,R0
+        SUBS     R0,R0,#+8
+        LDR      R0,[R0, #+0]
+        STR      R0,[R5, #+0]
+        MOVS     R0,#+8
+        MULS     R0,R4,R0
+        LDR      R1,[R6, #+0]
+        ADDS     R0,R1,R0
+        LDRH     R0,[R0, #+4]
+        MOV      R1,SP
+        LDRH     R1,[R1, #+0]
+        SUBS     R0,R0,R1
+        LDR      R1,??DataTable4_10
+        LDRH     R1,[R1, #+0]
+        SUBS     R0,R0,R1
+        STR      R0,[R5, #+8]
+        MOVS     R0,#+1
+        STRH     R0,[R5, #+4]
+        B        ??profile_aggregate_compute_detailed_2
+??profile_aggregate_compute_detailed_3:
+        LDR      R0,[R5, #+8]
         MOVS     R1,#+8
-        MULS     R1,R5,R1
-        LDR      R2,[R4, #+0]
-        ADDS     R1,R2,R1
-        SUBS     R1,R1,#+8
-        LDR      R1,[R1, #+0]
-        STR      R1,[R0, #+0]
-        MOVS     R1,#+8
-        MULS     R1,R5,R1
-        LDR      R2,[R4, #+0]
+        MULS     R1,R4,R1
+        LDR      R2,[R6, #+0]
         ADDS     R1,R2,R1
         LDRH     R1,[R1, #+4]
-        UXTH     R6,R6
-        SUBS     R1,R1,R6
+        MOV      R2,SP
+        LDRH     R2,[R2, #+0]
+        SUBS     R1,R1,R2
         LDR      R2,??DataTable4_10
         LDRH     R2,[R2, #+0]
         SUBS     R1,R1,R2
-        STR      R1,[R0, #+8]
-        MOVS     R1,#+1
-        STRH     R1,[R0, #+4]
-        B        ??profile_aggregate_compute_detailed_2
-??profile_aggregate_compute_detailed_3:
-        POP      {R0,R4-R7,PC}    ;; return
+        ADDS     R0,R0,R1
+        STR      R0,[R5, #+8]
+        LDRH     R0,[R5, #+4]
+        ADDS     R0,R0,#+1
+        STRH     R0,[R5, #+4]
+??profile_aggregate_compute_detailed_2:
+        MOV      R0,SP
+        MOVS     R1,#+8
+        MULS     R1,R4,R1
+        LDR      R2,[R6, #+0]
+        ADDS     R1,R2,R1
+        LDRH     R1,[R1, #+4]
+        STRH     R1,[R0, #+0]
+        ADDS     R4,R4,#+1
+        B        ??profile_aggregate_compute_detailed_0
+??profile_aggregate_compute_detailed_1:
+        POP      {R0-R2,R4-R7,PC}  ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -491,9 +506,9 @@ profile_aggregate_compute_detailed:
 // 4 634 bytes in section .bss
 //    48 bytes in section .data
 //    60 bytes in section .rodata
-//   528 bytes in section .text
+//   558 bytes in section .text
 // 
-//   528 bytes of CODE  memory
+//   558 bytes of CODE  memory
 //    60 bytes of CONST memory
 // 4 682 bytes of DATA  memory
 //

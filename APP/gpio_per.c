@@ -1385,16 +1385,16 @@ void read_UIP(void)
     u32 temp;
     
     read_8209c_regs(ADURMS,&temp);
-    rn8209c_papameter.Uv  =   ((temp & 0x800000) > 0) ? 0:(u16)(220.0*10/rn8209c_papameter.Ku*temp);
+    rn8209c_papameter.Uv  =   ((temp & 0x800000) > 0) ? 0:(u16)(220.0*10/rn8209c_papameter.Ku*temp); //以 1/10V为单位
     read_8209c_regs(ADIARMS,&temp);
-    rn8209c_papameter.Ia  =   ((temp & 0x800000) > 0) ? 0: (u32)(IB_05/rn8209c_papameter.KIa*temp*1000.0); 
+    rn8209c_papameter.Ia  =   ((temp & 0x800000) > 0) ? 0: (u32)(IB_05/rn8209c_papameter.KIa*temp*1000.0); //mA
     
     read_8209c_regs(ADPowerPA,&temp);
     if (temp & 0x80000000)
     {
       temp = (~temp + 1);
     }
-    rn8209c_papameter.Pa = (u16)(rn8209c_papameter.Kp*temp/1000000.0);
+    rn8209c_papameter.Pa = (u16)(rn8209c_papameter.Kp*temp/1000000.0);//本身计算出来的结果就是扩大了10^6，以uW为单位，现在以W为单位
 }
 
 
@@ -1419,7 +1419,7 @@ u32 read_8209c_energyP(void)
 
     rn8209c_papameter.energyAPulse += temp;
 
-    rn8209c_papameter.energyA = (u32)( (float)rn8209c_papameter.energyAPulse* 1000.0/rn8209c_papameter.EC );
+    rn8209c_papameter.energyA = (u32)( (float)rn8209c_papameter.energyAPulse* 1000.0/rn8209c_papameter.EC );//以Wh为单位
 
     return  rn8209c_papameter.energyA;
    

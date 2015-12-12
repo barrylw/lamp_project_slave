@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:36
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:16
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -10,12 +10,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\src\stm32f0xx_adc.c
 //        -D USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -28,7 +28,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\stm32f0xx_adc.s
 //
@@ -72,9 +72,10 @@
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 ADC_DeInit:
-        PUSH     {R7,LR}
-        LDR      R1,??DataTable13  ;; 0x40012400
-        CMP      R0,R1
+        PUSH     {R4,LR}
+        MOVS     R4,R0
+        LDR      R0,??DataTable13  ;; 0x40012400
+        CMP      R4,R0
         BNE      ??ADC_DeInit_0
         MOVS     R1,#+1
         MOVS     R0,#+128
@@ -85,7 +86,7 @@ ADC_DeInit:
         LSLS     R0,R0,#+2        ;; #+512
         BL       RCC_APB2PeriphResetCmd
 ??ADC_DeInit_0:
-        POP      {R0,PC}          ;; return
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -139,16 +140,16 @@ ADC_Cmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??ADC_Cmd_0
-        LDR      R1,[R0, #+8]
-        MOVS     R2,#+1
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+8]
+        LDR      R2,[R0, #+8]
+        MOVS     R3,#+1
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+8]
         B        ??ADC_Cmd_1
 ??ADC_Cmd_0:
-        LDR      R1,[R0, #+8]
-        MOVS     R2,#+2
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+8]
+        LDR      R2,[R0, #+8]
+        MOVS     R3,#+2
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+8]
 ??ADC_Cmd_1:
         POP      {PC}             ;; return
 
@@ -159,14 +160,14 @@ ADC_JitterCmd:
         UXTB     R2,R2
         CMP      R2,#+0
         BEQ      ??ADC_JitterCmd_0
-        LDR      R2,[R0, #+16]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+16]
+        LDR      R3,[R0, #+16]
+        ORRS     R3,R3,R1
+        STR      R3,[R0, #+16]
         B        ??ADC_JitterCmd_1
 ??ADC_JitterCmd_0:
-        LDR      R2,[R0, #+16]
-        BICS     R2,R2,R1
-        STR      R2,[R0, #+16]
+        LDR      R3,[R0, #+16]
+        BICS     R3,R3,R1
+        STR      R3,[R0, #+16]
 ??ADC_JitterCmd_1:
         POP      {PC}             ;; return
 
@@ -177,17 +178,17 @@ ADC_AutoPowerOffCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??ADC_AutoPowerOffCmd_0
-        LDR      R1,[R0, #+12]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+8        ;; #+32768
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+8        ;; #+32768
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+12]
         B        ??ADC_AutoPowerOffCmd_1
 ??ADC_AutoPowerOffCmd_0:
-        LDR      R1,[R0, #+12]
-        LDR      R2,??DataTable13_2  ;; 0xffff7fff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        LDR      R3,??DataTable13_2  ;; 0xffff7fff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+12]
 ??ADC_AutoPowerOffCmd_1:
         POP      {PC}             ;; return
 
@@ -198,17 +199,17 @@ ADC_WaitModeCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??ADC_WaitModeCmd_0
-        LDR      R1,[R0, #+12]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+7        ;; #+16384
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+7        ;; #+16384
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+12]
         B        ??ADC_WaitModeCmd_1
 ??ADC_WaitModeCmd_0:
-        LDR      R1,[R0, #+12]
-        LDR      R2,??DataTable13_3  ;; 0xffffbfff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        LDR      R3,??DataTable13_3  ;; 0xffffbfff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+12]
 ??ADC_WaitModeCmd_1:
         POP      {PC}             ;; return
 
@@ -219,17 +220,17 @@ ADC_AnalogWatchdogCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??ADC_AnalogWatchdogCmd_0
-        LDR      R1,[R0, #+12]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+16       ;; #+8388608
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+16       ;; #+8388608
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+12]
         B        ??ADC_AnalogWatchdogCmd_1
 ??ADC_AnalogWatchdogCmd_0:
-        LDR      R1,[R0, #+12]
-        LDR      R2,??DataTable13_4  ;; 0xff7fffff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        LDR      R3,??DataTable13_4  ;; 0xff7fffff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+12]
 ??ADC_AnalogWatchdogCmd_1:
         POP      {PC}             ;; return
 
@@ -237,9 +238,9 @@ ADC_AnalogWatchdogCmd:
         THUMB
 ADC_AnalogWatchdogThresholdsConfig:
         UXTH     R2,R2
-        LSLS     R1,R1,#+16
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+32]
+        LSLS     R3,R1,#+16
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+32]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -251,8 +252,7 @@ ADC_AnalogWatchdogSingleChannelConfig:
         MOVS     R3,R2
         LDR      R2,??DataTable13_5  ;; 0x83ffffff
         ANDS     R2,R2,R3
-        ORRS     R1,R1,R2
-        MOVS     R2,R1
+        ORRS     R2,R2,R1
         STR      R2,[R0, #+12]
         BX       LR               ;; return
 
@@ -263,17 +263,17 @@ ADC_AnalogWatchdogSingleChannelCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??ADC_AnalogWatchdogSingleChannelCmd_0
-        LDR      R1,[R0, #+12]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+15       ;; #+4194304
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+15       ;; #+4194304
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+12]
         B        ??ADC_AnalogWatchdogSingleChannelCmd_1
 ??ADC_AnalogWatchdogSingleChannelCmd_0:
-        LDR      R1,[R0, #+12]
-        LDR      R2,??DataTable13_6  ;; 0xffbfffff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        LDR      R3,??DataTable13_6  ;; 0xffbfffff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+12]
 ??ADC_AnalogWatchdogSingleChannelCmd_1:
         POP      {PC}             ;; return
 
@@ -284,21 +284,21 @@ ADC_TempSensorCmd:
         UXTB     R0,R0
         CMP      R0,#+0
         BEQ      ??ADC_TempSensorCmd_0
-        LDR      R0,??DataTable13_7  ;; 0x40012708
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+128
-        LSLS     R1,R1,#+16       ;; #+8388608
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable13_7  ;; 0x40012708
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable13_7  ;; 0x40012708
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+128
+        LSLS     R2,R2,#+16       ;; #+8388608
+        ORRS     R2,R2,R1
+        LDR      R1,??DataTable13_7  ;; 0x40012708
+        STR      R2,[R1, #+0]
         B        ??ADC_TempSensorCmd_1
 ??ADC_TempSensorCmd_0:
-        LDR      R0,??DataTable13_7  ;; 0x40012708
-        LDR      R0,[R0, #+0]
-        LDR      R1,??DataTable13_4  ;; 0xff7fffff
-        ANDS     R1,R1,R0
-        LDR      R0,??DataTable13_7  ;; 0x40012708
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable13_7  ;; 0x40012708
+        LDR      R1,[R1, #+0]
+        LDR      R2,??DataTable13_4  ;; 0xff7fffff
+        ANDS     R2,R2,R1
+        LDR      R1,??DataTable13_7  ;; 0x40012708
+        STR      R2,[R1, #+0]
 ??ADC_TempSensorCmd_1:
         POP      {PC}             ;; return
 
@@ -309,21 +309,21 @@ ADC_VrefintCmd:
         UXTB     R0,R0
         CMP      R0,#+0
         BEQ      ??ADC_VrefintCmd_0
-        LDR      R0,??DataTable13_7  ;; 0x40012708
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+128
-        LSLS     R1,R1,#+15       ;; #+4194304
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable13_7  ;; 0x40012708
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable13_7  ;; 0x40012708
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+128
+        LSLS     R2,R2,#+15       ;; #+4194304
+        ORRS     R2,R2,R1
+        LDR      R1,??DataTable13_7  ;; 0x40012708
+        STR      R2,[R1, #+0]
         B        ??ADC_VrefintCmd_1
 ??ADC_VrefintCmd_0:
-        LDR      R0,??DataTable13_7  ;; 0x40012708
-        LDR      R0,[R0, #+0]
-        LDR      R1,??DataTable13_6  ;; 0xffbfffff
-        ANDS     R1,R1,R0
-        LDR      R0,??DataTable13_7  ;; 0x40012708
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable13_7  ;; 0x40012708
+        LDR      R1,[R1, #+0]
+        LDR      R2,??DataTable13_6  ;; 0xffbfffff
+        ANDS     R2,R2,R1
+        LDR      R1,??DataTable13_7  ;; 0x40012708
+        STR      R2,[R1, #+0]
 ??ADC_VrefintCmd_1:
         POP      {PC}             ;; return
 
@@ -334,21 +334,21 @@ ADC_VbatCmd:
         UXTB     R0,R0
         CMP      R0,#+0
         BEQ      ??ADC_VbatCmd_0
-        LDR      R0,??DataTable13_7  ;; 0x40012708
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+128
-        LSLS     R1,R1,#+17       ;; #+16777216
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable13_7  ;; 0x40012708
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable13_7  ;; 0x40012708
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+128
+        LSLS     R2,R2,#+17       ;; #+16777216
+        ORRS     R2,R2,R1
+        LDR      R1,??DataTable13_7  ;; 0x40012708
+        STR      R2,[R1, #+0]
         B        ??ADC_VbatCmd_1
 ??ADC_VbatCmd_0:
-        LDR      R0,??DataTable13_7  ;; 0x40012708
-        LDR      R0,[R0, #+0]
-        LDR      R1,??DataTable13_8  ;; 0xfeffffff
-        ANDS     R1,R1,R0
-        LDR      R0,??DataTable13_7  ;; 0x40012708
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable13_7  ;; 0x40012708
+        LDR      R1,[R1, #+0]
+        LDR      R2,??DataTable13_8  ;; 0xfeffffff
+        ANDS     R2,R2,R1
+        LDR      R1,??DataTable13_7  ;; 0x40012708
+        STR      R2,[R1, #+0]
 ??ADC_VbatCmd_1:
         POP      {PC}             ;; return
 
@@ -358,12 +358,11 @@ ADC_ChannelConfig:
         PUSH     {R4}
         MOVS     R3,#+0
         LDR      R4,[R0, #+40]
-        ORRS     R1,R1,R4
-        STR      R1,[R0, #+40]
-        MOVS     R1,#+7
-        BICS     R3,R3,R1
-        ORRS     R2,R2,R3
-        MOVS     R3,R2
+        ORRS     R4,R4,R1
+        STR      R4,[R0, #+40]
+        MOVS     R4,#+7
+        BICS     R3,R3,R4
+        ORRS     R3,R3,R2
         STR      R3,[R0, #+20]
         POP      {R4}
         BX       LR               ;; return
@@ -375,17 +374,17 @@ ADC_ContinuousModeCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??ADC_ContinuousModeCmd_0
-        LDR      R1,[R0, #+12]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+6        ;; #+8192
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+6        ;; #+8192
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+12]
         B        ??ADC_ContinuousModeCmd_1
 ??ADC_ContinuousModeCmd_0:
-        LDR      R1,[R0, #+12]
-        LDR      R2,??DataTable13_9  ;; 0xffffdfff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        LDR      R3,??DataTable13_9  ;; 0xffffdfff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+12]
 ??ADC_ContinuousModeCmd_1:
         POP      {PC}             ;; return
 
@@ -396,17 +395,17 @@ ADC_DiscModeCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??ADC_DiscModeCmd_0
-        LDR      R1,[R0, #+12]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+9        ;; #+65536
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+9        ;; #+65536
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+12]
         B        ??ADC_DiscModeCmd_1
 ??ADC_DiscModeCmd_0:
-        LDR      R1,[R0, #+12]
-        LDR      R2,??DataTable13_10  ;; 0xfffeffff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        LDR      R3,??DataTable13_10  ;; 0xfffeffff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+12]
 ??ADC_DiscModeCmd_1:
         POP      {PC}             ;; return
 
@@ -417,17 +416,17 @@ ADC_OverrunModeCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??ADC_OverrunModeCmd_0
-        LDR      R1,[R0, #+12]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+5        ;; #+4096
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+5        ;; #+4096
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+12]
         B        ??ADC_OverrunModeCmd_1
 ??ADC_OverrunModeCmd_0:
-        LDR      R1,[R0, #+12]
-        LDR      R2,??DataTable13_11  ;; 0xffffefff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        LDR      R3,??DataTable13_11  ;; 0xffffefff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+12]
 ??ADC_OverrunModeCmd_1:
         POP      {PC}             ;; return
 
@@ -437,33 +436,36 @@ ADC_GetCalibrationFactor:
         PUSH     {R4,R5,LR}
         MOVS     R1,R0
         MOVS     R0,#+0
-        MOVS     R2,#+0
         MOVS     R3,#+0
+        MOVS     R2,#+0
         LDR      R4,[R1, #+8]
         MOVS     R5,#+128
         LSLS     R5,R5,#+24       ;; #-2147483648
         ORRS     R5,R5,R4
         STR      R5,[R1, #+8]
 ??ADC_GetCalibrationFactor_0:
-        LDR      R3,[R1, #+8]
-        MOVS     R0,#+128
-        LSLS     R0,R0,#+24       ;; #-2147483648
-        ANDS     R3,R3,R0
-        ADDS     R2,R2,#+1
-        MOVS     R0,#+240
-        LSLS     R0,R0,#+8        ;; #+61440
-        CMP      R2,R0
+        LDR      R4,[R1, #+8]
+        MOVS     R5,#+128
+        LSLS     R5,R5,#+24       ;; #-2147483648
+        ANDS     R4,R4,R5
+        MOVS     R2,R4
+        ADDS     R3,R3,#+1
+        MOVS     R4,#+240
+        LSLS     R4,R4,#+8        ;; #+61440
+        CMP      R3,R4
         BEQ      ??ADC_GetCalibrationFactor_1
-        CMP      R3,#+0
+        CMP      R2,#+0
         BNE      ??ADC_GetCalibrationFactor_0
 ??ADC_GetCalibrationFactor_1:
-        LDR      R0,[R1, #+8]
-        CMP      R0,#+0
+        LDR      R4,[R1, #+8]
+        CMP      R4,#+0
         BMI      ??ADC_GetCalibrationFactor_2
-        LDR      R0,[R1, #+64]
+        LDR      R4,[R1, #+64]
+        MOVS     R0,R4
         B        ??ADC_GetCalibrationFactor_3
 ??ADC_GetCalibrationFactor_2:
-        MOVS     R0,#+0
+        MOVS     R4,#+0
+        MOVS     R0,R4
 ??ADC_GetCalibrationFactor_3:
         POP      {R4,R5,PC}       ;; return
 
@@ -499,16 +501,16 @@ ADC_DMACmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??ADC_DMACmd_0
-        LDR      R1,[R0, #+12]
-        MOVS     R2,#+1
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        MOVS     R3,#+1
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+12]
         B        ??ADC_DMACmd_1
 ??ADC_DMACmd_0:
-        LDR      R1,[R0, #+12]
-        MOVS     R2,#+1
-        BICS     R1,R1,R2
-        STR      R1,[R0, #+12]
+        LDR      R2,[R0, #+12]
+        MOVS     R3,#+1
+        BICS     R2,R2,R3
+        STR      R2,[R0, #+12]
 ??ADC_DMACmd_1:
         POP      {PC}             ;; return
 
@@ -520,8 +522,8 @@ ADC_DMARequestModeConfig:
         BICS     R2,R2,R3
         STR      R2,[R0, #+12]
         LDR      R2,[R0, #+12]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+12]
+        ORRS     R2,R2,R1
+        STR      R2,[R0, #+12]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -531,43 +533,46 @@ ADC_ITConfig:
         UXTB     R2,R2
         CMP      R2,#+0
         BEQ      ??ADC_ITConfig_0
-        LDR      R2,[R0, #+4]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+4]
+        LDR      R3,[R0, #+4]
+        ORRS     R3,R3,R1
+        STR      R3,[R0, #+4]
         B        ??ADC_ITConfig_1
 ??ADC_ITConfig_0:
-        LDR      R2,[R0, #+4]
-        BICS     R2,R2,R1
-        STR      R2,[R0, #+4]
+        LDR      R3,[R0, #+4]
+        BICS     R3,R3,R1
+        STR      R3,[R0, #+4]
 ??ADC_ITConfig_1:
         POP      {PC}             ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 ADC_GetFlagStatus:
-        PUSH     {R4,LR}
+        PUSH     {R4,R5,LR}
         MOVS     R2,R0
         MOVS     R0,#+0
         MOVS     R3,#+0
         LSLS     R4,R1,#+7
         BPL      ??ADC_GetFlagStatus_0
-        LDR      R0,[R2, #+8]
-        LDR      R3,??DataTable13_8  ;; 0xfeffffff
-        ANDS     R3,R3,R0
+        LDR      R4,[R2, #+8]
+        LDR      R5,??DataTable13_8  ;; 0xfeffffff
+        ANDS     R5,R5,R4
+        MOVS     R3,R5
         B        ??ADC_GetFlagStatus_1
 ??ADC_GetFlagStatus_0:
-        LDR      R3,[R2, #+0]
+        LDR      R4,[R2, #+0]
+        MOVS     R3,R4
 ??ADC_GetFlagStatus_1:
-        ANDS     R1,R1,R3
-        CMP      R1,#+0
+        TST      R3,R1
         BEQ      ??ADC_GetFlagStatus_2
-        MOVS     R0,#+1
+        MOVS     R4,#+1
+        MOVS     R0,R4
         B        ??ADC_GetFlagStatus_3
 ??ADC_GetFlagStatus_2:
-        MOVS     R0,#+0
+        MOVS     R4,#+0
+        MOVS     R0,R4
 ??ADC_GetFlagStatus_3:
         UXTB     R0,R0
-        POP      {R4,PC}          ;; return
+        POP      {R4,R5,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -657,16 +662,18 @@ ADC_GetITStatus:
         LDR      R4,[R2, #+4]
         ANDS     R4,R4,R1
         MOVS     R3,R4
-        LDR      R2,[R2, #+0]
-        ANDS     R1,R1,R2
-        CMP      R1,#+0
+        LDR      R4,[R2, #+0]
+        ANDS     R4,R4,R1
+        CMP      R4,#+0
         BEQ      ??ADC_GetITStatus_0
         CMP      R3,#+0
         BEQ      ??ADC_GetITStatus_0
-        MOVS     R0,#+1
+        MOVS     R4,#+1
+        MOVS     R0,R4
         B        ??ADC_GetITStatus_1
 ??ADC_GetITStatus_0:
-        MOVS     R0,#+0
+        MOVS     R4,#+0
+        MOVS     R0,R4
 ??ADC_GetITStatus_1:
         UXTB     R0,R0
         POP      {R4,PC}          ;; return
@@ -690,9 +697,9 @@ ADC_ClearITPendingBit:
 
         END
 // 
-// 814 bytes in section .text
+// 828 bytes in section .text
 // 
-// 814 bytes of CODE memory
+// 828 bytes of CODE memory
 //
 //Errors: none
 //Warnings: none

@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:43
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:23
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -10,12 +10,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\LIB\CMSIS\CM0\DeviceSupport\ST\STM32F0xx\system_stm32f0xx.c
 //        -D USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -28,7 +28,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  
 //        G:\git_hub_lamp\lamp_slave_git\Debug\List\system_stm32f0xx.s
@@ -116,16 +116,17 @@ SystemInit:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SystemCoreClockUpdate:
-        PUSH     {R4,R5,LR}
-        MOVS     R0,#+0
+        PUSH     {R4-R7,LR}
         MOVS     R4,#+0
-        MOVS     R2,#+0
-        MOVS     R1,#+0
-        LDR      R3,??DataTable2_1  ;; 0x40021004
-        LDR      R3,[R3, #+0]
-        MOVS     R5,#+12
-        ANDS     R5,R5,R3
-        MOVS     R0,R5
+        MOVS     R7,#+0
+        MOVS     R5,#+0
+        MOVS     R6,#+0
+        LDR      R0,??DataTable2_1  ;; 0x40021004
+        LDR      R0,[R0, #+0]
+        MOVS     R1,#+12
+        ANDS     R1,R1,R0
+        MOVS     R4,R1
+        MOVS     R0,R4
         CMP      R0,#+0
         BEQ      ??SystemCoreClockUpdate_0
         CMP      R0,#+4
@@ -146,32 +147,36 @@ SystemCoreClockUpdate:
 ??SystemCoreClockUpdate_2:
         LDR      R0,??DataTable2_1  ;; 0x40021004
         LDR      R0,[R0, #+0]
-        MOVS     R4,#+240
-        LSLS     R4,R4,#+14       ;; #+3932160
-        ANDS     R4,R4,R0
+        MOVS     R1,#+240
+        LSLS     R1,R1,#+14       ;; #+3932160
+        ANDS     R1,R1,R0
+        MOVS     R7,R1
         LDR      R0,??DataTable2_1  ;; 0x40021004
-        LDR      R2,[R0, #+0]
-        MOVS     R0,#+128
-        LSLS     R0,R0,#+9        ;; #+65536
-        ANDS     R2,R2,R0
-        LSRS     R4,R4,#+18
-        ADDS     R4,R4,#+2
-        CMP      R2,#+0
+        LDR      R0,[R0, #+0]
+        MOVS     R1,#+128
+        LSLS     R1,R1,#+9        ;; #+65536
+        ANDS     R0,R0,R1
+        MOVS     R5,R0
+        LSRS     R7,R7,#+18
+        ADDS     R7,R7,#+2
+        CMP      R5,#+0
         BNE      ??SystemCoreClockUpdate_5
         LDR      R0,??DataTable2_14  ;; 0x3d0900
-        MULS     R4,R0,R4
-        LDR      R0,??DataTable2_12
-        STR      R4,[R0, #+0]
+        MULS     R0,R7,R0
+        LDR      R1,??DataTable2_12
+        STR      R0,[R1, #+0]
         B        ??SystemCoreClockUpdate_6
 ??SystemCoreClockUpdate_5:
         LDR      R0,??DataTable2_6  ;; 0x4002102c
         LDR      R0,[R0, #+0]
-        LSLS     R1,R0,#+28       ;; ZeroExtS R1,R0,#+28,#+28
-        LSRS     R1,R1,#+28
-        ADDS     R1,R1,#+1
+        LSLS     R0,R0,#+28       ;; ZeroExtS R0,R0,#+28,#+28
+        LSRS     R0,R0,#+28
+        ADDS     R0,R0,#+1
+        MOVS     R6,R0
         LDR      R0,??DataTable2_13  ;; 0xf42400
+        MOVS     R1,R6
         BL       __aeabi_uidiv
-        MULS     R0,R4,R0
+        MULS     R0,R7,R0
         LDR      R1,??DataTable2_12
         STR      R0,[R1, #+0]
 ??SystemCoreClockUpdate_6:
@@ -188,12 +193,13 @@ SystemCoreClockUpdate:
         LSRS     R0,R0,#+28
         LDR      R1,??DataTable2_15
         LDRB     R0,[R1, R0]
-        LDR      R1,??DataTable2_12
-        LDR      R1,[R1, #+0]
-        LSRS     R1,R1,R0
+        MOVS     R4,R0
         LDR      R0,??DataTable2_12
-        STR      R1,[R0, #+0]
-        POP      {R4,R5,PC}       ;; return
+        LDR      R0,[R0, #+0]
+        LSRS     R0,R0,R4
+        LDR      R1,??DataTable2_12
+        STR      R0,[R1, #+0]
+        POP      {R4-R7,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -417,9 +423,9 @@ SetSysClock:
         END
 // 
 //  20 bytes in section .data
-// 512 bytes in section .text
+// 524 bytes in section .text
 // 
-// 512 bytes of CODE memory
+// 524 bytes of CODE memory
 //  20 bytes of DATA memory
 //
 //Errors: none

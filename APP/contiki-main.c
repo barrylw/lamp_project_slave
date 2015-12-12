@@ -222,9 +222,17 @@ u16 currentADC = 0;
 #endif
 
 
+  
+#if 0
+#pragma pack(push) //保存对齐状态
+#pragma pack(1)//设定为1字节对齐
+#pragma pack(pop)//恢复对齐状态
+//在协议解析的时候有用
+#endif
 
 int main()
 {
+
 
     for(uint32_t i = 0; i < 48; i++)
     {
@@ -243,11 +251,18 @@ int main()
     tedtbuf[i] = i+1;
     }
 
+  
+    
+
+ 
+   
     InitVariable();
     InitHardware(); 
 
     gpio_per_init();
     init_update();
+    
+     
     //NWK_data_indication(test_phy_packet, sizeof(test_phy_packet));
     //len = compress_addr_list(commpress_buf, 18,  result_buf);
     //len = dempress_addr_list(decommpress_buf,result_buf, 1);

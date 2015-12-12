@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:34
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  13:18:41
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -8,7 +8,7 @@
 //    Source file  =  G:\git_hub_lamp\lamp_slave_git\APP\PHY.c
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\APP\PHY.c -D USE_STDPERIPH_DRIVER -D
-//        STM32F030X8 -D AUTOSTART_ENABLE -D PRINTF_DEBUG -lb
+//        STM32F030X8 -D AUTOSTART_ENABLE -D PRINTF_DEBUG -D USE_LORA_MODE -lb
 //        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
 //        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
 //        --no_inline --no_code_motion --no_tbaa --no_clustering
@@ -26,7 +26,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\PHY.s
 //
@@ -45,7 +45,6 @@
         EXTERN hal_InitTimerVariable
         EXTERN hal_InitUART
         EXTERN hal_InitUartVariable
-        EXTERN hal_Init_Flash
         EXTERN hal_sRF_Transmit
 
         PUBLIC InitHardware
@@ -78,7 +77,6 @@ InitHardware:
         BL       hal_InitLED
         BL       hal_InitUART
         BL       hal_InitTIMER
-        BL       hal_Init_Flash
         BL       hal_InitRF
         POP      {R0,PC}          ;; return
 
@@ -94,18 +92,22 @@ InitPhyVariable:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 PD_DATA_Request:
-        PUSH     {R7,LR}
-        MOVS     R3,R0
-        MOVS     R0,R1
+        PUSH     {R4-R6,LR}
+        MOVS     R5,R0
+        MOVS     R4,R1
+        MOVS     R6,R2
+        MOVS     R2,R6
         UXTB     R2,R2
-        MOVS     R1,R3
+        MOVS     R1,R5
         UXTB     R1,R1
+        MOVS     R0,R4
         BL       hal_sRF_Transmit
-        POP      {R0,PC}          ;; return
+        POP      {R4-R6,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 get_CCA_result:
+        MOVS     R1,R0
         MOVS     R0,#+0
         BX       LR               ;; return
 
@@ -130,40 +132,41 @@ Phy_RxData:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 PHY_DATA_Indication:
-        PUSH     {LR}
-        LDR      R2,??DataTable3_1
-        LDRB     R2,[R2, #+0]
-        STRB     R2,[R0, #+0]
-        MOVS     R0,#+0
+        PUSH     {R4,LR}
+        LDR      R3,??DataTable3_1
+        LDRB     R3,[R3, #+0]
+        STRB     R3,[R0, #+0]
+        MOVS     R3,#+0
+??PHY_DATA_Indication_0:
+        LDR      R4,??DataTable3_1
+        LDRB     R4,[R4, #+0]
+        UXTH     R3,R3
+        UXTH     R4,R4
+        CMP      R3,R4
+        BCS      ??PHY_DATA_Indication_1
+        UXTH     R3,R3
+        LDR      R4,??DataTable3_2
+        LDRB     R4,[R4, R3]
+        UXTH     R3,R3
+        STRB     R4,[R1, R3]
+        ADDS     R3,R3,#+1
         B        ??PHY_DATA_Indication_0
 ??PHY_DATA_Indication_1:
-        UXTH     R0,R0
-        LDR      R2,??DataTable3_2
-        LDRB     R2,[R2, R0]
-        UXTH     R0,R0
-        STRB     R2,[R1, R0]
-        ADDS     R0,R0,#+1
-??PHY_DATA_Indication_0:
-        LDR      R2,??DataTable3_1
-        LDRB     R2,[R2, #+0]
-        UXTH     R0,R0
-        UXTH     R2,R2
-        CMP      R0,R2
-        BCC      ??PHY_DATA_Indication_1
-        POP      {PC}             ;; return
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 Phy_GetAttr:
-        PUSH     {R4,LR}
+        PUSH     {R4-R6,LR}
+        MOVS     R5,R0
         MOVS     R4,R1
-        UXTB     R0,R0
-        CMP      R0,#+0
+        UXTB     R5,R5
+        CMP      R5,#+0
         BEQ      ??Phy_GetAttr_0
-        CMP      R0,#+2
+        CMP      R5,#+2
         BEQ      ??Phy_GetAttr_1
         BCC      ??Phy_GetAttr_2
-        CMP      R0,#+4
+        CMP      R5,#+4
         BEQ      ??Phy_GetAttr_3
         BCC      ??Phy_GetAttr_4
         B        ??Phy_GetAttr_5
@@ -193,11 +196,12 @@ Phy_GetAttr:
         B        ??Phy_GetAttr_6
 ??Phy_GetAttr_3:
         BL       SX1276LoRaGetRFState
-        UXTB     R0,R0
-        CMP      R0,#+7
+        MOVS     R6,R0
+        UXTB     R6,R6
+        CMP      R6,#+7
         BEQ      ??Phy_GetAttr_7
-        UXTB     R0,R0
-        CMP      R0,#+14
+        UXTB     R6,R6
+        CMP      R6,#+14
         BNE      ??Phy_GetAttr_8
 ??Phy_GetAttr_7:
         MOVS     R0,#+0
@@ -212,19 +216,20 @@ Phy_GetAttr:
 ??Phy_GetAttr_5:
         MOVS     R0,#+10
 ??Phy_GetAttr_6:
-        POP      {R4,PC}          ;; return
+        POP      {R4-R6,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 Phy_SetAttr:
         PUSH     {LR}
-        UXTB     R0,R0
-        CMP      R0,#+0
+        MOVS     R2,R0
+        UXTB     R2,R2
+        CMP      R2,#+0
         BEQ      ??Phy_SetAttr_0
-        CMP      R0,#+2
+        CMP      R2,#+2
         BEQ      ??Phy_SetAttr_1
         BCC      ??Phy_SetAttr_2
-        CMP      R0,#+3
+        CMP      R2,#+3
         BEQ      ??Phy_SetAttr_3
         B        ??Phy_SetAttr_4
 ??Phy_SetAttr_0:
@@ -291,9 +296,9 @@ Phy_SetAttr:
 // 
 //   4 bytes in section .bss
 //  12 bytes in section .rodata
-// 302 bytes in section .text
+// 312 bytes in section .text
 // 
-// 302 bytes of CODE  memory
+// 312 bytes of CODE  memory
 //  12 bytes of CONST memory
 //   4 bytes of DATA  memory
 //

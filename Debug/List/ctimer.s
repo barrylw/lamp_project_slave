@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:28:37
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:08
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,12 +9,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\core\sys\ctimer.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -27,7 +27,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\ctimer.s
 //
@@ -94,16 +94,16 @@ process_thread_ctimer_process:
         LDR      R0,[R0, #+0]
         BL       list_head
         MOVS     R5,R0
-        B        ??process_thread_ctimer_process_3
-??process_thread_ctimer_process_4:
+??process_thread_ctimer_process_3:
+        CMP      R5,#+0
+        BEQ      ??process_thread_ctimer_process_4
         LDR      R1,[R5, #+8]
         MOVS     R0,R5
         ADDS     R0,R0,#+4
         BL       etimer_set
         LDR      R5,[R5, #+0]
-??process_thread_ctimer_process_3:
-        CMP      R5,#+0
-        BNE      ??process_thread_ctimer_process_4
+        B        ??process_thread_ctimer_process_3
+??process_thread_ctimer_process_4:
         MOVS     R0,#+1
         LDR      R1,??DataTable6_1
         STRB     R0,[R1, #+0]
@@ -126,9 +126,6 @@ process_thread_ctimer_process:
         LDR      R0,[R0, #+0]
         BL       list_head
         MOVS     R5,R0
-        B        ??process_thread_ctimer_process_9
-??process_thread_ctimer_process_10:
-        LDR      R5,[R5, #+0]
 ??process_thread_ctimer_process_9:
         CMP      R5,#+0
         BEQ      ??process_thread_ctimer_process_5
@@ -156,8 +153,12 @@ process_thread_ctimer_process:
         LDR      R0,??DataTable6_2
         STR      R6,[R0, #+0]
         B        ??process_thread_ctimer_process_5
+??process_thread_ctimer_process_10:
+        LDR      R5,[R5, #+0]
+        B        ??process_thread_ctimer_process_9
 ??process_thread_ctimer_process_2:
-        MOVS     R1,#+0
+        MOVS     R0,#+0
+        MOVS     R1,R0
         MOVS     R0,#+0
         STRH     R0,[R4, #+0]
         MOVS     R0,#+3
@@ -182,13 +183,16 @@ ctimer_init:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 ctimer_set:
-        PUSH     {R3-R5,LR}
+        PUSH     {R2,R4-R7,LR}
         MOVS     R4,R0
+        MOVS     R6,R1
+        MOVS     R7,R3
         LDR      R0,??DataTable6_2
         LDR      R0,[R0, #+0]
         STR      R0,[R4, #+20]
-        STR      R2,[R4, #+24]
-        STR      R3,[R4, #+28]
+        LDR      R0,[SP, #+0]
+        STR      R0,[R4, #+24]
+        STR      R7,[R4, #+28]
         LDR      R0,??DataTable6_1
         LDRB     R0,[R0, #+0]
         CMP      R0,#+0
@@ -196,8 +200,9 @@ ctimer_set:
         LDR      R0,??DataTable6_2
         LDR      R5,[R0, #+0]
         LDR      R0,??DataTable6_3
-        LDR      R2,??DataTable6_2
-        STR      R0,[R2, #+0]
+        LDR      R1,??DataTable6_2
+        STR      R0,[R1, #+0]
+        MOVS     R1,R6
         MOVS     R0,R4
         ADDS     R0,R0,#+4
         BL       etimer_set
@@ -205,7 +210,7 @@ ctimer_set:
         STR      R5,[R0, #+0]
         B        ??ctimer_set_1
 ??ctimer_set_0:
-        STR      R1,[R4, #+8]
+        STR      R6,[R4, #+8]
 ??ctimer_set_1:
         MOVS     R1,R4
         LDR      R0,??DataTable6
@@ -215,7 +220,7 @@ ctimer_set:
         LDR      R0,??DataTable6
         LDR      R0,[R0, #+0]
         BL       list_add
-        POP      {R0,R4,R5,PC}    ;; return
+        POP      {R0,R4-R7,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -305,34 +310,35 @@ ctimer_stop:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 ctimer_expired:
-        PUSH     {R4,LR}
+        PUSH     {R3-R5,LR}
         MOVS     R4,R0
         LDR      R0,??DataTable6_1
         LDRB     R0,[R0, #+0]
         CMP      R0,#+0
         BEQ      ??ctimer_expired_0
-        ADDS     R4,R4,#+4
         MOVS     R0,R4
+        ADDS     R0,R0,#+4
         BL       etimer_expired
         B        ??ctimer_expired_1
 ??ctimer_expired_0:
         LDR      R0,??DataTable6
         LDR      R0,[R0, #+0]
         BL       list_head
-        B        ??ctimer_expired_2
-??ctimer_expired_3:
-        LDR      R0,[R0, #+0]
+        MOVS     R5,R0
 ??ctimer_expired_2:
-        CMP      R0,#+0
-        BEQ      ??ctimer_expired_4
-        CMP      R0,R4
-        BNE      ??ctimer_expired_3
+        CMP      R5,#+0
+        BEQ      ??ctimer_expired_3
+        CMP      R5,R4
+        BNE      ??ctimer_expired_4
         MOVS     R0,#+0
         B        ??ctimer_expired_1
 ??ctimer_expired_4:
+        LDR      R5,[R5, #+0]
+        B        ??ctimer_expired_2
+??ctimer_expired_3:
         MOVS     R0,#+1
 ??ctimer_expired_1:
-        POP      {R4,PC}          ;; return
+        POP      {R1,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -380,9 +386,9 @@ ctimer_expired:
 //   5 bytes in section .bss
 //  20 bytes in section .data
 //  16 bytes in section .rodata
-// 468 bytes in section .text
+// 480 bytes in section .text
 // 
-// 468 bytes of CODE  memory
+// 480 bytes of CODE  memory
 //  16 bytes of CONST memory
 //  25 bytes of DATA  memory
 //

@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:35
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:15
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,12 +9,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\core\sys\stimer.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -27,7 +27,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\stimer.s
 //
@@ -48,12 +48,13 @@
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 stimer_set:
-        PUSH     {R4,LR}
-        MOVS     R4,R0
-        STR      R1,[R4, #+4]
+        PUSH     {R3-R5,LR}
+        MOVS     R5,R0
+        MOVS     R4,R1
+        STR      R4,[R5, #+4]
         BL       clock_seconds
-        STR      R0,[R4, #+0]
-        POP      {R4,PC}          ;; return
+        STR      R0,[R5, #+0]
+        POP      {R0,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -103,13 +104,14 @@ stimer_expired:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 stimer_remaining:
-        PUSH     {R4,LR}
-        LDR      R1,[R0, #+0]
-        LDR      R0,[R0, #+4]
-        ADDS     R4,R1,R0
+        PUSH     {R3-R5,LR}
+        MOVS     R4,R0
+        LDR      R0,[R4, #+0]
+        LDR      R1,[R4, #+4]
+        ADDS     R5,R0,R1
         BL       clock_seconds
-        SUBS     R0,R4,R0
-        POP      {R4,PC}          ;; return
+        SUBS     R0,R5,R0
+        POP      {R1,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -134,9 +136,9 @@ stimer_elapsed:
 
         END
 // 
-// 102 bytes in section .text
+// 106 bytes in section .text
 // 
-// 102 bytes of CODE memory
+// 106 bytes of CODE memory
 //
 //Errors: none
 //Warnings: none

@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:36
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:17
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -10,12 +10,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\src\stm32f0xx_crc.c
 //        -D USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -28,7 +28,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\stm32f0xx_crc.s
 //
@@ -84,10 +84,9 @@ CRC_ReverseInputDataSelect:
         MOVS     R1,R2
         MOVS     R2,#+96
         BICS     R1,R1,R2
-        ORRS     R0,R0,R1
-        MOVS     R1,R0
-        LDR      R0,??DataTable9_3  ;; 0x40023008
-        STR      R1,[R0, #+0]
+        ORRS     R1,R1,R0
+        LDR      R2,??DataTable9_3  ;; 0x40023008
+        STR      R1,[R2, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -97,20 +96,20 @@ CRC_ReverseOutputDataCmd:
         UXTB     R0,R0
         CMP      R0,#+0
         BEQ      ??CRC_ReverseOutputDataCmd_0
-        LDR      R0,??DataTable9_3  ;; 0x40023008
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+128
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable9_3  ;; 0x40023008
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable9_3  ;; 0x40023008
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+128
+        ORRS     R2,R2,R1
+        LDR      R1,??DataTable9_3  ;; 0x40023008
+        STR      R2,[R1, #+0]
         B        ??CRC_ReverseOutputDataCmd_1
 ??CRC_ReverseOutputDataCmd_0:
-        LDR      R0,??DataTable9_3  ;; 0x40023008
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+128
-        BICS     R0,R0,R1
         LDR      R1,??DataTable9_3  ;; 0x40023008
-        STR      R0,[R1, #+0]
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+128
+        BICS     R1,R1,R2
+        LDR      R2,??DataTable9_3  ;; 0x40023008
+        STR      R1,[R2, #+0]
 ??CRC_ReverseOutputDataCmd_1:
         POP      {PC}             ;; return
 
@@ -124,8 +123,9 @@ CRC_SetInitRegister:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 CRC_CalcCRC:
-        LDR      R1,??DataTable9  ;; 0x40023000
-        STR      R0,[R1, #+0]
+        MOVS     R1,R0
+        LDR      R0,??DataTable9  ;; 0x40023000
+        STR      R1,[R0, #+0]
         LDR      R0,??DataTable9  ;; 0x40023000
         LDR      R0,[R0, #+0]
         BX       LR               ;; return
@@ -134,20 +134,21 @@ CRC_CalcCRC:
         THUMB
 CRC_CalcBlockCRC:
         PUSH     {R4,LR}
-        MOVS     R2,#+0
+        MOVS     R2,R0
         MOVS     R3,#+0
-        MOVS     R2,R3
+        MOVS     R0,#+0
+        MOVS     R3,R0
+??CRC_CalcBlockCRC_0:
+        CMP      R3,R1
+        BCS      ??CRC_CalcBlockCRC_1
+        MOVS     R0,#+4
+        MULS     R0,R3,R0
+        LDR      R0,[R2, R0]
+        LDR      R4,??DataTable9  ;; 0x40023000
+        STR      R0,[R4, #+0]
+        ADDS     R3,R3,#+1
         B        ??CRC_CalcBlockCRC_0
 ??CRC_CalcBlockCRC_1:
-        MOVS     R3,#+4
-        MULS     R3,R2,R3
-        LDR      R3,[R0, R3]
-        LDR      R4,??DataTable9  ;; 0x40023000
-        STR      R3,[R4, #+0]
-        ADDS     R2,R2,#+1
-??CRC_CalcBlockCRC_0:
-        CMP      R2,R1
-        BCC      ??CRC_CalcBlockCRC_1
         LDR      R0,??DataTable9  ;; 0x40023000
         LDR      R0,[R0, #+0]
         POP      {R4,PC}          ;; return
@@ -211,9 +212,9 @@ CRC_GetIDRegister:
 
         END
 // 
-// 180 bytes in section .text
+// 182 bytes in section .text
 // 
-// 180 bytes of CODE memory
+// 182 bytes of CODE memory
 //
 //Errors: none
 //Warnings: none

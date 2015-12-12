@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:40
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:20
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -10,12 +10,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\src\stm32f0xx_spi.c
 //        -D USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -28,7 +28,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\stm32f0xx_spi.s
 //
@@ -77,9 +77,10 @@
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SPI_I2S_DeInit:
-        PUSH     {R7,LR}
-        LDR      R1,??DataTable13  ;; 0x40013000
-        CMP      R0,R1
+        PUSH     {R4,LR}
+        MOVS     R4,R0
+        LDR      R0,??DataTable12  ;; 0x40013000
+        CMP      R4,R0
         BNE      ??SPI_I2S_DeInit_0
         MOVS     R1,#+1
         MOVS     R0,#+128
@@ -91,8 +92,8 @@ SPI_I2S_DeInit:
         BL       RCC_APB2PeriphResetCmd
         B        ??SPI_I2S_DeInit_1
 ??SPI_I2S_DeInit_0:
-        LDR      R1,??DataTable13_1  ;; 0x40003800
-        CMP      R0,R1
+        LDR      R0,??DataTable13  ;; 0x40003800
+        CMP      R4,R0
         BNE      ??SPI_I2S_DeInit_1
         MOVS     R1,#+1
         MOVS     R0,#+128
@@ -103,7 +104,7 @@ SPI_I2S_DeInit:
         LSLS     R0,R0,#+7        ;; #+16384
         BL       RCC_APB1PeriphResetCmd
 ??SPI_I2S_DeInit_1:
-        POP      {R0,PC}          ;; return
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -154,7 +155,8 @@ SPI_Init:
         ORRS     R3,R3,R5
         ORRS     R3,R3,R2
         STRH     R3,[R0, #+0]
-        LDRH     R3,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        MOVS     R3,R2
         MOVS     R2,R3
         LDR      R3,??DataTable14  ;; 0xf0ff
         ANDS     R3,R3,R2
@@ -164,7 +166,8 @@ SPI_Init:
         STRH     R3,[R0, #+4]
         LDRH     R2,[R1, #+16]
         STRH     R2,[R0, #+16]
-        LDRH     R3,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        MOVS     R3,R2
         MOVS     R2,R3
         LDR      R3,??DataTable14_1  ;; 0xfffb
         ANDS     R3,R3,R2
@@ -172,10 +175,10 @@ SPI_Init:
         LDRH     R3,[R1, #+2]
         ORRS     R3,R3,R2
         STRH     R3,[R0, #+0]
-        LDRH     R1,[R0, #+28]
-        LDR      R2,??DataTable14_2  ;; 0xf7ff
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+28]
+        LDRH     R2,[R0, #+28]
+        LDR      R4,??DataTable14_2  ;; 0xf7ff
+        ANDS     R4,R4,R2
+        STRH     R4,[R0, #+28]
         POP      {R4,R5}
         BX       LR               ;; return
 
@@ -199,121 +202,141 @@ I2S_StructInit:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 I2S_Init:
-        PUSH     {R0,R1,R4-R7,LR}
-        SUB      SP,SP,#+28
+        PUSH     {R0,R4-R7,LR}
+        SUB      SP,SP,#+40
+        MOVS     R7,R1
+        MOVS     R6,#+0
+        MOVS     R0,#+2
+        MOV      R1,SP
+        STRH     R0,[R1, #+0]
         MOVS     R4,#+0
-        MOVS     R2,#+2
-        MOVS     R3,#+0
-        MOVS     R5,#+1
+        MOVS     R0,#+1
+        MOV      R1,SP
+        STRH     R0,[R1, #+2]
+        MOVS     R5,#+0
         MOVS     R0,#+0
-        MOVS     R1,#+0
-        LDR      R6,[SP, #+28]
-        LDRH     R7,[R6, #+28]
-        LDR      R6,??DataTable14_3  ;; 0xf040
-        ANDS     R6,R6,R7
-        LDR      R7,[SP, #+28]
-        STRH     R6,[R7, #+28]
-        MOVS     R6,#+2
-        LDR      R7,[SP, #+28]
-        STRH     R6,[R7, #+32]
-        LDR      R6,[SP, #+28]
-        LDRH     R6,[R6, #+28]
-        MOVS     R4,R6
-        LDR      R6,[SP, #+32]
-        LDR      R6,[R6, #+8]
-        CMP      R6,#+2
+        STR      R0,[SP, #+4]
+        LDR      R0,[SP, #+40]
+        LDRH     R0,[R0, #+28]
+        LDR      R1,??DataTable14_3  ;; 0xf040
+        ANDS     R1,R1,R0
+        LDR      R0,[SP, #+40]
+        STRH     R1,[R0, #+28]
+        MOVS     R0,#+2
+        LDR      R1,[SP, #+40]
+        STRH     R0,[R1, #+32]
+        LDR      R0,[SP, #+40]
+        LDRH     R0,[R0, #+28]
+        MOVS     R6,R0
+        LDR      R0,[R7, #+8]
+        CMP      R0,#+2
         BNE      ??I2S_Init_0
-        MOVS     R3,#+0
-        MOVS     R2,#+2
+        MOVS     R0,#+0
+        MOVS     R4,R0
+        MOVS     R0,#+2
+        MOV      R1,SP
+        STRH     R0,[R1, #+0]
         B        ??I2S_Init_1
 ??I2S_Init_0:
-        LDR      R0,[SP, #+32]
-        LDRH     R0,[R0, #+4]
+        LDRH     R0,[R7, #+4]
         CMP      R0,#+0
         BNE      ??I2S_Init_2
-        MOVS     R5,#+1
+        MOVS     R0,#+1
+        MOV      R1,SP
+        STRH     R0,[R1, #+2]
         B        ??I2S_Init_3
 ??I2S_Init_2:
-        MOVS     R5,#+2
+        MOVS     R0,#+2
+        MOV      R1,SP
+        STRH     R0,[R1, #+2]
 ??I2S_Init_3:
-        MOV      R0,SP
+        ADD      R0,SP,#+8
         BL       RCC_GetClocksFreq
-        LDR      R1,[SP, #+0]
-        LDR      R0,[SP, #+32]
-        LDRH     R0,[R0, #+6]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+2        ;; #+512
-        CMP      R0,R2
+        LDR      R0,[SP, #+8]
+        STR      R0,[SP, #+4]
+        LDRH     R0,[R7, #+6]
+        MOVS     R1,#+128
+        LSLS     R1,R1,#+2        ;; #+512
+        CMP      R0,R1
         BNE      ??I2S_Init_4
-        MOVS     R0,R1
+        LDR      R0,[SP, #+4]
         LSRS     R0,R0,#+8
         MOVS     R1,#+10
         MULS     R0,R1,R0
-        LDR      R1,[SP, #+32]
-        LDR      R1,[R1, #+8]
+        LDR      R1,[R7, #+8]
         BL       __aeabi_uidiv
         ADDS     R0,R0,#+5
         UXTH     R0,R0
+        MOVS     R5,R0
         B        ??I2S_Init_5
 ??I2S_Init_4:
-        MOVS     R0,R1
-        UXTH     R5,R5
+        LDR      R0,[SP, #+4]
+        MOV      R1,SP
+        LDRH     R2,[R1, #+2]
         MOVS     R1,#+32
-        MULS     R1,R5,R1
+        MULS     R1,R2,R1
         BL       __aeabi_uidiv
         MOVS     R1,#+10
         MULS     R0,R1,R0
-        LDR      R1,[SP, #+32]
-        LDR      R1,[R1, #+8]
+        LDR      R1,[R7, #+8]
         BL       __aeabi_uidiv
         ADDS     R0,R0,#+5
         UXTH     R0,R0
+        MOVS     R5,R0
 ??I2S_Init_5:
+        MOVS     R0,R5
         MOVS     R1,#+10
         BL       __aeabi_uidiv
+        MOVS     R5,R0
+        MOVS     R0,R5
         MOVS     R1,R0
-        MOVS     R3,R1
-        LSLS     R3,R3,#+31       ;; ZeroExtS R3,R3,#+31,#+31
-        LSRS     R3,R3,#+31
-        UXTH     R3,R3
-        SUBS     R0,R0,R3
-        MOVS     R2,R0
-        LSRS     R2,R2,#+1
-        LSLS     R3,R3,#+8
+        LSLS     R1,R1,#+31       ;; ZeroExtS R1,R1,#+31,#+31
+        LSRS     R1,R1,#+31
+        MOVS     R4,R1
+        MOV      R0,SP
+        UXTH     R4,R4
+        SUBS     R1,R5,R4
+        LSRS     R1,R1,#+1
+        STRH     R1,[R0, #+0]
+        LSLS     R4,R4,#+8
 ??I2S_Init_1:
-        UXTH     R2,R2
-        MOVS     R0,R2
-        SUBS     R0,R0,#+2
-        CMP      R0,#+254
-        BCC      ??I2S_Init_6
-        MOVS     R2,#+2
-        MOVS     R3,#+0
-??I2S_Init_6:
-        LDR      R0,[SP, #+32]
-        LDRH     R0,[R0, #+6]
-        ORRS     R0,R0,R3
-        ORRS     R0,R0,R2
-        LDR      R1,[SP, #+28]
-        STRH     R0,[R1, #+32]
-        LDR      R0,[SP, #+32]
+        MOV      R0,SP
         LDRH     R0,[R0, #+0]
-        LDR      R1,[SP, #+32]
-        LDRH     R1,[R1, #+2]
-        LDR      R2,[SP, #+32]
-        LDRH     R2,[R2, #+4]
-        LDR      R3,[SP, #+32]
-        LDRH     R3,[R3, #+12]
-        ORRS     R3,R3,R2
-        ORRS     R3,R3,R1
-        ORRS     R3,R3,R0
+        CMP      R0,#+2
+        BLT      ??I2S_Init_6
+        MOV      R0,SP
+        LDRH     R0,[R0, #+0]
+        CMP      R0,#+255
+        BLE      ??I2S_Init_7
+??I2S_Init_6:
+        MOVS     R0,#+2
+        MOV      R1,SP
+        STRH     R0,[R1, #+0]
+        MOVS     R0,#+0
+        MOVS     R4,R0
+??I2S_Init_7:
+        MOV      R0,SP
+        LDRH     R0,[R0, #+0]
+        LDRH     R1,[R7, #+6]
+        ORRS     R1,R1,R4
+        ORRS     R1,R1,R0
+        LDR      R0,[SP, #+40]
+        STRH     R1,[R0, #+32]
+        LDRH     R0,[R7, #+0]
+        LDRH     R2,[R7, #+2]
+        LDRH     R3,[R7, #+4]
+        LDRH     R1,[R7, #+12]
+        ORRS     R1,R1,R3
+        ORRS     R1,R1,R2
+        ORRS     R1,R1,R0
         MOVS     R0,#+128
         LSLS     R0,R0,#+4        ;; #+2048
-        ORRS     R0,R0,R3
-        ORRS     R0,R0,R4
-        MOVS     R4,R0
-        LDR      R0,[SP, #+28]
-        STRH     R4,[R0, #+28]
-        ADD      SP,SP,#+36
+        ORRS     R0,R0,R1
+        ORRS     R0,R0,R6
+        MOVS     R6,R0
+        LDR      R0,[SP, #+40]
+        STRH     R6,[R0, #+28]
+        ADD      SP,SP,#+44
         POP      {R4-R7,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -323,16 +346,16 @@ SPI_Cmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??SPI_Cmd_0
-        LDRH     R1,[R0, #+0]
-        MOVS     R2,#+64
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        MOVS     R3,#+64
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+0]
         B        ??SPI_Cmd_1
 ??SPI_Cmd_0:
-        LDRH     R1,[R0, #+0]
-        LDR      R2,??DataTable14_4  ;; 0xffbf
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        LDR      R3,??DataTable14_4  ;; 0xffbf
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+0]
 ??SPI_Cmd_1:
         POP      {PC}             ;; return
 
@@ -343,16 +366,16 @@ SPI_TIModeCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??SPI_TIModeCmd_0
-        LDRH     R1,[R0, #+4]
-        MOVS     R2,#+16
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        MOVS     R3,#+16
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+4]
         B        ??SPI_TIModeCmd_1
 ??SPI_TIModeCmd_0:
-        LDRH     R1,[R0, #+4]
-        LDR      R2,??DataTable14_5  ;; 0xffef
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        LDR      R3,??DataTable14_5  ;; 0xffef
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+4]
 ??SPI_TIModeCmd_1:
         POP      {PC}             ;; return
 
@@ -363,17 +386,17 @@ I2S_Cmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??I2S_Cmd_0
-        LDRH     R1,[R0, #+28]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+3        ;; #+1024
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+28]
+        LDRH     R2,[R0, #+28]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+3        ;; #+1024
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+28]
         B        ??I2S_Cmd_1
 ??I2S_Cmd_0:
-        LDRH     R1,[R0, #+28]
-        LDR      R2,??DataTable14_6  ;; 0xfbff
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+28]
+        LDRH     R2,[R0, #+28]
+        LDR      R3,??DataTable14_6  ;; 0xfbff
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+28]
 ??I2S_Cmd_1:
         POP      {PC}             ;; return
 
@@ -386,8 +409,7 @@ SPI_DataSizeConfig:
         MOVS     R3,R2
         LDR      R2,??DataTable14  ;; 0xf0ff
         ANDS     R2,R2,R3
-        ORRS     R1,R1,R2
-        MOVS     R2,R1
+        ORRS     R2,R2,R1
         STRH     R2,[R0, #+4]
         BX       LR               ;; return
 
@@ -399,8 +421,8 @@ SPI_RxFIFOThresholdConfig:
         ANDS     R3,R3,R2
         STRH     R3,[R0, #+4]
         LDRH     R2,[R0, #+4]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+4]
+        ORRS     R2,R2,R1
+        STRH     R2,[R0, #+4]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -412,17 +434,17 @@ SPI_BiDirectionalLineConfig:
         LSLS     R2,R2,#+7        ;; #+16384
         CMP      R1,R2
         BNE      ??SPI_BiDirectionalLineConfig_0
-        LDRH     R1,[R0, #+0]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+7        ;; #+16384
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+7        ;; #+16384
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+0]
         B        ??SPI_BiDirectionalLineConfig_1
 ??SPI_BiDirectionalLineConfig_0:
-        LDRH     R1,[R0, #+0]
-        LDR      R2,??DataTable14_8  ;; 0xbfff
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        LDR      R3,??DataTable14_8  ;; 0xbfff
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+0]
 ??SPI_BiDirectionalLineConfig_1:
         POP      {PC}             ;; return
 
@@ -434,17 +456,17 @@ SPI_NSSInternalSoftwareConfig:
         LDR      R2,??DataTable14_9  ;; 0xfeff
         CMP      R1,R2
         BEQ      ??SPI_NSSInternalSoftwareConfig_0
-        LDRH     R1,[R0, #+0]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+1        ;; #+256
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+1        ;; #+256
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+0]
         B        ??SPI_NSSInternalSoftwareConfig_1
 ??SPI_NSSInternalSoftwareConfig_0:
-        LDRH     R1,[R0, #+0]
-        LDR      R2,??DataTable14_9  ;; 0xfeff
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        LDR      R3,??DataTable14_9  ;; 0xfeff
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+0]
 ??SPI_NSSInternalSoftwareConfig_1:
         POP      {PC}             ;; return
 
@@ -455,16 +477,16 @@ SPI_SSOutputCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??SPI_SSOutputCmd_0
-        LDRH     R1,[R0, #+4]
-        MOVS     R2,#+4
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        MOVS     R3,#+4
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+4]
         B        ??SPI_SSOutputCmd_1
 ??SPI_SSOutputCmd_0:
-        LDRH     R1,[R0, #+4]
-        LDR      R2,??DataTable14_1  ;; 0xfffb
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        LDR      R3,??DataTable14_1  ;; 0xfffb
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+4]
 ??SPI_SSOutputCmd_1:
         POP      {PC}             ;; return
 
@@ -475,16 +497,16 @@ SPI_NSSPulseModeCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??SPI_NSSPulseModeCmd_0
-        LDRH     R1,[R0, #+4]
-        MOVS     R2,#+8
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        MOVS     R3,#+8
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+4]
         B        ??SPI_NSSPulseModeCmd_1
 ??SPI_NSSPulseModeCmd_0:
-        LDRH     R1,[R0, #+4]
-        LDR      R2,??DataTable14_10  ;; 0xfff7
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R2,[R0, #+4]
+        LDR      R3,??DataTable14_10  ;; 0xfff7
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+4]
 ??SPI_NSSPulseModeCmd_1:
         POP      {PC}             ;; return
 
@@ -506,10 +528,11 @@ SPI_I2S_SendData16:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SPI_ReceiveData8:
-        MOVS     R1,#+0
         MOVS     R1,R0
-        ADDS     R1,R1,#+12
-        LDRB     R0,[R1, #+0]
+        MOVS     R0,#+0
+        MOVS     R0,R1
+        ADDS     R0,R0,#+12
+        LDRB     R0,[R0, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -526,9 +549,15 @@ SPI_CRCLengthConfig:
         ANDS     R3,R3,R2
         STRH     R3,[R0, #+0]
         LDRH     R2,[R0, #+0]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+0]
+        ORRS     R2,R2,R1
+        STRH     R2,[R0, #+0]
         BX       LR               ;; return
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable12:
+        DC32     0x40013000
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -537,17 +566,17 @@ SPI_CalculateCRC:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??SPI_CalculateCRC_0
-        LDRH     R1,[R0, #+0]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+6        ;; #+8192
-        ORRS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+6        ;; #+8192
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+0]
         B        ??SPI_CalculateCRC_1
 ??SPI_CalculateCRC_0:
-        LDRH     R1,[R0, #+0]
-        LDR      R2,??DataTable14_11  ;; 0xdfff
-        ANDS     R2,R2,R1
-        STRH     R2,[R0, #+0]
+        LDRH     R2,[R0, #+0]
+        LDR      R3,??DataTable14_11  ;; 0xdfff
+        ANDS     R3,R3,R2
+        STRH     R3,[R0, #+0]
 ??SPI_CalculateCRC_1:
         POP      {PC}             ;; return
 
@@ -555,12 +584,6 @@ SPI_CalculateCRC:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable13:
-        DC32     0x40013000
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable13_1:
         DC32     0x40003800
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -582,10 +605,12 @@ SPI_GetCRC:
         UXTB     R1,R1
         CMP      R1,#+1
         BEQ      ??SPI_GetCRC_0
-        LDRH     R0,[R2, #+24]
+        LDRH     R3,[R2, #+24]
+        MOVS     R0,R3
         B        ??SPI_GetCRC_1
 ??SPI_GetCRC_0:
-        LDRH     R0,[R2, #+20]
+        LDRH     R3,[R2, #+20]
+        MOVS     R0,R3
 ??SPI_GetCRC_1:
         UXTH     R0,R0
         POP      {PC}             ;; return
@@ -603,14 +628,14 @@ SPI_I2S_DMACmd:
         UXTB     R2,R2
         CMP      R2,#+0
         BEQ      ??SPI_I2S_DMACmd_0
-        LDRH     R2,[R0, #+4]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+4]
+        LDRH     R3,[R0, #+4]
+        ORRS     R3,R3,R1
+        STRH     R3,[R0, #+4]
         B        ??SPI_I2S_DMACmd_1
 ??SPI_I2S_DMACmd_0:
-        LDRH     R2,[R0, #+4]
-        BICS     R2,R2,R1
-        STRH     R2,[R0, #+4]
+        LDRH     R3,[R0, #+4]
+        BICS     R3,R3,R1
+        STRH     R3,[R0, #+4]
 ??SPI_I2S_DMACmd_1:
         POP      {PC}             ;; return
 
@@ -622,8 +647,8 @@ SPI_LastDMATransferCmd:
         ANDS     R3,R3,R2
         STRH     R3,[R0, #+4]
         LDRH     R2,[R0, #+4]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+4]
+        ORRS     R2,R2,R1
+        STRH     R2,[R0, #+4]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -707,29 +732,30 @@ SPI_LastDMATransferCmd:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SPI_I2S_ITConfig:
-        PUSH     {R4,LR}
-        MOVS     R4,#+0
+        PUSH     {R4,R5,LR}
         MOVS     R3,#+0
-        UXTB     R1,R1
-        LSRS     R1,R1,#+4
-        UXTB     R1,R1
-        MOVS     R4,R1
-        MOVS     R1,#+1
-        LSLS     R1,R1,R4
-        MOVS     R3,R1
+        MOVS     R4,#+0
+        MOVS     R5,R1
+        UXTB     R5,R5
+        LSRS     R5,R5,#+4
+        UXTB     R5,R5
+        MOVS     R3,R5
+        MOVS     R5,#+1
+        LSLS     R5,R5,R3
+        MOVS     R4,R5
         UXTB     R2,R2
         CMP      R2,#+0
         BEQ      ??SPI_I2S_ITConfig_0
-        LDRH     R1,[R0, #+4]
-        ORRS     R3,R3,R1
-        STRH     R3,[R0, #+4]
+        LDRH     R5,[R0, #+4]
+        ORRS     R5,R5,R4
+        STRH     R5,[R0, #+4]
         B        ??SPI_I2S_ITConfig_1
 ??SPI_I2S_ITConfig_0:
-        LDRH     R1,[R0, #+4]
-        BICS     R1,R1,R3
-        STRH     R1,[R0, #+4]
+        LDRH     R5,[R0, #+4]
+        BICS     R5,R5,R4
+        STRH     R5,[R0, #+4]
 ??SPI_I2S_ITConfig_1:
-        POP      {R4,PC}          ;; return
+        POP      {R4,R5,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -755,13 +781,15 @@ SPI_I2S_GetFlagStatus:
         PUSH     {LR}
         MOVS     R2,R0
         MOVS     R0,#+0
-        LDRH     R2,[R2, #+8]
-        TST      R2,R1
+        LDRH     R3,[R2, #+8]
+        TST      R3,R1
         BEQ      ??SPI_I2S_GetFlagStatus_0
-        MOVS     R0,#+1
+        MOVS     R3,#+1
+        MOVS     R0,R3
         B        ??SPI_I2S_GetFlagStatus_1
 ??SPI_I2S_GetFlagStatus_0:
-        MOVS     R0,#+0
+        MOVS     R3,#+0
+        MOVS     R0,R3
 ??SPI_I2S_GetFlagStatus_1:
         UXTB     R0,R0
         POP      {PC}             ;; return
@@ -778,37 +806,40 @@ SPI_I2S_ClearFlag:
         THUMB
 SPI_I2S_GetITStatus:
         PUSH     {R4-R7,LR}
-        MOVS     R2,R0
+        MOVS     R3,R0
         MOVS     R0,#+0
-        MOVS     R3,#+0
         MOVS     R4,#+0
         MOVS     R5,#+0
-        MOVS     R6,#+1
+        MOVS     R6,#+0
+        MOVS     R2,#+1
         LSLS     R7,R1,#+28       ;; ZeroExtS R7,R1,#+28,#+28
         LSRS     R7,R7,#+28
-        LSLS     R6,R6,R7
-        MOVS     R3,R6
-        UXTB     R1,R1
-        LSRS     R1,R1,#+4
-        UXTB     R1,R1
-        MOVS     R4,R1
-        MOVS     R6,#+1
-        MOVS     R1,R4
-        MOVS     R4,R6
-        LSLS     R4,R4,R1
-        LDRH     R1,[R2, #+4]
-        ANDS     R4,R4,R1
-        MOVS     R5,R4
-        LDRH     R1,[R2, #+8]
-        TST      R1,R3
+        LSLS     R2,R2,R7
+        MOVS     R4,R2
+        MOVS     R2,R1
+        UXTB     R2,R2
+        LSRS     R2,R2,#+4
+        UXTB     R2,R2
+        MOVS     R5,R2
+        MOVS     R7,#+1
+        MOVS     R2,R5
+        MOVS     R5,R7
+        LSLS     R5,R5,R2
+        LDRH     R2,[R3, #+4]
+        ANDS     R2,R2,R5
+        MOVS     R6,R2
+        LDRH     R2,[R3, #+8]
+        TST      R2,R4
         BEQ      ??SPI_I2S_GetITStatus_0
-        UXTH     R5,R5
-        CMP      R5,#+0
+        UXTH     R6,R6
+        CMP      R6,#+0
         BEQ      ??SPI_I2S_GetITStatus_0
-        MOVS     R0,#+1
+        MOVS     R2,#+1
+        MOVS     R0,R2
         B        ??SPI_I2S_GetITStatus_1
 ??SPI_I2S_GetITStatus_0:
-        MOVS     R0,#+0
+        MOVS     R2,#+0
+        MOVS     R0,R2
 ??SPI_I2S_GetITStatus_1:
         UXTB     R0,R0
         POP      {R4-R7,PC}       ;; return
@@ -826,9 +857,9 @@ SPI_I2S_GetITStatus:
 
         END
 // 
-// 1 058 bytes in section .text
+// 1 118 bytes in section .text
 // 
-// 1 058 bytes of CODE memory
+// 1 118 bytes of CODE memory
 //
 //Errors: none
 //Warnings: none

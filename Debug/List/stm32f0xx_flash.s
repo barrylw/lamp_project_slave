@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:38
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:18
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -10,12 +10,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\src\stm32f0xx_flash.c
 //        -D USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -28,7 +28,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  
 //        G:\git_hub_lamp\lamp_slave_git\Debug\List\stm32f0xx_flash.s
@@ -77,10 +77,9 @@ FLASH_SetLatency:
         MOVS     R1,R2
         MOVS     R2,#+1
         BICS     R1,R1,R2
-        ORRS     R0,R0,R1
-        MOVS     R1,R0
-        LDR      R0,??DataTable13  ;; 0x40022000
-        STR      R1,[R0, #+0]
+        ORRS     R1,R1,R0
+        LDR      R2,??DataTable13  ;; 0x40022000
+        STR      R1,[R2, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -90,20 +89,20 @@ FLASH_PrefetchBufferCmd:
         UXTB     R0,R0
         CMP      R0,#+0
         BEQ      ??FLASH_PrefetchBufferCmd_0
-        LDR      R0,??DataTable13  ;; 0x40022000
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+16
-        ORRS     R1,R1,R0
-        LDR      R0,??DataTable13  ;; 0x40022000
-        STR      R1,[R0, #+0]
+        LDR      R1,??DataTable13  ;; 0x40022000
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+16
+        ORRS     R2,R2,R1
+        LDR      R1,??DataTable13  ;; 0x40022000
+        STR      R2,[R1, #+0]
         B        ??FLASH_PrefetchBufferCmd_1
 ??FLASH_PrefetchBufferCmd_0:
-        LDR      R0,??DataTable13  ;; 0x40022000
-        LDR      R0,[R0, #+0]
-        MOVS     R1,#+16
-        BICS     R0,R0,R1
         LDR      R1,??DataTable13  ;; 0x40022000
-        STR      R0,[R1, #+0]
+        LDR      R1,[R1, #+0]
+        MOVS     R2,#+16
+        BICS     R1,R1,R2
+        LDR      R2,??DataTable13  ;; 0x40022000
+        STR      R1,[R2, #+0]
 ??FLASH_PrefetchBufferCmd_1:
         POP      {PC}             ;; return
 
@@ -116,10 +115,12 @@ FLASH_GetPrefetchBufferStatus:
         LDR      R1,[R1, #+0]
         LSLS     R1,R1,#+26
         BPL      ??FLASH_GetPrefetchBufferStatus_0
-        MOVS     R0,#+1
+        MOVS     R1,#+1
+        MOVS     R0,R1
         B        ??FLASH_GetPrefetchBufferStatus_1
 ??FLASH_GetPrefetchBufferStatus_0:
-        MOVS     R0,#+0
+        MOVS     R1,#+0
+        MOVS     R0,R1
 ??FLASH_GetPrefetchBufferStatus_1:
         UXTB     R0,R0
         POP      {PC}             ;; return
@@ -265,8 +266,9 @@ FLASH_ProgramWord:
         UXTB     R6,R6
         CMP      R6,#+4
         BNE      ??FLASH_ProgramWord_1
-        ADDS     R5,R5,#+2
-        STR      R5,[SP, #+0]
+        MOVS     R0,R5
+        ADDS     R0,R0,#+2
+        STR      R0,[SP, #+0]
         MOVS     R0,R4
         LSRS     R0,R0,#+16
         LDR      R1,[SP, #+0]
@@ -379,7 +381,8 @@ FLASH_OB_Erase:
         BL       FLASH_OB_GetRDP
         CMP      R0,#+0
         BEQ      ??FLASH_OB_Erase_0
-        MOVS     R4,#+0
+        MOVS     R0,#+0
+        MOVS     R4,R0
 ??FLASH_OB_Erase_0:
         MOVS     R0,#+176
         LSLS     R0,R0,#+12       ;; #+720896
@@ -453,15 +456,17 @@ FLASH_OB_Erase:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 FLASH_OB_EnableWRP:
-        PUSH     {R4-R6,LR}
-        LDR      R4,??DataTable19  ;; 0xffff
+        PUSH     {R3-R7,LR}
+        MOVS     R4,R0
+        LDR      R7,??DataTable19  ;; 0xffff
         LDR      R5,??DataTable19  ;; 0xffff
         MOVS     R6,#+4
-        MVNS     R1,R0
-        MOVS     R0,R1
-        MOVS     R1,R0
-        UXTB     R1,R1
-        MOVS     R4,R1
+        MVNS     R0,R4
+        MOVS     R4,R0
+        MOVS     R0,R4
+        UXTB     R0,R0
+        MOVS     R7,R0
+        MOVS     R0,R4
         LSRS     R0,R0,#+8
         UXTB     R0,R0
         MOVS     R5,R0
@@ -478,11 +483,11 @@ FLASH_OB_EnableWRP:
         ORRS     R1,R1,R0
         LDR      R0,??DataTable13_1  ;; 0x40022010
         STR      R1,[R0, #+0]
-        UXTH     R4,R4
-        CMP      R4,#+255
+        UXTH     R7,R7
+        CMP      R7,#+255
         BEQ      ??FLASH_OB_EnableWRP_1
         LDR      R0,??DataTable22  ;; 0x1ffff808
-        STRH     R4,[R0, #+0]
+        STRH     R7,[R0, #+0]
         MOVS     R0,#+176
         LSLS     R0,R0,#+12       ;; #+720896
         BL       FLASH_WaitForLastOperation
@@ -513,7 +518,7 @@ FLASH_OB_EnableWRP:
 ??FLASH_OB_EnableWRP_0:
         MOVS     R0,R6
         UXTB     R0,R0
-        POP      {R4-R6,PC}       ;; return
+        POP      {R1,R4-R7,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -650,13 +655,14 @@ FLASH_OB_UserConfig:
         STR      R1,[R0, #+0]
         UXTB     R4,R4
         UXTB     R7,R7
-        ORRS     R7,R7,R4
+        MOVS     R0,R7
+        ORRS     R0,R0,R4
         UXTB     R5,R5
-        MOVS     R0,#+248
-        ORRS     R0,R0,R5
-        ORRS     R0,R0,R7
-        LDR      R1,??DataTable27_1  ;; 0x1ffff802
-        STRH     R0,[R1, #+0]
+        MOVS     R1,#+248
+        ORRS     R1,R1,R5
+        ORRS     R1,R1,R0
+        LDR      R0,??DataTable27_1  ;; 0x1ffff802
+        STRH     R1,[R0, #+0]
         MOVS     R0,#+176
         LSLS     R0,R0,#+12       ;; #+720896
         BL       FLASH_WaitForLastOperation
@@ -940,10 +946,12 @@ FLASH_OB_GetRDP:
         ANDS     R2,R2,R1
         CMP      R2,#+0
         BEQ      ??FLASH_OB_GetRDP_0
-        MOVS     R0,#+1
+        MOVS     R1,#+1
+        MOVS     R0,R1
         B        ??FLASH_OB_GetRDP_1
 ??FLASH_OB_GetRDP_0:
-        MOVS     R0,#+0
+        MOVS     R1,#+0
+        MOVS     R0,R1
 ??FLASH_OB_GetRDP_1:
         UXTB     R0,R0
         POP      {PC}             ;; return
@@ -961,18 +969,18 @@ FLASH_ITConfig:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??FLASH_ITConfig_0
-        LDR      R1,??DataTable27  ;; 0x40022010
-        LDR      R1,[R1, #+0]
-        ORRS     R0,R0,R1
-        LDR      R1,??DataTable27  ;; 0x40022010
-        STR      R0,[R1, #+0]
+        LDR      R2,??DataTable27  ;; 0x40022010
+        LDR      R2,[R2, #+0]
+        ORRS     R2,R2,R0
+        LDR      R3,??DataTable27  ;; 0x40022010
+        STR      R2,[R3, #+0]
         B        ??FLASH_ITConfig_1
 ??FLASH_ITConfig_0:
-        LDR      R1,??DataTable27  ;; 0x40022010
-        LDR      R1,[R1, #+0]
-        BICS     R1,R1,R0
-        LDR      R0,??DataTable27  ;; 0x40022010
-        STR      R1,[R0, #+0]
+        LDR      R2,??DataTable27  ;; 0x40022010
+        LDR      R2,[R2, #+0]
+        BICS     R2,R2,R0
+        LDR      R3,??DataTable27  ;; 0x40022010
+        STR      R2,[R3, #+0]
 ??FLASH_ITConfig_1:
         POP      {PC}             ;; return
 
@@ -984,13 +992,15 @@ FLASH_GetFlagStatus:
         MOVS     R0,#+0
         LDR      R2,??DataTable27_4  ;; 0x4002200c
         LDR      R2,[R2, #+0]
-        ANDS     R1,R1,R2
-        CMP      R1,#+0
+        ANDS     R2,R2,R1
+        CMP      R2,#+0
         BEQ      ??FLASH_GetFlagStatus_0
-        MOVS     R0,#+1
+        MOVS     R2,#+1
+        MOVS     R0,R2
         B        ??FLASH_GetFlagStatus_1
 ??FLASH_GetFlagStatus_0:
-        MOVS     R0,#+0
+        MOVS     R2,#+0
+        MOVS     R0,R2
 ??FLASH_GetFlagStatus_1:
         UXTB     R0,R0
         POP      {PC}             ;; return
@@ -1011,24 +1021,28 @@ FLASH_GetStatus:
         LDR      R1,[R1, #+0]
         LSLS     R1,R1,#+31
         BPL      ??FLASH_GetStatus_0
-        MOVS     R0,#+1
+        MOVS     R1,#+1
+        MOVS     R0,R1
         B        ??FLASH_GetStatus_1
 ??FLASH_GetStatus_0:
-        LDR      R0,??DataTable27_4  ;; 0x4002200c
-        LDR      R0,[R0, #+0]
-        LSLS     R0,R0,#+27
+        LDR      R1,??DataTable27_4  ;; 0x4002200c
+        LDR      R1,[R1, #+0]
+        LSLS     R1,R1,#+27
         BPL      ??FLASH_GetStatus_2
-        MOVS     R0,#+2
+        MOVS     R1,#+2
+        MOVS     R0,R1
         B        ??FLASH_GetStatus_1
 ??FLASH_GetStatus_2:
-        LDR      R0,??DataTable27_4  ;; 0x4002200c
-        LDR      R0,[R0, #+0]
-        LSLS     R0,R0,#+29
+        LDR      R1,??DataTable27_4  ;; 0x4002200c
+        LDR      R1,[R1, #+0]
+        LSLS     R1,R1,#+29
         BPL      ??FLASH_GetStatus_3
-        MOVS     R0,#+3
+        MOVS     R1,#+3
+        MOVS     R0,R1
         B        ??FLASH_GetStatus_1
 ??FLASH_GetStatus_3:
-        MOVS     R0,#+4
+        MOVS     R1,#+4
+        MOVS     R0,R1
 ??FLASH_GetStatus_1:
         UXTB     R0,R0
         POP      {PC}             ;; return
@@ -1071,22 +1085,22 @@ FLASH_WaitForLastOperation:
         MOVS     R5,#+4
         BL       FLASH_GetStatus
         MOVS     R5,R0
-        B        ??FLASH_WaitForLastOperation_0
-??FLASH_WaitForLastOperation_1:
-        BL       FLASH_GetStatus
-        MOVS     R5,R0
-        SUBS     R4,R4,#+1
 ??FLASH_WaitForLastOperation_0:
         UXTB     R5,R5
         CMP      R5,#+1
-        BNE      ??FLASH_WaitForLastOperation_2
-        CMP      R4,#+0
         BNE      ??FLASH_WaitForLastOperation_1
-??FLASH_WaitForLastOperation_2:
         CMP      R4,#+0
-        BNE      ??FLASH_WaitForLastOperation_3
-        MOVS     R5,#+5
-??FLASH_WaitForLastOperation_3:
+        BEQ      ??FLASH_WaitForLastOperation_1
+        BL       FLASH_GetStatus
+        MOVS     R5,R0
+        SUBS     R4,R4,#+1
+        B        ??FLASH_WaitForLastOperation_0
+??FLASH_WaitForLastOperation_1:
+        CMP      R4,#+0
+        BNE      ??FLASH_WaitForLastOperation_2
+        MOVS     R0,#+5
+        MOVS     R5,R0
+??FLASH_WaitForLastOperation_2:
         MOVS     R0,R5
         UXTB     R0,R0
         POP      {R1,R4,R5,PC}    ;; return
@@ -1104,9 +1118,9 @@ FLASH_WaitForLastOperation:
 
         END
 // 
-// 1 666 bytes in section .text
+// 1 696 bytes in section .text
 // 
-// 1 666 bytes of CODE memory
+// 1 696 bytes of CODE memory
 //
 //Errors: none
 //Warnings: none

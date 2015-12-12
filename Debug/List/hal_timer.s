@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:32
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:11
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,12 +9,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\APP\hal_timer.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -27,7 +27,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\hal_timer.s
 //
@@ -78,35 +78,36 @@ NVIC_SetPriority:
         LSLS     R2,R0,#+28       ;; ZeroExtS R2,R0,#+28,#+28
         LSRS     R2,R2,#+28
         SUBS     R2,R2,#+8
+        MOVS     R5,R2
+        LSRS     R5,R5,#+2
+        MOVS     R2,#+4
+        MULS     R5,R2,R5
+        LDR      R4,??DataTable6  ;; 0xe000ed1c
+        SXTB     R0,R0
+        LSLS     R2,R0,#+28       ;; ZeroExtS R2,R0,#+28,#+28
+        LSRS     R2,R2,#+28
+        SUBS     R2,R2,#+8
         LSRS     R2,R2,#+2
         MOVS     R3,#+4
         MULS     R2,R3,R2
         LDR      R3,??DataTable6  ;; 0xe000ed1c
-        SXTB     R0,R0
-        LSLS     R4,R0,#+28       ;; ZeroExtS R4,R0,#+28,#+28
-        LSRS     R4,R4,#+28
-        SUBS     R4,R4,#+8
-        LSRS     R4,R4,#+2
-        MOVS     R5,#+4
-        MULS     R4,R5,R4
-        LDR      R5,??DataTable6  ;; 0xe000ed1c
-        LDR      R4,[R5, R4]
-        MOVS     R5,#+255
+        LDR      R2,[R3, R2]
+        MOVS     R3,#+255
         LSLS     R6,R0,#+30       ;; ZeroExtS R6,R0,#+30,#+30
         LSRS     R6,R6,#+30
         MOVS     R7,#+8
         MULS     R6,R7,R6
-        LSLS     R5,R5,R6
-        BICS     R4,R4,R5
-        LSLS     R1,R1,#+6
-        UXTB     R1,R1
-        LSLS     R0,R0,#+30       ;; ZeroExtS R0,R0,#+30,#+30
-        LSRS     R0,R0,#+30
-        MOVS     R5,#+8
-        MULS     R0,R5,R0
-        LSLS     R1,R1,R0
-        ORRS     R1,R1,R4
-        STR      R1,[R3, R2]
+        LSLS     R3,R3,R6
+        BICS     R2,R2,R3
+        LSLS     R3,R1,#+6
+        UXTB     R3,R3
+        LSLS     R6,R0,#+30       ;; ZeroExtS R6,R0,#+30,#+30
+        LSRS     R6,R6,#+30
+        MOVS     R7,#+8
+        MULS     R6,R7,R6
+        LSLS     R3,R3,R6
+        ORRS     R3,R3,R2
+        STR      R3,[R4, R5]
         B        ??NVIC_SetPriority_1
 ??NVIC_SetPriority_0:
         SXTB     R0,R0
@@ -123,20 +124,21 @@ NVIC_SetPriority:
         MULS     R4,R5,R4
         LSLS     R3,R3,R4
         BICS     R2,R2,R3
-        LSLS     R1,R1,#+6
-        UXTB     R1,R1
-        LSLS     R3,R0,#+30       ;; ZeroExtS R3,R0,#+30,#+30
-        LSRS     R3,R3,#+30
-        MOVS     R4,#+8
-        MULS     R3,R4,R3
-        LSLS     R1,R1,R3
-        ORRS     R1,R1,R2
+        LSLS     R3,R1,#+6
+        UXTB     R3,R3
+        LSLS     R4,R0,#+30       ;; ZeroExtS R4,R0,#+30,#+30
+        LSRS     R4,R4,#+30
+        MOVS     R5,#+8
+        MULS     R4,R5,R4
+        LSLS     R3,R3,R4
+        ORRS     R3,R3,R2
         SXTB     R0,R0
-        LSRS     R0,R0,#+2
-        MOVS     R2,#+4
-        MULS     R0,R2,R0
-        LDR      R2,??DataTable6_1  ;; 0xe000e400
-        STR      R1,[R2, R0]
+        MOVS     R2,R0
+        LSRS     R2,R2,#+2
+        MOVS     R4,#+4
+        MULS     R2,R4,R2
+        LDR      R4,??DataTable6_1  ;; 0xe000e400
+        STR      R3,[R4, R2]
 ??NVIC_SetPriority_1:
         POP      {R4-R7,PC}       ;; return
 
@@ -144,16 +146,17 @@ NVIC_SetPriority:
         THUMB
 // static __interwork __softfp uint32_t SysTick_Config(uint32_t)
 SysTick_Config:
-        PUSH     {R7,LR}
-        SUBS     R1,R0,#+1
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+17       ;; #+16777216
-        CMP      R1,R2
+        PUSH     {R4,LR}
+        MOVS     R4,R0
+        SUBS     R0,R4,#+1
+        MOVS     R1,#+128
+        LSLS     R1,R1,#+17       ;; #+16777216
+        CMP      R0,R1
         BCC      ??SysTick_Config_0
         MOVS     R0,#+1
         B        ??SysTick_Config_1
 ??SysTick_Config_0:
-        SUBS     R0,R0,#+1
+        SUBS     R0,R4,#+1
         LDR      R1,??DataTable6_2  ;; 0xe000e014
         STR      R0,[R1, #+0]
         MOVS     R1,#+3
@@ -168,7 +171,7 @@ SysTick_Config:
         STR      R0,[R1, #+0]
         MOVS     R0,#+0
 ??SysTick_Config_1:
-        POP      {R1,PC}          ;; return
+        POP      {R4,PC}          ;; return
 
         SECTION `.bss`:DATA:REORDER:NOROOT(2)
 g_SystickCounter:
@@ -265,76 +268,79 @@ hal_InitRTC:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 hal_SetCurrentTime:
-        PUSH     {R2-R7,LR}
+        PUSH     {R0,R3-R7,LR}
         SUB      SP,SP,#+20
-        MOVS     R7,R0
-        MOVS     R6,R1
+        MOVS     R5,R1
+        MOVS     R4,R2
+        LDR      R7,[SP, #+48]
+        LDR      R6,[SP, #+52]
         ADD      R0,SP,#+16
         BL       RTC_DateStructInit
         ADD      R0,SP,#+12
         BL       RTC_TimeStructInit
-        UXTB     R7,R7
-        CMP      R7,#+100
-        BGE      ??hal_SetCurrentTime_0
-        UXTB     R6,R6
-        CMP      R6,#+0
-        BEQ      ??hal_SetCurrentTime_0
-        UXTB     R6,R6
-        CMP      R6,#+13
-        BGE      ??hal_SetCurrentTime_0
         MOV      R0,SP
         LDRB     R0,[R0, #+20]
-        CMP      R0,#+0
-        BEQ      ??hal_SetCurrentTime_0
-        MOV      R0,SP
-        LDRB     R0,[R0, #+20]
-        CMP      R0,#+32
+        CMP      R0,#+100
         BGE      ??hal_SetCurrentTime_0
-        ADD      R0,SP,#+16
-        STRB     R7,[R0, #+3]
-        ADD      R0,SP,#+16
-        STRB     R6,[R0, #+1]
+        UXTB     R5,R5
+        CMP      R5,#+0
+        BEQ      ??hal_SetCurrentTime_0
+        UXTB     R5,R5
+        CMP      R5,#+13
+        BGE      ??hal_SetCurrentTime_0
+        UXTB     R4,R4
+        CMP      R4,#+0
+        BEQ      ??hal_SetCurrentTime_0
+        UXTB     R4,R4
+        CMP      R4,#+32
+        BGE      ??hal_SetCurrentTime_0
         MOV      R0,SP
         LDRB     R0,[R0, #+20]
         ADD      R1,SP,#+16
-        STRB     R0,[R1, #+2]
+        STRB     R0,[R1, #+3]
+        ADD      R0,SP,#+16
+        STRB     R5,[R0, #+1]
+        ADD      R0,SP,#+16
+        STRB     R4,[R0, #+2]
         MOV      R0,SP
         LDRB     R0,[R0, #+24]
         CMP      R0,#+24
         BGE      ??hal_SetCurrentTime_1
-        LDR      R4,[SP, #+48]
-        UXTB     R4,R4
-        CMP      R4,#+60
+        B        ??hal_SetCurrentTime_2
+??hal_SetCurrentTime_0:
+        LDR      R0,??DataTable6_11
+        BL       printf
+        B        ??hal_SetCurrentTime_3
+??hal_SetCurrentTime_2:
+        UXTB     R7,R7
+        CMP      R7,#+60
         BGE      ??hal_SetCurrentTime_1
-        LDR      R5,[SP, #+52]
-        UXTB     R5,R5
-        CMP      R5,#+60
+        UXTB     R6,R6
+        CMP      R6,#+60
         BGE      ??hal_SetCurrentTime_1
         MOV      R0,SP
         LDRB     R0,[R0, #+24]
         MOV      R1,SP
         STRB     R0,[R1, #+12]
         ADD      R0,SP,#+12
-        STRB     R4,[R0, #+1]
+        STRB     R7,[R0, #+1]
         ADD      R0,SP,#+12
-        STRB     R5,[R0, #+2]
+        STRB     R6,[R0, #+2]
         ADD      R1,SP,#+12
         MOVS     R0,#+0
         BL       RTC_SetTime
         CMP      R0,#+0
-        BNE      ??hal_SetCurrentTime_2
-        LDR      R0,??DataTable6_11
-        BL       printf
-        B        ??hal_SetCurrentTime_3
-??hal_SetCurrentTime_0:
+        BNE      ??hal_SetCurrentTime_4
+        B        ??hal_SetCurrentTime_5
+??hal_SetCurrentTime_1:
         LDR      R0,??DataTable6_12
         BL       printf
-        B        ??hal_SetCurrentTime_4
-??hal_SetCurrentTime_1:
+        B        ??hal_SetCurrentTime_3
+??hal_SetCurrentTime_5:
         LDR      R0,??DataTable6_13
         BL       printf
-        B        ??hal_SetCurrentTime_4
-??hal_SetCurrentTime_2:
+        B        ??hal_SetCurrentTime_6
+??hal_SetCurrentTime_4:
         LDR      R0,??DataTable6_14  ;; 0x40002804
         LDR      R0,[R0, #+0]
         STR      R0,[SP, #+0]
@@ -342,31 +348,31 @@ hal_SetCurrentTime:
         MOVS     R0,#+0
         BL       RTC_SetDate
         CMP      R0,#+0
-        BNE      ??hal_SetCurrentTime_5
+        BNE      ??hal_SetCurrentTime_7
         LDR      R0,??DataTable6_15
         BL       printf
-        B        ??hal_SetCurrentTime_3
-??hal_SetCurrentTime_5:
-        UXTB     R5,R5
-        STR      R5,[SP, #+8]
-        UXTB     R4,R4
-        STR      R4,[SP, #+4]
+        B        ??hal_SetCurrentTime_6
+??hal_SetCurrentTime_7:
+        UXTB     R6,R6
+        STR      R6,[SP, #+8]
+        UXTB     R7,R7
+        STR      R7,[SP, #+4]
         MOV      R0,SP
         LDRB     R0,[R0, #+24]
         STR      R0,[SP, #+0]
+        UXTB     R4,R4
+        MOVS     R3,R4
+        UXTB     R5,R5
+        MOVS     R2,R5
         MOV      R0,SP
-        LDRB     R3,[R0, #+20]
-        UXTB     R6,R6
-        MOVS     R2,R6
-        UXTB     R7,R7
-        MOVS     R1,R7
+        LDRB     R1,[R0, #+20]
         LDR      R0,??DataTable6_16
         BL       printf
         LDR      R1,??DataTable6_7  ;; 0xa5a5
         MOVS     R0,#+0
         BL       RTC_WriteBackupRegister
+??hal_SetCurrentTime_6:
 ??hal_SetCurrentTime_3:
-??hal_SetCurrentTime_4:
         ADD      SP,SP,#+28
         POP      {R4-R7,PC}       ;; return
 
@@ -471,19 +477,19 @@ hal_GetCurrentTime:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable6_11:
-        DC32     `?<Constant "RTC set time failed\\r\\n">`
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable6_12:
         DC32     `?<Constant "Date Format Error\\r\\n">`
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable6_13:
+??DataTable6_12:
         DC32     `?<Constant "Time Format Error\\r\\n">`
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable6_13:
+        DC32     `?<Constant "RTC set time failed\\r\\n">`
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -644,9 +650,9 @@ GetTime:
 // 
 //   4 bytes in section .bss
 // 236 bytes in section .rodata
-// 838 bytes in section .text
+// 846 bytes in section .text
 // 
-// 838 bytes of CODE  memory
+// 846 bytes of CODE  memory
 // 236 bytes of CONST memory
 //   4 bytes of DATA  memory
 //

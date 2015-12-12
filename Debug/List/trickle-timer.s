@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:43
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:23
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,12 +9,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\core\lib\trickle-timer.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -27,7 +27,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\trickle-timer.s
 //
@@ -71,27 +71,29 @@ wide_rand:
         THUMB
 max_imax:
         PUSH     {R4,LR}
-        MOVS     R1,#+0
-        LDR      R3,??DataTable5  ;; 0xffff
-        SUBS     R0,R0,#+1
-        MOVS     R2,#+16
-        B        ??max_imax_0
-??max_imax_1:
-        LSLS     R3,R3,R2
-        MOVS     R4,R3
-        ANDS     R4,R4,R0
-        CMP      R4,#+0
-        BNE      ??max_imax_2
-        ADDS     R1,R1,R2
-        LSLS     R0,R0,R2
-??max_imax_2:
-        UXTB     R2,R2
-        LSRS     R2,R2,#+1
+        MOVS     R1,R0
+        MOVS     R0,#+0
+        LDR      R3,??DataTable4  ;; 0xffff
+        SUBS     R1,R1,#+1
+        MOVS     R4,#+16
+        MOVS     R2,R4
 ??max_imax_0:
         UXTB     R2,R2
         CMP      R2,#+0
-        BNE      ??max_imax_1
-        SUBS     R0,R1,#+1
+        BEQ      ??max_imax_1
+        LSLS     R3,R3,R2
+        MOVS     R4,R3
+        ANDS     R4,R4,R1
+        CMP      R4,#+0
+        BNE      ??max_imax_2
+        ADDS     R0,R0,R2
+        LSLS     R1,R1,R2
+??max_imax_2:
+        UXTB     R2,R2
+        LSRS     R2,R2,#+1
+        B        ??max_imax_0
+??max_imax_1:
+        SUBS     R0,R0,#+1
         UXTB     R0,R0
         POP      {R4,PC}          ;; return
 
@@ -110,136 +112,140 @@ get_t:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 schedule_for_end:
-        PUSH     {R4,LR}
+        PUSH     {R3-R5,LR}
         MOVS     R4,R0
         BL       clock_time
-        LDR      R1,[R4, #+8]
-        LDR      R2,[R4, #+4]
-        ADDS     R1,R1,R2
-        SUBS     R0,R1,R0
-        LDR      R1,??DataTable5_1
+        MOVS     R5,R0
+        LDR      R0,[R4, #+8]
+        LDR      R1,[R4, #+4]
+        ADDS     R0,R0,R1
+        SUBS     R0,R0,R5
+        LDR      R1,??DataTable4_1
         STR      R0,[R1, #+0]
-        LDR      R0,??DataTable5_1
+        LDR      R0,??DataTable4_1
         LDR      R0,[R0, #+0]
         MOVS     R1,#+128
         LSLS     R1,R1,#+24       ;; #-2147483648
         CMP      R0,R1
         BCC      ??schedule_for_end_0
         MOVS     R0,#+0
-        LDR      R1,??DataTable5_1
+        LDR      R1,??DataTable4_1
         STR      R0,[R1, #+0]
 ??schedule_for_end_0:
         MOVS     R3,R4
-        LDR      R2,??DataTable5_2
-        LDR      R0,??DataTable5_1
+        LDR      R2,??DataTable4_2
+        LDR      R0,??DataTable4_1
         LDR      R1,[R0, #+0]
-        ADDS     R4,R4,#+16
         MOVS     R0,R4
+        ADDS     R0,R0,#+16
         BL       ctimer_set
-        POP      {R4,PC}          ;; return
+        POP      {R0,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 double_interval:
-        PUSH     {R4,LR}
-        LDR      R1,??DataTable5_3
-        STR      R0,[R1, #+0]
+        PUSH     {R3-R5,LR}
+        MOVS     R4,R0
+        LDR      R0,??DataTable4_3
+        STR      R4,[R0, #+0]
         MOVS     R0,#+0
-        LDR      R1,??DataTable5_3
+        LDR      R1,??DataTable4_3
         LDR      R1,[R1, #+0]
         ADDS     R1,R1,#+58
         STRB     R0,[R1, #+0]
-        LDR      R0,??DataTable5_3
+        LDR      R0,??DataTable4_3
         LDR      R0,[R0, #+0]
         LDR      R0,[R0, #+8]
-        LDR      R1,??DataTable5_3
+        LDR      R1,??DataTable4_3
         LDR      R1,[R1, #+0]
         LDR      R1,[R1, #+4]
-        ADDS     R4,R0,R1
-        LDR      R0,??DataTable5_3
+        ADDS     R0,R0,R1
+        MOVS     R5,R0
+        LDR      R0,??DataTable4_3
         LDR      R0,[R0, #+0]
         LDR      R0,[R0, #+12]
         LSRS     R0,R0,#+1
-        LDR      R1,??DataTable5_3
+        LDR      R1,??DataTable4_3
         LDR      R1,[R1, #+0]
         LDR      R1,[R1, #+4]
         CMP      R0,R1
         BCC      ??double_interval_0
-        LDR      R0,??DataTable5_3
+        LDR      R0,??DataTable4_3
         LDR      R0,[R0, #+0]
         LDR      R0,[R0, #+4]
         LSLS     R0,R0,#+1
-        LDR      R1,??DataTable5_3
+        LDR      R1,??DataTable4_3
         LDR      R1,[R1, #+0]
         STR      R0,[R1, #+4]
         B        ??double_interval_1
 ??double_interval_0:
-        LDR      R0,??DataTable5_3
+        LDR      R0,??DataTable4_3
         LDR      R0,[R0, #+0]
         LDR      R0,[R0, #+12]
-        LDR      R1,??DataTable5_3
+        LDR      R1,??DataTable4_3
         LDR      R1,[R1, #+0]
         STR      R0,[R1, #+4]
 ??double_interval_1:
-        LDR      R0,??DataTable5_3
+        LDR      R0,??DataTable4_3
         LDR      R0,[R0, #+0]
         LDR      R0,[R0, #+4]
         BL       get_t
-        LDR      R1,??DataTable5_1
+        LDR      R1,??DataTable4_1
         STR      R0,[R1, #+0]
         BL       clock_time
-        LDR      R1,??DataTable5_1
+        LDR      R1,??DataTable4_1
         LDR      R1,[R1, #+0]
-        ADDS     R1,R4,R1
+        ADDS     R1,R5,R1
         SUBS     R0,R1,R0
-        LDR      R1,??DataTable5_1
+        LDR      R1,??DataTable4_1
         STR      R0,[R1, #+0]
-        LDR      R0,??DataTable5_1
+        LDR      R0,??DataTable4_1
         LDR      R0,[R0, #+0]
         MOVS     R1,#+128
         LSLS     R1,R1,#+24       ;; #-2147483648
         CMP      R0,R1
         BCC      ??double_interval_2
         MOVS     R0,#+0
-        LDR      R1,??DataTable5_1
+        LDR      R1,??DataTable4_1
         STR      R0,[R1, #+0]
 ??double_interval_2:
-        LDR      R0,??DataTable5_3
+        LDR      R0,??DataTable4_3
         LDR      R3,[R0, #+0]
-        LDR      R2,??DataTable5_4
-        LDR      R0,??DataTable5_1
+        LDR      R2,??DataTable4_4
+        LDR      R0,??DataTable4_1
         LDR      R1,[R0, #+0]
-        LDR      R0,??DataTable5_3
+        LDR      R0,??DataTable4_3
         LDR      R0,[R0, #+0]
         ADDS     R0,R0,#+16
         BL       ctimer_set
-        LDR      R0,??DataTable5_3
+        LDR      R0,??DataTable4_3
         LDR      R0,[R0, #+0]
-        STR      R4,[R0, #+8]
-        POP      {R4,PC}          ;; return
+        STR      R5,[R0, #+8]
+        POP      {R0,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 fire:
-        PUSH     {R7,LR}
-        LDR      R1,??DataTable5_3
-        STR      R0,[R1, #+0]
-        LDR      R0,??DataTable5_3
+        PUSH     {R4,LR}
+        MOVS     R4,R0
+        LDR      R0,??DataTable4_3
+        STR      R4,[R0, #+0]
+        LDR      R0,??DataTable4_3
         LDR      R0,[R0, #+0]
         LDR      R0,[R0, #+48]
         CMP      R0,#+0
         BEQ      ??fire_0
-        LDR      R0,??DataTable5_3
+        LDR      R0,??DataTable4_3
         LDR      R0,[R0, #+0]
         ADDS     R0,R0,#+57
         LDRB     R0,[R0, #+0]
         CMP      R0,#+0
         BEQ      ??fire_1
-        LDR      R0,??DataTable5_3
+        LDR      R0,??DataTable4_3
         LDR      R0,[R0, #+0]
         ADDS     R0,R0,#+58
         LDRB     R0,[R0, #+0]
-        LDR      R1,??DataTable5_3
+        LDR      R1,??DataTable4_3
         LDR      R1,[R1, #+0]
         ADDS     R1,R1,#+57
         LDRB     R1,[R1, #+0]
@@ -252,24 +258,24 @@ fire:
         MOVS     R1,#+0
 ??fire_3:
         UXTB     R1,R1
-        LDR      R0,??DataTable5_3
+        LDR      R0,??DataTable4_3
         LDR      R0,[R0, #+0]
         LDR      R0,[R0, #+52]
-        LDR      R2,??DataTable5_3
+        LDR      R2,??DataTable4_3
         LDR      R2,[R2, #+0]
         LDR      R2,[R2, #+48]
         BLX      R2
 ??fire_0:
-        LDR      R0,??DataTable5_3
+        LDR      R0,??DataTable4_3
         LDR      R0,[R0, #+0]
         LDR      R0,[R0, #+4]
         CMP      R0,#+0
         BEQ      ??fire_4
-        LDR      R0,??DataTable5_3
+        LDR      R0,??DataTable4_3
         LDR      R0,[R0, #+0]
         BL       schedule_for_end
 ??fire_4:
-        POP      {R0,PC}          ;; return
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -281,11 +287,11 @@ new_interval:
         STRB     R0,[R4, R1]
         LDR      R0,[R4, #+4]
         BL       get_t
-        LDR      R1,??DataTable5_1
+        LDR      R1,??DataTable4_1
         STR      R0,[R1, #+0]
         MOVS     R3,R4
-        LDR      R2,??DataTable5_4
-        LDR      R0,??DataTable5_1
+        LDR      R2,??DataTable4_4
+        LDR      R0,??DataTable4_1
         LDR      R1,[R0, #+0]
         MOVS     R0,R4
         ADDS     R0,R0,#+16
@@ -293,6 +299,36 @@ new_interval:
         LDR      R0,[R4, #+20]
         STR      R0,[R4, #+8]
         POP      {R4,PC}          ;; return
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable4:
+        DC32     0xffff
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable4_1:
+        DC32     loc_clock
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable4_2:
+        DC32     double_interval
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable4_3:
+        DC32     loctt
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable4_4:
+        DC32     fire
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -305,141 +341,113 @@ trickle_timer_consistency:
         MOVS     R1,#+58
         LDRB     R1,[R0, R1]
         ADDS     R1,R1,#+1
-        ADDS     R0,R0,#+58
-        STRB     R1,[R0, #+0]
+        MOVS     R2,#+58
+        STRB     R1,[R0, R2]
 ??trickle_timer_consistency_0:
         POP      {PC}             ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 trickle_timer_inconsistency:
-        PUSH     {R7,LR}
-        LDR      R1,[R0, #+4]
-        LDR      R2,[R0, #+0]
-        CMP      R1,R2
+        PUSH     {R4,LR}
+        MOVS     R4,R0
+        LDR      R0,[R4, #+4]
+        LDR      R1,[R4, #+0]
+        CMP      R0,R1
         BEQ      ??trickle_timer_inconsistency_0
-        LDR      R1,[R0, #+0]
-        STR      R1,[R0, #+4]
+        LDR      R0,[R4, #+0]
+        STR      R0,[R4, #+4]
+        MOVS     R0,R4
         BL       new_interval
 ??trickle_timer_inconsistency_0:
-        POP      {R0,PC}          ;; return
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 trickle_timer_config:
-        PUSH     {R4-R6,LR}
-        MOVS     R5,R0
+        PUSH     {R3-R7,LR}
+        MOVS     R6,R0
         MOVS     R4,R1
-        MOVS     R0,R2
-        MOVS     R6,R3
-        MOVS     R1,R4
-        SUBS     R1,R1,#+2
-        LDR      R2,??DataTable5_5  ;; 0x7ffffffe
-        CMP      R1,R2
+        MOVS     R5,R2
+        MOVS     R7,R3
+        CMP      R4,#+2
         BCC      ??trickle_timer_config_0
-        MOVS     R0,#+0
-        B        ??trickle_timer_config_1
+        MOVS     R0,#+128
+        LSLS     R0,R0,#+24       ;; #-2147483648
+        CMP      R4,R0
+        BCC      ??trickle_timer_config_1
 ??trickle_timer_config_0:
-        CMP      R5,#+0
-        BEQ      ??trickle_timer_config_2
-        UXTB     R0,R0
-        CMP      R0,#+0
-        BEQ      ??trickle_timer_config_2
-        UXTB     R6,R6
-        CMP      R6,#+0
-        BNE      ??trickle_timer_config_3
-??trickle_timer_config_2:
         MOVS     R0,#+0
-        B        ??trickle_timer_config_1
+        B        ??trickle_timer_config_2
+??trickle_timer_config_1:
+        CMP      R6,#+0
+        BEQ      ??trickle_timer_config_3
+        UXTB     R5,R5
+        CMP      R5,#+0
+        BEQ      ??trickle_timer_config_3
+        UXTB     R7,R7
+        CMP      R7,#+0
+        BNE      ??trickle_timer_config_4
 ??trickle_timer_config_3:
-        MOVS     R2,#+0
-        MVNS     R2,R2            ;; #-1
-        MOVS     R1,R0
-        ADDS     R1,R1,#+1
-        LSRS     R2,R2,R1
-        SUBS     R1,R4,#+1
-        CMP      R2,R1
-        BCS      ??trickle_timer_config_4
+        MOVS     R0,#+0
+        B        ??trickle_timer_config_2
+??trickle_timer_config_4:
+        MOVS     R1,#+0
+        MVNS     R1,R1            ;; #-1
+        MOVS     R0,R5
+        ADDS     R0,R0,#+1
+        LSRS     R1,R1,R0
+        SUBS     R0,R4,#+1
+        CMP      R1,R0
+        BCS      ??trickle_timer_config_5
         MOVS     R0,R4
         BL       max_imax
-??trickle_timer_config_4:
-        STR      R4,[R5, #+0]
-        MOVS     R1,#+56
-        STRB     R0,[R5, R1]
-        LSLS     R4,R4,R0
-        STR      R4,[R5, #+12]
-        ADDS     R5,R5,#+57
-        STRB     R6,[R5, #+0]
+        MOVS     R5,R0
+??trickle_timer_config_5:
+        STR      R4,[R6, #+0]
+        MOVS     R0,#+56
+        STRB     R5,[R6, R0]
+        MOVS     R0,R4
+        LSLS     R0,R0,R5
+        STR      R0,[R6, #+12]
+        MOVS     R0,#+57
+        STRB     R7,[R6, R0]
         MOVS     R0,#+1
-??trickle_timer_config_1:
-        POP      {R4-R6,PC}       ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable5:
-        DC32     0xffff
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable5_1:
-        DC32     loc_clock
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable5_2:
-        DC32     double_interval
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable5_3:
-        DC32     loctt
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable5_4:
-        DC32     fire
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable5_5:
-        DC32     0x7ffffffe
+??trickle_timer_config_2:
+        POP      {R1,R4-R7,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 trickle_timer_set:
-        PUSH     {R3-R5,LR}
+        PUSH     {R3-R7,LR}
         MOVS     R4,R0
+        MOVS     R5,R1
+        MOVS     R6,R2
         CMP      R4,#+0
         BEQ      ??trickle_timer_set_0
-        MOVS     R0,R1
+        MOVS     R0,R5
         CMP      R0,#+0
         BNE      ??trickle_timer_set_1
 ??trickle_timer_set_0:
         MOVS     R0,#+0
         B        ??trickle_timer_set_2
 ??trickle_timer_set_1:
-        STR      R1,[R4, #+48]
-        STR      R2,[R4, #+52]
-        LDR      R5,[R4, #+0]
+        STR      R5,[R4, #+48]
+        STR      R6,[R4, #+52]
+        LDR      R7,[R4, #+0]
         BL       wide_rand
         LDR      R1,[R4, #+12]
         LDR      R2,[R4, #+0]
         SUBS     R1,R1,R2
         ADDS     R1,R1,#+1
         BL       __aeabi_uidivmod
-        ADDS     R0,R5,R1
+        ADDS     R0,R7,R1
         STR      R0,[R4, #+4]
         MOVS     R0,R4
         BL       new_interval
         MOVS     R0,#+1
 ??trickle_timer_set_2:
-        POP      {R1,R4,R5,PC}    ;; return
+        POP      {R1,R4-R7,PC}    ;; return
 
         SECTION `.iar_vfe_header`:DATA:NOALLOC:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -455,9 +463,9 @@ trickle_timer_set:
         END
 // 
 //   8 bytes in section .bss
-// 628 bytes in section .text
+// 650 bytes in section .text
 // 
-// 628 bytes of CODE memory
+// 650 bytes of CODE memory
 //   8 bytes of DATA memory
 //
 //Errors: none

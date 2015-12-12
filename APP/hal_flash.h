@@ -17,7 +17,6 @@ typedef enum
 
 uint32_t FLASH_Write_chars( uint32_t FlashAddress, uint8_t* Data ,uint16_t DataLength);
 uint32_t FLASH_Write_16BITS( uint32_t* FlashAddress, uint16_t* Data ,uint16_t DataLength);
-//uint32_t FLASH_Write_page(__IO uint32_t* FlashAddress, uint16_t* Data);
 void FLASH_Init(void);
 void hal_Init_Flash(void);
 #endif

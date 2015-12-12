@@ -62,7 +62,7 @@ void InitHardware(void)
   hal_InitLED();
   hal_InitUART();
   hal_InitTIMER();
-  hal_Init_Flash();
+  //hal_Init_Flash();
   //hal_InitWDG();
   //GDflash_init();
   hal_InitRF();

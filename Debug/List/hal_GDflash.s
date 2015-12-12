@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:31
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:09
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,12 +9,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\APP\hal_GDflash.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -27,7 +27,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  G:\git_hub_lamp\lamp_slave_git\Debug\List\hal_GDflash.s
 //
@@ -225,12 +225,22 @@ GDflash_WriteByte:
         PUSH     {R3-R5,LR}
         MOVS     R4,R0
         MOVS     R5,#+0
-        B        ??GDflash_WriteByte_0
-??GDflash_WriteByte_1:
+??GDflash_WriteByte_0:
+        UXTB     R5,R5
+        CMP      R5,#+8
+        BGE      ??GDflash_WriteByte_1
+        UXTB     R4,R4
+        LSLS     R0,R4,#+24
+        BPL      ??GDflash_WriteByte_2
+        MOVS     R1,#+32
+        LDR      R0,??DataTable4  ;; 0x48000400
+        BL       GPIO_SetBits
+        B        ??GDflash_WriteByte_3
+??GDflash_WriteByte_2:
         MOVS     R1,#+32
         LDR      R0,??DataTable4  ;; 0x48000400
         BL       GPIO_ResetBits
-??GDflash_WriteByte_2:
+??GDflash_WriteByte_3:
         MOVS     R1,#+8
         LDR      R0,??DataTable4  ;; 0x48000400
         BL       GPIO_SetBits
@@ -239,39 +249,32 @@ GDflash_WriteByte:
         LDR      R0,??DataTable4  ;; 0x48000400
         BL       GPIO_ResetBits
         ADDS     R5,R5,#+1
-??GDflash_WriteByte_0:
-        UXTB     R5,R5
-        CMP      R5,#+8
-        BGE      ??GDflash_WriteByte_3
-        UXTB     R4,R4
-        LSLS     R0,R4,#+24
-        BPL      ??GDflash_WriteByte_1
-        MOVS     R1,#+32
-        LDR      R0,??DataTable4  ;; 0x48000400
-        BL       GPIO_SetBits
-        B        ??GDflash_WriteByte_2
-??GDflash_WriteByte_3:
+        B        ??GDflash_WriteByte_0
+??GDflash_WriteByte_1:
         POP      {R0,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 GDflash_ReadByte:
-        PUSH     {R4-R6,LR}
+        PUSH     {R3-R7,LR}
+        MOVS     R7,R0
         MOVS     R4,#+0
-        MOVS     R5,#+0
         MOVS     R6,#+0
-        B        ??GDflash_ReadByte_0
-??GDflash_ReadByte_1:
+        MOVS     R5,#+0
+??GDflash_ReadByte_0:
+        UXTB     R5,R5
+        CMP      R5,#+8
+        BGE      ??GDflash_ReadByte_1
         LSLS     R4,R4,#+1
         MOVS     R1,#+16
         LDR      R0,??DataTable4  ;; 0x48000400
         BL       GPIO_ReadInputDataBit
-        MOVS     R5,R0
+        MOVS     R6,R0
         MOVS     R1,#+8
         LDR      R0,??DataTable4  ;; 0x48000400
         BL       GPIO_SetBits
-        UXTB     R5,R5
-        CMP      R5,#+0
+        UXTB     R6,R6
+        CMP      R6,#+0
         BEQ      ??GDflash_ReadByte_2
         MOVS     R0,R4
         MOVS     R4,#+1
@@ -280,14 +283,12 @@ GDflash_ReadByte:
         MOVS     R1,#+8
         LDR      R0,??DataTable4  ;; 0x48000400
         BL       GPIO_ResetBits
-        ADDS     R6,R6,#+1
-??GDflash_ReadByte_0:
-        UXTB     R6,R6
-        CMP      R6,#+8
-        BLT      ??GDflash_ReadByte_1
+        ADDS     R5,R5,#+1
+        B        ??GDflash_ReadByte_0
+??GDflash_ReadByte_1:
         MOVS     R0,R4
         UXTB     R0,R0
-        POP      {R4-R6,PC}       ;; return
+        POP      {R1,R4-R7,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -423,18 +424,17 @@ GDfalsh_read_identification:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 GDflash_read_datas:
-        PUSH     {R3-R7,LR}
+        PUSH     {R2,R4-R7,LR}
         MOVS     R4,R0
-        MOVS     R6,R1
-        MOVS     R7,R2
-        MOVS     R5,R3
+        MOVS     R5,R1
+        MOVS     R7,R3
         MOVS     R1,#+128
         LSLS     R1,R1,#+8        ;; #+32768
         MOVS     R0,#+144
         LSLS     R0,R0,#+23       ;; #+1207959552
         BL       GPIO_ResetBits
-        UXTB     R5,R5
-        CMP      R5,#+0
+        UXTB     R7,R7
+        CMP      R7,#+0
         BEQ      ??GDflash_read_datas_0
         MOVS     R0,#+11
         BL       GDflash_WriteByte
@@ -454,22 +454,23 @@ GDflash_read_datas:
         MOVS     R0,R4
         UXTB     R0,R0
         BL       GDflash_WriteByte
-        UXTB     R5,R5
-        CMP      R5,#+0
+        UXTB     R7,R7
+        CMP      R7,#+0
         BEQ      ??GDflash_read_datas_2
         MOVS     R0,#+170
         BL       GDflash_WriteByte
 ??GDflash_read_datas_2:
-        MOVS     R4,#+0
-        B        ??GDflash_read_datas_3
-??GDflash_read_datas_4:
+        MOVS     R6,#+0
+??GDflash_read_datas_3:
+        LDR      R0,[SP, #+0]
+        CMP      R6,R0
+        BCS      ??GDflash_read_datas_4
         MOVS     R0,#+170
         BL       GDflash_ReadByte
-        STRB     R0,[R6, R4]
-        ADDS     R4,R4,#+1
-??GDflash_read_datas_3:
-        CMP      R4,R7
-        BCC      ??GDflash_read_datas_4
+        STRB     R0,[R5, R6]
+        ADDS     R6,R6,#+1
+        B        ??GDflash_read_datas_3
+??GDflash_read_datas_4:
         MOVS     R1,#+128
         LSLS     R1,R1,#+8        ;; #+32768
         MOVS     R0,#+144
@@ -482,9 +483,8 @@ GDflash_read_datas:
 GDflash_page_program:
         PUSH     {R3-R7,LR}
         MOVS     R4,R0
-        MOVS     R6,R1
+        MOVS     R5,R1
         MOVS     R7,R2
-        MOVS     R5,R3
 ??GDflash_page_program_0:
         BL       GDflash_read_status_reg
         LSLS     R0,R0,#+31
@@ -496,8 +496,9 @@ GDflash_page_program:
         MOVS     R0,#+144
         LSLS     R0,R0,#+23       ;; #+1207959552
         BL       GPIO_ResetBits
-        UXTB     R5,R5
-        CMP      R5,#+0
+        MOV      R0,SP
+        LDRB     R0,[R0, #+0]
+        CMP      R0,#+0
         BEQ      ??GDflash_page_program_1
         MOVS     R0,#+242
         BL       GDflash_WriteByte
@@ -517,18 +518,18 @@ GDflash_page_program:
         MOVS     R0,R4
         UXTB     R0,R0
         BL       GDflash_WriteByte
-        MOVS     R4,#+0
+        MOVS     R6,#+0
+??GDflash_page_program_3:
+        UXTH     R6,R6
+        UXTH     R7,R7
+        CMP      R6,R7
+        BCS      ??GDflash_page_program_4
+        UXTH     R6,R6
+        LDRB     R0,[R5, R6]
+        BL       GDflash_WriteByte
+        ADDS     R6,R6,#+1
         B        ??GDflash_page_program_3
 ??GDflash_page_program_4:
-        UXTH     R4,R4
-        LDRB     R0,[R6, R4]
-        BL       GDflash_WriteByte
-        ADDS     R4,R4,#+1
-??GDflash_page_program_3:
-        UXTH     R4,R4
-        UXTH     R7,R7
-        CMP      R4,R7
-        BCC      ??GDflash_page_program_4
         MOVS     R1,#+128
         LSLS     R1,R1,#+8        ;; #+32768
         MOVS     R0,#+144
@@ -609,51 +610,72 @@ GDflash_erase:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 GDflash_read:
-        PUSH     {R7,LR}
+        PUSH     {R4-R6,LR}
+        MOVS     R4,R0
+        MOVS     R6,R1
+        MOVS     R5,R2
         MOVS     R3,#+0
+        MOVS     R2,R5
+        MOVS     R1,R6
+        MOVS     R0,R4
         BL       GDflash_read_datas
-        POP      {R0,PC}          ;; return
+        POP      {R4-R6,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 GDflash_write:
-        PUSH     {R3-R7,LR}
-        MOVS     R6,R1
-        MOVS     R5,R2
-        MOVS     R4,R0
-        MOVS     R7,#+0
+        PUSH     {R0,R1,R4-R7,LR}
+        SUB      SP,SP,#+12
+        MOVS     R7,R2
+        LDR      R4,[SP, #+12]
+        MOV      R5,SP
+        MOVS     R6,#+0
+        LDR      R0,[SP, #+12]
         MOVS     R1,#+128
         LSLS     R1,R1,#+1        ;; #+256
         BL       __aeabi_uidivmod
-        SUBS     R7,R7,R1
-        MOVS     R0,R5
-        UXTB     R7,R7
-        CMP      R7,R5
+        SUBS     R0,R6,R1
+        STRB     R0,[R5, #+0]
+        LDR      R6,[SP, #+16]
+        STR      R7,[SP, #+4]
+        MOV      R0,SP
+        LDRB     R0,[R0, #+0]
+        CMP      R0,R7
         BCS      ??GDflash_write_0
         MOVS     R3,#+0
-        UXTB     R7,R7
-        MOVS     R2,R7
+        MOV      R0,SP
+        LDRB     R2,[R0, #+0]
         UXTH     R2,R2
         MOVS     R1,R6
         MOVS     R0,R4
         BL       GDflash_page_program
-        UXTB     R7,R7
-        ADDS     R4,R4,R7
-        UXTB     R7,R7
-        ADDS     R6,R6,R7
-        UXTB     R7,R7
-        SUBS     R0,R5,R7
-        MOV      R1,SP
-        MOVS     R2,R0
-        LSRS     R2,R2,#+8
-        STRH     R2,[R1, #+0]
+        MOV      R0,SP
+        LDRB     R0,[R0, #+0]
+        ADDS     R4,R4,R0
+        MOV      R0,SP
+        LDRB     R0,[R0, #+0]
+        ADDS     R6,R6,R0
+        MOV      R0,SP
+        LDRB     R0,[R0, #+0]
+        SUBS     R0,R7,R0
+        STR      R0,[SP, #+4]
+        MOV      R0,SP
+        LDR      R1,[SP, #+4]
+        LSRS     R1,R1,#+8
+        STRH     R1,[R0, #+8]
+        MOV      R5,SP
+        LDR      R0,[SP, #+4]
         MOVS     R1,#+128
         LSLS     R1,R1,#+1        ;; #+256
         BL       __aeabi_uidivmod
-        MOVS     R7,R1
+        STRH     R1,[R5, #+2]
         MOVS     R5,#+0
-        B        ??GDflash_write_1
-??GDflash_write_2:
+??GDflash_write_1:
+        MOV      R0,SP
+        LDRH     R0,[R0, #+8]
+        UXTH     R5,R5
+        CMP      R5,R0
+        BCS      ??GDflash_write_2
         MOVS     R3,#+0
         MOVS     R2,#+128
         LSLS     R2,R2,#+1        ;; #+256
@@ -667,31 +689,29 @@ GDflash_write:
         LSLS     R0,R0,#+1        ;; #+256
         ADDS     R6,R6,R0
         ADDS     R5,R5,#+1
-??GDflash_write_1:
+        B        ??GDflash_write_1
+??GDflash_write_2:
         MOV      R0,SP
-        LDRH     R0,[R0, #+0]
-        UXTH     R5,R5
-        CMP      R5,R0
-        BCC      ??GDflash_write_2
-        UXTH     R7,R7
-        CMP      R7,#+0
+        LDRH     R0,[R0, #+2]
+        CMP      R0,#+0
         BEQ      ??GDflash_write_3
         MOVS     R3,#+0
-        MOVS     R2,R7
-        UXTH     R2,R2
+        MOV      R0,SP
+        LDRH     R2,[R0, #+2]
         MOVS     R1,R6
         MOVS     R0,R4
         BL       GDflash_page_program
         B        ??GDflash_write_3
 ??GDflash_write_0:
         MOVS     R3,#+0
-        MOVS     R2,R5
+        MOVS     R2,R7
         UXTH     R2,R2
         MOVS     R1,R6
         MOVS     R0,R4
         BL       GDflash_page_program
 ??GDflash_write_3:
-        POP      {R0,R4-R7,PC}    ;; return
+        ADD      SP,SP,#+20
+        POP      {R4-R7,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -763,9 +783,9 @@ GDflash_test:
         END
 // 
 //    16 bytes in section .rodata
-// 1 286 bytes in section .text
+// 1 326 bytes in section .text
 // 
-// 1 286 bytes of CODE  memory
+// 1 326 bytes of CODE  memory
 //    16 bytes of CONST memory
 //
 //Errors: none

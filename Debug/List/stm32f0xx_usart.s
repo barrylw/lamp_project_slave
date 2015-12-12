@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       11/Dec/2015  20:29:41
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:21
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -10,12 +10,12 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\src\stm32f0xx_usart.c
 //        -D USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\
-//        --diag_suppress Pa050 -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\
-//        --no_cse --no_unroll --no_inline --no_code_motion --no_tbaa
-//        --no_clustering --no_scheduling --debug --endian=little
-//        --cpu=Cortex-M0 -e --fpu=None --dlib_config "F:\Program Files
-//        (x86)\IAR Systems\Embedded Workbench
+//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
+//        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
+//        --no_inline --no_code_motion --no_tbaa --no_clustering
+//        --no_scheduling --debug --endian=little --cpu=Cortex-M0 -e --fpu=None
+//        --dlib_config "F:\Program Files (x86)\IAR Systems\Embedded Workbench
 //        7.0\arm\INC\c\DLib_Config_Normal.h" -I
 //        G:\git_hub_lamp\lamp_slave_git\APP\ -I
 //        G:\git_hub_lamp\lamp_slave_git\LIB\STM32F0xx_StdPeriph_Driver\inc\ -I
@@ -28,7 +28,7 @@
 //        G:\git_hub_lamp\lamp_slave_git\tools\wpcapslip\ -I
 //        G:\git_hub_lamp\lamp_slave_git\core\cfs\ -I
 //        G:\git_hub_lamp\lamp_slave_git\OLED\ -I
-//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -Ol -I "F:\Program Files
+//        G:\git_hub_lamp\lamp_slave_git\coffee_arch\ -On -I "F:\Program Files
 //        (x86)\IAR Systems\Embedded Workbench 7.0\arm\CMSIS\Include\"
 //    List file    =  
 //        G:\git_hub_lamp\lamp_slave_git\Debug\List\stm32f0xx_usart.s
@@ -97,9 +97,10 @@
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 USART_DeInit:
-        PUSH     {R7,LR}
-        LDR      R1,??DataTable11  ;; 0x40013800
-        CMP      R0,R1
+        PUSH     {R4,LR}
+        MOVS     R4,R0
+        LDR      R0,??DataTable11  ;; 0x40013800
+        CMP      R4,R0
         BNE      ??USART_DeInit_0
         MOVS     R1,#+1
         MOVS     R0,#+128
@@ -111,8 +112,8 @@ USART_DeInit:
         BL       RCC_APB2PeriphResetCmd
         B        ??USART_DeInit_1
 ??USART_DeInit_0:
-        LDR      R1,??DataTable13  ;; 0x40004400
-        CMP      R0,R1
+        LDR      R0,??DataTable12  ;; 0x40004400
+        CMP      R4,R0
         BNE      ??USART_DeInit_1
         MOVS     R1,#+1
         MOVS     R0,#+128
@@ -123,104 +124,114 @@ USART_DeInit:
         LSLS     R0,R0,#+10       ;; #+131072
         BL       RCC_APB1PeriphResetCmd
 ??USART_DeInit_1:
-        POP      {R0,PC}          ;; return
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 USART_Init:
         PUSH     {R4-R7,LR}
-        SUB      SP,SP,#+28
+        SUB      SP,SP,#+36
         MOVS     R6,R0
         MOVS     R7,R1
-        MOVS     R4,#+0
         MOVS     R5,#+0
-        MOVS     R1,#+0
+        MOVS     R0,#+0
+        STR      R0,[SP, #+0]
+        MOVS     R4,#+0
         LDR      R0,[R6, #+0]
-        MOVS     R2,#+1
-        BICS     R0,R0,R2
+        MOVS     R1,#+1
+        BICS     R0,R0,R1
         STR      R0,[R6, #+0]
         LDR      R0,[R6, #+4]
-        MOVS     R1,R0
-        MOVS     R0,R1
-        LDR      R1,??DataTable13_1  ;; 0xffffcfff
-        ANDS     R1,R1,R0
-        MOVS     R0,R1
-        LDR      R1,[R7, #+8]
-        ORRS     R1,R1,R0
-        STR      R1,[R6, #+4]
-        LDR      R1,[R6, #+0]
-        MOVS     R0,R1
-        LDR      R1,??DataTable13_2  ;; 0xffffe9f3
-        ANDS     R1,R1,R0
-        MOVS     R3,R1
+        MOVS     R4,R0
+        MOVS     R0,R4
+        LDR      R4,??DataTable13  ;; 0xffffcfff
+        ANDS     R4,R4,R0
+        MOVS     R0,R4
+        LDR      R4,[R7, #+8]
+        ORRS     R4,R4,R0
+        STR      R4,[R6, #+4]
+        LDR      R0,[R6, #+0]
+        MOVS     R4,R0
+        MOVS     R0,R4
+        LDR      R4,??DataTable13_1  ;; 0xffffe9f3
+        ANDS     R4,R4,R0
         LDR      R0,[R7, #+4]
-        LDR      R2,[R7, #+12]
-        ORRS     R2,R2,R0
-        LDR      R1,[R7, #+16]
-        ORRS     R1,R1,R2
-        ORRS     R1,R1,R3
-        STR      R1,[R6, #+0]
-        LDR      R1,[R6, #+8]
-        MOVS     R0,R1
-        LDR      R1,??DataTable14  ;; 0xfffffcff
-        ANDS     R1,R1,R0
-        MOVS     R0,R1
-        LDR      R1,[R7, #+20]
+        LDR      R1,[R7, #+12]
         ORRS     R1,R1,R0
-        STR      R1,[R6, #+8]
-        MOV      R0,SP
+        LDR      R0,[R7, #+16]
+        ORRS     R0,R0,R1
+        ORRS     R0,R0,R4
+        MOVS     R4,R0
+        STR      R4,[R6, #+0]
+        LDR      R0,[R6, #+8]
+        MOVS     R4,R0
+        MOVS     R0,R4
+        LDR      R4,??DataTable14  ;; 0xfffffcff
+        ANDS     R4,R4,R0
+        MOVS     R0,R4
+        LDR      R4,[R7, #+20]
+        ORRS     R4,R4,R0
+        STR      R4,[R6, #+8]
+        ADD      R0,SP,#+4
         BL       RCC_GetClocksFreq
         LDR      R0,??DataTable11  ;; 0x40013800
         CMP      R6,R0
         BNE      ??USART_Init_0
-        LDR      R5,[SP, #+24]
+        LDR      R0,[SP, #+28]
+        STR      R0,[SP, #+0]
         B        ??USART_Init_1
 ??USART_Init_0:
-        LDR      R5,[SP, #+8]
+        LDR      R0,[SP, #+12]
+        STR      R0,[SP, #+0]
 ??USART_Init_1:
         LDR      R0,[R6, #+0]
         LSLS     R0,R0,#+16
         BPL      ??USART_Init_2
-        MOVS     R0,#+2
-        MULS     R0,R5,R0
+        LDR      R0,[SP, #+0]
+        MOVS     R1,#+2
+        MULS     R0,R1,R0
         LDR      R1,[R7, #+0]
         BL       __aeabi_uidiv
-        MOVS     R4,R0
-        MOVS     R0,#+2
-        MULS     R5,R0,R5
-        MOVS     R0,R5
+        MOVS     R5,R0
+        LDR      R0,[SP, #+0]
+        MOVS     R1,#+2
+        MULS     R0,R1,R0
         LDR      R1,[R7, #+0]
         BL       __aeabi_uidivmod
+        MOVS     R4,R1
         B        ??USART_Init_3
 ??USART_Init_2:
-        MOVS     R0,R5
+        LDR      R0,[SP, #+0]
         LDR      R1,[R7, #+0]
         BL       __aeabi_uidiv
-        MOVS     R4,R0
-        MOVS     R0,R5
+        MOVS     R5,R0
+        LDR      R0,[SP, #+0]
         LDR      R1,[R7, #+0]
         BL       __aeabi_uidivmod
+        MOVS     R4,R1
 ??USART_Init_3:
         LDR      R0,[R7, #+0]
         LSRS     R0,R0,#+1
-        CMP      R1,R0
+        CMP      R4,R0
         BCC      ??USART_Init_4
-        ADDS     R4,R4,#+1
+        ADDS     R5,R5,#+1
 ??USART_Init_4:
         LDR      R0,[R6, #+0]
         LSLS     R0,R0,#+16
         BPL      ??USART_Init_5
-        MOVS     R0,R4
+        MOVS     R0,R5
         LSRS     R0,R0,#+1
-        LSLS     R1,R0,#+29       ;; ZeroExtS R1,R0,#+29,#+29
-        LSRS     R1,R1,#+29
-        LDR      R0,??DataTable14_1  ;; 0xfff0
-        ANDS     R0,R0,R4
-        MOVS     R4,R1
-        ORRS     R4,R4,R0
+        LSLS     R0,R0,#+29       ;; ZeroExtS R0,R0,#+29,#+29
+        LSRS     R0,R0,#+29
+        MOVS     R4,R0
+        MOVS     R0,R5
+        LDR      R5,??DataTable14_1  ;; 0xfff0
+        ANDS     R5,R5,R0
+        ORRS     R5,R5,R4
 ??USART_Init_5:
-        STRH     R4,[R6, #+12]
-        ADD      SP,SP,#+28
+        MOVS     R0,R5
+        STRH     R0,[R6, #+12]
+        ADD      SP,SP,#+36
         POP      {R4-R7,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -284,16 +295,16 @@ USART_Cmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_Cmd_0
-        LDR      R1,[R0, #+0]
-        MOVS     R2,#+1
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+0]
+        LDR      R2,[R0, #+0]
+        MOVS     R3,#+1
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+0]
         B        ??USART_Cmd_1
 ??USART_Cmd_0:
-        LDR      R1,[R0, #+0]
-        MOVS     R2,#+1
-        BICS     R1,R1,R2
-        STR      R1,[R0, #+0]
+        LDR      R2,[R0, #+0]
+        MOVS     R3,#+1
+        BICS     R2,R2,R3
+        STR      R2,[R0, #+0]
 ??USART_Cmd_1:
         POP      {PC}             ;; return
 
@@ -304,14 +315,14 @@ USART_DirectionModeCmd:
         UXTB     R2,R2
         CMP      R2,#+0
         BEQ      ??USART_DirectionModeCmd_0
-        LDR      R2,[R0, #+0]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+0]
+        LDR      R3,[R0, #+0]
+        ORRS     R3,R3,R1
+        STR      R3,[R0, #+0]
         B        ??USART_DirectionModeCmd_1
 ??USART_DirectionModeCmd_0:
-        LDR      R2,[R0, #+0]
-        BICS     R2,R2,R1
-        STR      R2,[R0, #+0]
+        LDR      R3,[R0, #+0]
+        BICS     R3,R3,R1
+        STR      R3,[R0, #+0]
 ??USART_DirectionModeCmd_1:
         POP      {PC}             ;; return
 
@@ -322,17 +333,17 @@ USART_OverSampling8Cmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_OverSampling8Cmd_0
-        LDR      R1,[R0, #+0]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+8        ;; #+32768
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+0]
+        LDR      R2,[R0, #+0]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+8        ;; #+32768
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+0]
         B        ??USART_OverSampling8Cmd_1
 ??USART_OverSampling8Cmd_0:
-        LDR      R1,[R0, #+0]
-        LDR      R2,??DataTable19  ;; 0xffff7fff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+0]
+        LDR      R2,[R0, #+0]
+        LDR      R3,??DataTable19  ;; 0xffff7fff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+0]
 ??USART_OverSampling8Cmd_1:
         POP      {PC}             ;; return
 
@@ -343,17 +354,17 @@ USART_OneBitMethodCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_OneBitMethodCmd_0
-        LDR      R1,[R0, #+8]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+4        ;; #+2048
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+8]
+        LDR      R2,[R0, #+8]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+4        ;; #+2048
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+8]
         B        ??USART_OneBitMethodCmd_1
 ??USART_OneBitMethodCmd_0:
-        LDR      R1,[R0, #+8]
-        LDR      R2,??DataTable19_1  ;; 0xfffff7ff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+8]
+        LDR      R2,[R0, #+8]
+        LDR      R3,??DataTable19_1  ;; 0xfffff7ff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+8]
 ??USART_OneBitMethodCmd_1:
         POP      {PC}             ;; return
 
@@ -364,17 +375,17 @@ USART_MSBFirstCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_MSBFirstCmd_0
-        LDR      R1,[R0, #+4]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+12       ;; #+524288
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+4]
+        LDR      R2,[R0, #+4]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+12       ;; #+524288
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+4]
         B        ??USART_MSBFirstCmd_1
 ??USART_MSBFirstCmd_0:
-        LDR      R1,[R0, #+4]
-        LDR      R2,??DataTable20  ;; 0xfff7ffff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+4]
+        LDR      R2,[R0, #+4]
+        LDR      R3,??DataTable20  ;; 0xfff7ffff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+4]
 ??USART_MSBFirstCmd_1:
         POP      {PC}             ;; return
 
@@ -385,17 +396,17 @@ USART_DataInvCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_DataInvCmd_0
-        LDR      R1,[R0, #+4]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+11       ;; #+262144
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+4]
+        LDR      R2,[R0, #+4]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+11       ;; #+262144
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+4]
         B        ??USART_DataInvCmd_1
 ??USART_DataInvCmd_0:
-        LDR      R1,[R0, #+4]
-        LDR      R2,??DataTable20_1  ;; 0xfffbffff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+4]
+        LDR      R2,[R0, #+4]
+        LDR      R3,??DataTable20_1  ;; 0xfffbffff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+4]
 ??USART_DataInvCmd_1:
         POP      {PC}             ;; return
 
@@ -406,14 +417,14 @@ USART_InvPinCmd:
         UXTB     R2,R2
         CMP      R2,#+0
         BEQ      ??USART_InvPinCmd_0
-        LDR      R2,[R0, #+4]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+4]
+        LDR      R3,[R0, #+4]
+        ORRS     R3,R3,R1
+        STR      R3,[R0, #+4]
         B        ??USART_InvPinCmd_1
 ??USART_InvPinCmd_0:
-        LDR      R2,[R0, #+4]
-        BICS     R2,R2,R1
-        STR      R2,[R0, #+4]
+        LDR      R3,[R0, #+4]
+        BICS     R3,R3,R1
+        STR      R3,[R0, #+4]
 ??USART_InvPinCmd_1:
         POP      {PC}             ;; return
 
@@ -424,17 +435,17 @@ USART_SWAPPinCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_SWAPPinCmd_0
-        LDR      R1,[R0, #+4]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+8        ;; #+32768
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+4]
+        LDR      R2,[R0, #+4]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+8        ;; #+32768
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+4]
         B        ??USART_SWAPPinCmd_1
 ??USART_SWAPPinCmd_0:
-        LDR      R1,[R0, #+4]
-        LDR      R2,??DataTable19  ;; 0xffff7fff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+4]
+        LDR      R2,[R0, #+4]
+        LDR      R3,??DataTable19  ;; 0xffff7fff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+4]
 ??USART_SWAPPinCmd_1:
         POP      {PC}             ;; return
 
@@ -445,17 +456,17 @@ USART_ReceiverTimeOutCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_ReceiverTimeOutCmd_0
-        LDR      R1,[R0, #+4]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+16       ;; #+8388608
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+4]
+        LDR      R2,[R0, #+4]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+16       ;; #+8388608
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+4]
         B        ??USART_ReceiverTimeOutCmd_1
 ??USART_ReceiverTimeOutCmd_0:
-        LDR      R1,[R0, #+4]
-        LDR      R2,??DataTable21  ;; 0xff7fffff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+4]
+        LDR      R2,[R0, #+4]
+        LDR      R3,??DataTable21  ;; 0xff7fffff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+4]
 ??USART_ReceiverTimeOutCmd_1:
         POP      {PC}             ;; return
 
@@ -467,8 +478,8 @@ USART_SetReceiverTimeOut:
         LSLS     R2,R2,#+24
         STR      R2,[R0, #+20]
         LDR      R2,[R0, #+20]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+20]
+        ORRS     R2,R2,R1
+        STR      R2,[R0, #+20]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -492,16 +503,16 @@ USART_STOPModeCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_STOPModeCmd_0
-        LDR      R1,[R0, #+0]
-        MOVS     R2,#+2
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+0]
+        LDR      R2,[R0, #+0]
+        MOVS     R3,#+2
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+0]
         B        ??USART_STOPModeCmd_1
 ??USART_STOPModeCmd_0:
-        LDR      R1,[R0, #+0]
-        MOVS     R2,#+2
-        BICS     R1,R1,R2
-        STR      R1,[R0, #+0]
+        LDR      R2,[R0, #+0]
+        MOVS     R3,#+2
+        BICS     R2,R2,R3
+        STR      R2,[R0, #+0]
 ??USART_STOPModeCmd_1:
         POP      {PC}             ;; return
 
@@ -513,8 +524,8 @@ USART_StopModeWakeUpSourceConfig:
         ANDS     R3,R3,R2
         STR      R3,[R0, #+8]
         LDR      R2,[R0, #+8]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+8]
+        ORRS     R2,R2,R1
+        STR      R2,[R0, #+8]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -524,17 +535,17 @@ USART_AutoBaudRateCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_AutoBaudRateCmd_0
-        LDR      R1,[R0, #+4]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+13       ;; #+1048576
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+4]
+        LDR      R2,[R0, #+4]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+13       ;; #+1048576
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+4]
         B        ??USART_AutoBaudRateCmd_1
 ??USART_AutoBaudRateCmd_0:
-        LDR      R1,[R0, #+4]
-        LDR      R2,??DataTable21_2  ;; 0xffefffff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+4]
+        LDR      R2,[R0, #+4]
+        LDR      R3,??DataTable21_2  ;; 0xffefffff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+4]
 ??USART_AutoBaudRateCmd_1:
         POP      {PC}             ;; return
 
@@ -546,8 +557,8 @@ USART_AutoBaudRateConfig:
         ANDS     R3,R3,R2
         STR      R3,[R0, #+4]
         LDR      R2,[R0, #+4]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+4]
+        ORRS     R2,R2,R1
+        STR      R2,[R0, #+4]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -559,9 +570,9 @@ USART_AutoBaudRateConfig:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 USART_SendData:
-        LSLS     R1,R1,#+23       ;; ZeroExtS R1,R1,#+23,#+23
-        LSRS     R1,R1,#+23
-        STRH     R1,[R0, #+40]
+        LSLS     R2,R1,#+23       ;; ZeroExtS R2,R1,#+23,#+23
+        LSRS     R2,R2,#+23
+        STRH     R2,[R0, #+40]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -581,9 +592,9 @@ USART_SetAddress:
         STR      R2,[R0, #+4]
         LDR      R2,[R0, #+4]
         UXTB     R1,R1
-        LSLS     R1,R1,#+24
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+4]
+        LSLS     R3,R1,#+24
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+4]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -593,19 +604,25 @@ USART_MuteModeCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_MuteModeCmd_0
-        LDR      R1,[R0, #+0]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+6        ;; #+8192
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+0]
+        LDR      R2,[R0, #+0]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+6        ;; #+8192
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+0]
         B        ??USART_MuteModeCmd_1
 ??USART_MuteModeCmd_0:
-        LDR      R1,[R0, #+0]
-        LDR      R2,??DataTable21_4  ;; 0xffffdfff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+0]
+        LDR      R2,[R0, #+0]
+        LDR      R3,??DataTable21_4  ;; 0xffffdfff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+0]
 ??USART_MuteModeCmd_1:
         POP      {PC}             ;; return
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable12:
+        DC32     0x40004400
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -615,26 +632,20 @@ USART_MuteModeWakeUpConfig:
         ANDS     R3,R3,R2
         STR      R3,[R0, #+0]
         LDR      R2,[R0, #+0]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+0]
+        ORRS     R2,R2,R1
+        STR      R2,[R0, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable13:
-        DC32     0x40004400
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable13_1:
         DC32     0xffffcfff
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable13_2:
+??DataTable13_1:
         DC32     0xffffe9f3
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -645,8 +656,8 @@ USART_AddressDetectionConfig:
         BICS     R2,R2,R3
         STR      R2,[R0, #+4]
         LDR      R2,[R0, #+4]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+4]
+        ORRS     R2,R2,R1
+        STR      R2,[R0, #+4]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -657,8 +668,8 @@ USART_LINBreakDetectLengthConfig:
         BICS     R2,R2,R3
         STR      R2,[R0, #+4]
         LDR      R2,[R0, #+4]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+4]
+        ORRS     R2,R2,R1
+        STR      R2,[R0, #+4]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -668,17 +679,17 @@ USART_LINCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_LINCmd_0
-        LDR      R1,[R0, #+4]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+7        ;; #+16384
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+4]
+        LDR      R2,[R0, #+4]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+7        ;; #+16384
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+4]
         B        ??USART_LINCmd_1
 ??USART_LINCmd_0:
-        LDR      R1,[R0, #+4]
-        LDR      R2,??DataTable21_5  ;; 0xffffbfff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+4]
+        LDR      R2,[R0, #+4]
+        LDR      R3,??DataTable21_5  ;; 0xffffbfff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+4]
 ??USART_LINCmd_1:
         POP      {PC}             ;; return
 
@@ -701,16 +712,16 @@ USART_HalfDuplexCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_HalfDuplexCmd_0
-        LDR      R1,[R0, #+8]
-        MOVS     R2,#+8
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+8]
+        LDR      R2,[R0, #+8]
+        MOVS     R3,#+8
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+8]
         B        ??USART_HalfDuplexCmd_1
 ??USART_HalfDuplexCmd_0:
-        LDR      R1,[R0, #+8]
-        MOVS     R2,#+8
-        BICS     R1,R1,R2
-        STR      R1,[R0, #+8]
+        LDR      R2,[R0, #+8]
+        MOVS     R3,#+8
+        BICS     R2,R2,R3
+        STR      R2,[R0, #+8]
 ??USART_HalfDuplexCmd_1:
         POP      {PC}             ;; return
 
@@ -722,9 +733,9 @@ USART_SetGuardTime:
         STRH     R2,[R0, #+16]
         LDRH     R2,[R0, #+16]
         UXTB     R1,R1
-        LSLS     R1,R1,#+8
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+16]
+        LSLS     R3,R1,#+8
+        ORRS     R3,R3,R2
+        STRH     R3,[R0, #+16]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -734,16 +745,16 @@ USART_SmartCardCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_SmartCardCmd_0
-        LDR      R1,[R0, #+8]
-        MOVS     R2,#+32
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+8]
+        LDR      R2,[R0, #+8]
+        MOVS     R3,#+32
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+8]
         B        ??USART_SmartCardCmd_1
 ??USART_SmartCardCmd_0:
-        LDR      R1,[R0, #+8]
-        MOVS     R2,#+32
-        BICS     R1,R1,R2
-        STR      R1,[R0, #+8]
+        LDR      R2,[R0, #+8]
+        MOVS     R3,#+32
+        BICS     R2,R2,R3
+        STR      R2,[R0, #+8]
 ??USART_SmartCardCmd_1:
         POP      {PC}             ;; return
 
@@ -754,16 +765,16 @@ USART_SmartCardNACKCmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_SmartCardNACKCmd_0
-        LDR      R1,[R0, #+8]
-        MOVS     R2,#+16
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+8]
+        LDR      R2,[R0, #+8]
+        MOVS     R3,#+16
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+8]
         B        ??USART_SmartCardNACKCmd_1
 ??USART_SmartCardNACKCmd_0:
-        LDR      R1,[R0, #+8]
-        MOVS     R2,#+16
-        BICS     R1,R1,R2
-        STR      R1,[R0, #+8]
+        LDR      R2,[R0, #+8]
+        MOVS     R3,#+16
+        BICS     R2,R2,R3
+        STR      R2,[R0, #+8]
 ??USART_SmartCardNACKCmd_1:
         POP      {PC}             ;; return
 
@@ -776,9 +787,9 @@ USART_SetAutoRetryCount:
         STR      R3,[R0, #+8]
         LDR      R2,[R0, #+8]
         UXTB     R1,R1
-        LSLS     R1,R1,#+17
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+8]
+        LSLS     R3,R1,#+17
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+8]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -796,9 +807,9 @@ USART_SetBlockLength:
         STR      R2,[R0, #+20]
         LDR      R2,[R0, #+20]
         UXTB     R1,R1
-        LSLS     R1,R1,#+24
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+20]
+        LSLS     R3,R1,#+24
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+20]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -809,8 +820,8 @@ USART_IrDAConfig:
         BICS     R2,R2,R3
         STR      R2,[R0, #+8]
         LDR      R2,[R0, #+8]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+8]
+        ORRS     R2,R2,R1
+        STR      R2,[R0, #+8]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -820,16 +831,16 @@ USART_IrDACmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_IrDACmd_0
-        LDR      R1,[R0, #+8]
-        MOVS     R2,#+2
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+8]
+        LDR      R2,[R0, #+8]
+        MOVS     R3,#+2
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+8]
         B        ??USART_IrDACmd_1
 ??USART_IrDACmd_0:
-        LDR      R1,[R0, #+8]
-        MOVS     R2,#+2
-        BICS     R1,R1,R2
-        STR      R1,[R0, #+8]
+        LDR      R2,[R0, #+8]
+        MOVS     R3,#+2
+        BICS     R2,R2,R3
+        STR      R2,[R0, #+8]
 ??USART_IrDACmd_1:
         POP      {PC}             ;; return
 
@@ -840,17 +851,17 @@ USART_DECmd:
         UXTB     R1,R1
         CMP      R1,#+0
         BEQ      ??USART_DECmd_0
-        LDR      R1,[R0, #+8]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+7        ;; #+16384
-        ORRS     R2,R2,R1
-        STR      R2,[R0, #+8]
+        LDR      R2,[R0, #+8]
+        MOVS     R3,#+128
+        LSLS     R3,R3,#+7        ;; #+16384
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+8]
         B        ??USART_DECmd_1
 ??USART_DECmd_0:
-        LDR      R1,[R0, #+8]
-        LDR      R2,??DataTable21_5  ;; 0xffffbfff
-        ANDS     R2,R2,R1
-        STR      R2,[R0, #+8]
+        LDR      R2,[R0, #+8]
+        LDR      R3,??DataTable21_5  ;; 0xffffbfff
+        ANDS     R3,R3,R2
+        STR      R3,[R0, #+8]
 ??USART_DECmd_1:
         POP      {PC}             ;; return
 
@@ -862,8 +873,8 @@ USART_DEPolarityConfig:
         ANDS     R3,R3,R2
         STR      R3,[R0, #+8]
         LDR      R2,[R0, #+8]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+8]
+        ORRS     R2,R2,R1
+        STR      R2,[R0, #+8]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -874,9 +885,9 @@ USART_SetDEAssertionTime:
         ANDS     R3,R3,R2
         STR      R3,[R0, #+0]
         LDR      R2,[R0, #+0]
-        LSLS     R1,R1,#+21
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+0]
+        LSLS     R3,R1,#+21
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -887,9 +898,9 @@ USART_SetDEDeassertionTime:
         ANDS     R3,R3,R2
         STR      R3,[R0, #+0]
         LDR      R2,[R0, #+0]
-        LSLS     R1,R1,#+16
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+0]
+        LSLS     R3,R1,#+16
+        ORRS     R3,R3,R2
+        STR      R3,[R0, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -911,14 +922,14 @@ USART_DMACmd:
         UXTB     R2,R2
         CMP      R2,#+0
         BEQ      ??USART_DMACmd_0
-        LDR      R2,[R0, #+8]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+8]
+        LDR      R3,[R0, #+8]
+        ORRS     R3,R3,R1
+        STR      R3,[R0, #+8]
         B        ??USART_DMACmd_1
 ??USART_DMACmd_0:
-        LDR      R2,[R0, #+8]
-        BICS     R2,R2,R1
-        STR      R2,[R0, #+8]
+        LDR      R3,[R0, #+8]
+        BICS     R3,R3,R1
+        STR      R3,[R0, #+8]
 ??USART_DMACmd_1:
         POP      {PC}             ;; return
 
@@ -930,8 +941,8 @@ USART_DMAReceptionErrorConfig:
         ANDS     R3,R3,R2
         STR      R3,[R0, #+8]
         LDR      R2,[R0, #+8]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+8]
+        ORRS     R2,R2,R1
+        STR      R2,[R0, #+8]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -949,22 +960,22 @@ USART_DMAReceptionErrorConfig:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 USART_ITConfig:
-        PUSH     {R4-R6,LR}
+        PUSH     {R4-R7,LR}
         MOVS     R3,#+0
         MOVS     R4,#+0
         MOVS     R5,#+0
         MOVS     R6,#+0
         MOVS     R6,R0
-        MOVS     R0,R1
-        UXTH     R0,R0
-        LSRS     R0,R0,#+8
-        UXTH     R0,R0
-        MOVS     R3,R0
-        UXTB     R0,R1
-        MOVS     R4,R0
-        MOVS     R0,#+1
-        LSLS     R0,R0,R4
-        MOVS     R5,R0
+        MOVS     R7,R1
+        UXTH     R7,R7
+        LSRS     R7,R7,#+8
+        UXTH     R7,R7
+        MOVS     R3,R7
+        UXTB     R7,R1
+        MOVS     R4,R7
+        MOVS     R7,#+1
+        LSLS     R7,R7,R4
+        MOVS     R5,R7
         CMP      R3,#+2
         BNE      ??USART_ITConfig_0
         ADDS     R6,R6,#+4
@@ -977,34 +988,36 @@ USART_ITConfig:
         UXTB     R2,R2
         CMP      R2,#+0
         BEQ      ??USART_ITConfig_2
-        LDR      R0,[R6, #+0]
-        ORRS     R5,R5,R0
-        STR      R5,[R6, #+0]
+        LDR      R7,[R6, #+0]
+        ORRS     R7,R7,R5
+        STR      R7,[R6, #+0]
         B        ??USART_ITConfig_3
 ??USART_ITConfig_2:
-        LDR      R0,[R6, #+0]
-        BICS     R0,R0,R5
-        STR      R0,[R6, #+0]
+        LDR      R7,[R6, #+0]
+        BICS     R7,R7,R5
+        STR      R7,[R6, #+0]
 ??USART_ITConfig_3:
-        POP      {R4-R6,PC}       ;; return
+        POP      {R4-R7,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 USART_RequestCmd:
-        PUSH     {LR}
+        PUSH     {R4,LR}
         UXTB     R2,R2
         CMP      R2,#+0
         BEQ      ??USART_RequestCmd_0
-        LDRH     R2,[R0, #+24]
-        ORRS     R1,R1,R2
-        STRH     R1,[R0, #+24]
+        LDRH     R3,[R0, #+24]
+        MOVS     R4,R1
+        ORRS     R4,R4,R3
+        STRH     R4,[R0, #+24]
         B        ??USART_RequestCmd_1
 ??USART_RequestCmd_0:
-        LDRH     R2,[R0, #+24]
-        BICS     R2,R2,R1
-        STRH     R2,[R0, #+24]
+        LDRH     R3,[R0, #+24]
+        MOVS     R4,R1
+        BICS     R3,R3,R4
+        STRH     R3,[R0, #+24]
 ??USART_RequestCmd_1:
-        POP      {PC}             ;; return
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1014,8 +1027,8 @@ USART_OverrunDetectionConfig:
         ANDS     R3,R3,R2
         STR      R3,[R0, #+8]
         LDR      R2,[R0, #+8]
-        ORRS     R1,R1,R2
-        STR      R1,[R0, #+8]
+        ORRS     R2,R2,R1
+        STR      R2,[R0, #+8]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -1084,14 +1097,16 @@ USART_GetFlagStatus:
         PUSH     {LR}
         MOVS     R2,R0
         MOVS     R0,#+0
-        LDR      R2,[R2, #+28]
-        ANDS     R1,R1,R2
-        CMP      R1,#+0
+        LDR      R3,[R2, #+28]
+        ANDS     R3,R3,R1
+        CMP      R3,#+0
         BEQ      ??USART_GetFlagStatus_0
-        MOVS     R0,#+1
+        MOVS     R3,#+1
+        MOVS     R0,R3
         B        ??USART_GetFlagStatus_1
 ??USART_GetFlagStatus_0:
-        MOVS     R0,#+0
+        MOVS     R3,#+0
+        MOVS     R0,R3
 ??USART_GetFlagStatus_1:
         UXTB     R0,R0
         POP      {PC}             ;; return
@@ -1106,57 +1121,60 @@ USART_ClearFlag:
         THUMB
 USART_GetITStatus:
         PUSH     {R4-R7,LR}
-        MOVS     R2,R0
+        MOVS     R3,R0
         MOVS     R4,#+0
         MOVS     R5,#+0
         MOVS     R6,#+0
         MOVS     R0,#+0
-        MOVS     R3,R1
-        UXTH     R3,R3
-        LSRS     R3,R3,#+8
-        UXTH     R3,R3
-        MOVS     R6,R3
-        UXTB     R3,R1
-        MOVS     R5,R3
+        MOVS     R2,R1
+        UXTH     R2,R2
+        LSRS     R2,R2,#+8
+        UXTH     R2,R2
+        MOVS     R6,R2
+        UXTB     R2,R1
+        MOVS     R5,R2
         MOVS     R7,#+1
-        MOVS     R3,R5
+        MOVS     R2,R5
         MOVS     R5,R7
-        LSLS     R5,R5,R3
+        LSLS     R5,R5,R2
         CMP      R6,#+1
         BNE      ??USART_GetITStatus_0
-        MOVS     R0,R5
-        LDR      R5,[R2, #+0]
-        ANDS     R5,R5,R0
+        MOVS     R2,R5
+        LDR      R5,[R3, #+0]
+        ANDS     R5,R5,R2
         B        ??USART_GetITStatus_1
 ??USART_GetITStatus_0:
         CMP      R6,#+2
         BNE      ??USART_GetITStatus_2
-        MOVS     R0,R5
-        LDR      R5,[R2, #+4]
-        ANDS     R5,R5,R0
+        MOVS     R2,R5
+        LDR      R5,[R3, #+4]
+        ANDS     R5,R5,R2
         B        ??USART_GetITStatus_1
 ??USART_GetITStatus_2:
-        MOVS     R0,R5
-        LDR      R5,[R2, #+8]
-        ANDS     R5,R5,R0
+        MOVS     R2,R5
+        LDR      R5,[R3, #+8]
+        ANDS     R5,R5,R2
 ??USART_GetITStatus_1:
-        MOVS     R4,R1
-        LSRS     R4,R4,#+16
-        MOVS     R1,#+1
-        MOVS     R0,R4
-        MOVS     R4,R1
-        LSLS     R4,R4,R0
-        MOVS     R0,R4
-        LDR      R4,[R2, #+28]
-        ANDS     R4,R4,R0
+        MOVS     R2,R1
+        LSRS     R2,R2,#+16
+        MOVS     R4,R2
+        MOVS     R7,#+1
+        MOVS     R2,R4
+        MOVS     R4,R7
+        LSLS     R4,R4,R2
+        MOVS     R2,R4
+        LDR      R4,[R3, #+28]
+        ANDS     R4,R4,R2
         CMP      R5,#+0
         BEQ      ??USART_GetITStatus_3
         CMP      R4,#+0
         BEQ      ??USART_GetITStatus_3
-        MOVS     R0,#+1
+        MOVS     R2,#+1
+        MOVS     R0,R2
         B        ??USART_GetITStatus_4
 ??USART_GetITStatus_3:
-        MOVS     R0,#+0
+        MOVS     R2,#+0
+        MOVS     R0,R2
 ??USART_GetITStatus_4:
         UXTB     R0,R0
         POP      {R4-R7,PC}       ;; return
@@ -1164,14 +1182,17 @@ USART_GetITStatus:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 USART_ClearITPendingBit:
+        PUSH     {R4}
         MOVS     R2,#+0
         MOVS     R3,#+0
-        LSRS     R1,R1,#+16
-        MOVS     R2,R1
-        MOVS     R1,#+1
-        LSLS     R1,R1,R2
-        MOVS     R3,R1
+        MOVS     R4,R1
+        LSRS     R4,R4,#+16
+        MOVS     R2,R4
+        MOVS     R4,#+1
+        LSLS     R4,R4,R2
+        MOVS     R3,R4
         STR      R3,[R0, #+32]
+        POP      {R4}
         BX       LR               ;; return
 
         SECTION `.iar_vfe_header`:DATA:NOALLOC:NOROOT(2)
@@ -1187,9 +1208,9 @@ USART_ClearITPendingBit:
 
         END
 // 
-// 1 500 bytes in section .text
+// 1 542 bytes in section .text
 // 
-// 1 500 bytes of CODE memory
+// 1 542 bytes of CODE memory
 //
 //Errors: none
 //Warnings: none
