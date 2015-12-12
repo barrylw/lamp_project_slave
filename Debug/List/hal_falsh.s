@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  17:38:28
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  18:20:06
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -36,7 +36,6 @@
         #define SHT_PROGBITS 0x1
 
         EXTERN FLASH_ClearFlag
-        EXTERN FLASH_ErasePage
         EXTERN FLASH_ProgramHalfWord
         EXTERN FLASH_Unlock
         EXTERN __aeabi_idiv
@@ -44,7 +43,6 @@
 
         PUBLIC FLASH_Init
         PUBLIC FLASH_Write_chars
-        PUBLIC flash_erase_page
         PUBLIC hal_Init_Flash
 
 
@@ -63,18 +61,6 @@ hal_Init_Flash:
         PUSH     {R7,LR}
         BL       FLASH_Init
         POP      {R0,PC}          ;; return
-
-        SECTION `.text`:CODE:NOROOT(1)
-        THUMB
-flash_erase_page:
-        PUSH     {R3-R5,LR}
-        MOVS     R4,R0
-        MOVS     R0,R4
-        BL       FLASH_ErasePage
-        MOVS     R5,R0
-        MOVS     R0,R5
-        UXTB     R0,R0
-        POP      {R1,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -184,9 +170,9 @@ FLASH_Write_chars:
 
         END
 // 
-// 214 bytes in section .text
+// 196 bytes in section .text
 // 
-// 214 bytes of CODE memory
+// 196 bytes of CODE memory
 //
 //Errors: none
 //Warnings: none

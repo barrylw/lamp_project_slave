@@ -642,7 +642,7 @@ void set_8209c_Kx(void)
     read_8209c_regs(ADPhsA,&rn8209c_papameter.PhsA );
     
     save_8209c_params();
-    flash_erase_page(FLASH_ELC_SAVE_ADDRESS);
+    FLASH_ErasePage(FLASH_ELC_SAVE_ADDRESS);
     
     process_start(&start_time_detect_process, NULL);
 #endif
@@ -659,7 +659,7 @@ void set_8209c_Kx(void)
     rn8209c_papameter.calibration  = 1;
     
     save_8209c_params();
-    flash_erase_page(FLASH_ELC_SAVE_ADDRESS);
+    FLASH_ErasePage(FLASH_ELC_SAVE_ADDRESS);
 }
 
 void read_param_all(void)
@@ -860,7 +860,7 @@ void set_local_addr(void)
         flashtemp[6] = (u8)(crcvalue & 0xFF);
         flashtemp[7] = (u8)(crcvalue >>8 & 0xFF);
         
-        if (flash_erase_page(FLASH_LOCAL_ADDR_ADDRESS) == FLASH_COMPLETE)
+        if (FLASH_ErasePage(FLASH_LOCAL_ADDR_ADDRESS) == FLASH_COMPLETE)
         {
             FLASH_Write_chars( FLASH_LOCAL_ADDR_ADDRESS,  flashtemp, 8);
         }  

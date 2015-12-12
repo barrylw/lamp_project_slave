@@ -21,12 +21,7 @@ void hal_Init_Flash(void)
   FLASH_Init();
 }
 
-FLASH_Status  flash_erase_page(uint32_t FlashAddress)
-{
-  FLASH_Status val;
-  val = FLASH_ErasePage(FlashAddress);
-  return val;
-}
+
 
 uint32_t FLASH_Write_chars( uint32_t FlashAddress, uint8_t* Data ,uint16_t DataLength)
 {

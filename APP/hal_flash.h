@@ -19,5 +19,5 @@ uint32_t FLASH_Write_chars( uint32_t FlashAddress, uint8_t* Data ,uint16_t DataL
 uint32_t FLASH_Write_16BITS( uint32_t* FlashAddress, uint16_t* Data ,uint16_t DataLength);
 void FLASH_Init(void);
 void hal_Init_Flash(void);
-FLASH_Status  flash_erase_page(uint32_t FlashAddress);
+FLASH_Status  FLASH_ErasePage(uint32_t FlashAddress);
 #endif

@@ -21,7 +21,7 @@
 #include "gpio_per.h"
 #include "apl.h"
 #include "sx1276-Fsk.h"
-
+#include "hal_wdg.h"
 
 u8 tedtbuf[150];
 

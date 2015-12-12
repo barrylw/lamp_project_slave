@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  17:18:26
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  18:20:04
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -35,6 +35,7 @@
 
         #define SHT_PROGBITS 0x1
 
+        EXTERN FLASH_ErasePage
         EXTERN FLASH_Write_chars
         EXTERN GPIO_ResetBits
         EXTERN GPIO_SetBits
@@ -56,7 +57,6 @@
         EXTERN __aeabi_memclr4
         EXTERN atoi
         EXTERN config_8209c_reg
-        EXTERN flash_erase_page
         EXTERN g_DebugRxBuffer
         EXTERN g_DebugRxFlag
         EXTERN g_SystickCounter
@@ -1371,7 +1371,7 @@ set_8209c_Kx:
         STRB     R0,[R1, #+4]
         BL       save_8209c_params
         LDR      R0,??DataTable22_10  ;; 0x800f800
-        BL       flash_erase_page
+        BL       FLASH_ErasePage
         POP      {R0,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -1848,7 +1848,7 @@ set_local_addr:
         ADD      R1,SP,#+12
         STRB     R0,[R1, #+7]
         LDR      R0,??DataTable25_8  ;; 0x800f000
-        BL       flash_erase_page
+        BL       FLASH_ErasePage
         CMP      R0,#+4
         BNE      ??set_local_addr_2
         MOVS     R2,#+8

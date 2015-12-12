@@ -67,7 +67,7 @@ __root const Manufacturer_Version aplVersion =
   {'B', 'R'},//厂商代码 
   {'2', '3'},//芯片代码
    0x12, 0x12, 0x15,//日月年
-  {0x00, 0x00}//版本
+  {0x07, 0x00}//版本
 };
 
 
@@ -250,19 +250,19 @@ void proceess_packet(ST_update_packet_info * current_ptr, ST_UPDATE * flash_ptr)
             write_update_flash(flash_ptr);
             //测试用，到时候修改
             printf("update data OK\r\n");
-            Delayms(500);
             SoftReset();
         }
         else
         {
             //7、错误，复位升级数据
-            reset_update_params();
             printf("update crc err\r\n");
+            reset_update_params();
         }
     }
     else
     {
         //8、升级未完成，保存升级数据
+        printf("wait update packets\r\n");
         write_update_flash(flash_ptr);
     }  
 }
@@ -416,7 +416,7 @@ void write_update_flash(ST_UPDATE *st_update_Structure )
      tempBuf[UPDATE_CRC_POS]               =  (u8)((st_update_Structure->crcValue >>8)&0xFF);
      tempBuf[UPDATE_CRC_POS + 1]           =  (u8)(st_update_Structure->crcValue & 0xFF);
 
-    if (flash_erase_page(FLASH_UPDATE_PARAMS_ADDRESS) == FLASH_COMPLETE)
+    if (FLASH_ErasePage(FLASH_UPDATE_PARAMS_ADDRESS) == FLASH_COMPLETE)
     {
        FLASH_Write_chars( FLASH_UPDATE_PARAMS_ADDRESS,  tempBuf, TOTAL_UPDATE_BYTE);
     }  
@@ -656,7 +656,7 @@ u8 modify_update_flash_params(u8 params)
     }
   }
 
-  if (flash_erase_page(UPDATE_FLASH_PARAMETER_DDR) == FLASH_COMPLETE)
+  if (FLASH_ErasePage(UPDATE_FLASH_PARAMETER_DDR) == FLASH_COMPLETE)
   {
     if (params & UPDATE_TOTALBYTES_MASK)
     { 
@@ -788,7 +788,7 @@ void reset_update_params(void)
     tempBuf[UPDATE_FLASH_LENGTH]     = (u8)(crcValue & 0xFF);
     tempBuf[UPDATE_FLASH_LENGTH + 1] = (u8)((crcValue >> 8) & 0xFF);
      
-    if (flash_erase_page(UPDATE_FLASH_PARAMETER_DDR) == FLASH_COMPLETE)
+    if (FLASH_ErasePage(UPDATE_FLASH_PARAMETER_DDR) == FLASH_COMPLETE)
     {
        FLASH_Write_chars( &startADDR,  tempBuf, UPDATE_FLASH_LENGTH + 2);
     }  
@@ -958,7 +958,7 @@ uint32_t FLASH_Write_update_page(u8 packetNo, u8 * Data, u8 length)
   }
   
   
-  if (flash_erase_page(page_start_addr) == FLASH_COMPLETE)
+  if (FLASH_ErasePage(page_start_addr) == FLASH_COMPLETE)
   {
     return (FLASH_Write_chars(&page_start_addr,g_updateBuffer ,FLASH_PAGE_SIZE));
      

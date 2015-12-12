@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  17:45:10
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  18:37:34
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -46,6 +46,7 @@
         EXTERN Delayms
         EXTERN EXTI_ClearITPendingBit
         EXTERN EXTI_Init
+        EXTERN FLASH_ErasePage
         EXTERN FLASH_Write_chars
         EXTERN GPIO_Init
         EXTERN GPIO_PinAFConfig
@@ -92,7 +93,6 @@
         EXTERN atoi
         EXTERN clear_light_time
         EXTERN etimer_set
-        EXTERN flash_erase_page
         EXTERN hal_InitUART
         EXTERN paralist
         EXTERN printf
@@ -353,7 +353,7 @@ drop_down_timer_init:
         LDR      R0,??DataTable4_1  ;; 0xbb80
         MOV      R1,SP
         STRH     R0,[R1, #+0]
-        MOVS     R0,#+40
+        MOVS     R0,#+60
         STR      R0,[SP, #+4]
         MOVS     R0,#+0
         MOV      R1,SP
@@ -554,7 +554,7 @@ process_thread_start_time_detect_process:
         BL       read_8209c_energyP
         BL       format_elc_data
         LDR      R0,??DataTable6_7  ;; 0x800f800
-        BL       flash_erase_page
+        BL       FLASH_ErasePage
         CMP      R0,#+4
         BNE      ??process_thread_start_time_detect_process_9
         MOVS     R2,#+18
@@ -582,7 +582,7 @@ process_thread_start_time_detect_process:
         BL       read_8209c_energyP
         BL       format_elc_data
         LDR      R0,??DataTable6_7  ;; 0x800f800
-        BL       flash_erase_page
+        BL       FLASH_ErasePage
         CMP      R0,#+4
         BNE      ??process_thread_start_time_detect_process_9
         MOVS     R2,#+18
@@ -1826,7 +1826,7 @@ save_8209c_params:
         ADDS     R1,R1,R4
         STRB     R0,[R1, #+2]
         LDR      R0,??DataTable18_1  ;; 0x800fc00
-        BL       flash_erase_page
+        BL       FLASH_ErasePage
         CMP      R0,#+4
         BNE      ??save_8209c_params_0
         MOVS     R2,R4
@@ -2280,7 +2280,7 @@ save_elc_datas:
         CMP      R4,R0
         BLT      ??save_elc_datas_0
         LDR      R0,??DataTable22_3  ;; 0x800f800
-        BL       flash_erase_page
+        BL       FLASH_ErasePage
         MOVS     R0,#+0
         MOVS     R4,R0
 ??save_elc_datas_0:

@@ -368,13 +368,14 @@ PROCESS_THREAD(hal_RF_process, ev, data)
            
            printf("rssi = %f  snr = %d\r\n",SX1276LoRaGetPacketRssi(), SX1276LoRaGetPacketSnr());
            
+ #if 0
            for (u8 i = 0; i < g_RF_LoRa.rf_RxPacketSize; i++)
            {
               printf("%X ",g_RF_LoRa.rf_DataBuffer[i]);
            }
            printf("\r\n");
            
-#if 0
+
         g_RF_LoRa.rf_DataBuffer[0] =   hal_get_equal_RxPacketRssi();
           
         #ifndef USE_LORA_MODE
