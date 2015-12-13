@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:15
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       13/Dec/2015  23:36:22
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,7 +9,7 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\core\lib\ringbuf.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        USE_LORA_MODE -D PRINTF_DEBUG -lb
 //        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
 //        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
 //        --no_inline --no_code_motion --no_tbaa --no_clustering

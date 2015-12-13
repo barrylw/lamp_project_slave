@@ -797,6 +797,7 @@ void SX1276LoRaInit( void )
 
     SX1276LoRaSetPreambleLength(LoRaSettings.PreambleLen);
   
+#if 0
     // seted  true when a symble time over 16ms /
     if (SX1276LoRaGetSymbolTs(LoRaSettings.SignalBw, LoRaSettings.SpreadingFactor) >= 16)
     {
@@ -808,6 +809,7 @@ void SX1276LoRaInit( void )
     }
     
     LoRaSettings.HopPeriod = SX1276LoRaInitHopPeriod();
+#endif
     
     /* BEGIN: Added by Barry, 2014/3/5 */
     SX1276LoRaSetPAOutput( RFLR_PACONFIG_PASELECT_RFO );

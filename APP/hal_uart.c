@@ -19,6 +19,7 @@
 #include "hal_led.h"
 #include "apl_debug.h"
 #include "apl.h"
+#include "hal_radio.h"
 
 /** @addtogroup USART
   * @{
@@ -41,19 +42,23 @@ const uint8_t COM_TX_PIN_SOURCE[COMn] = {RBL_COM1_TX_SOURCE, RBL_COM2_TX_SOURCE}
 const uint8_t COM_RX_PIN_SOURCE[COMn] = {RBL_COM1_RX_SOURCE, RBL_COM2_RX_SOURCE};
 const uint8_t COM_TX_AF[COMn] = {RBL_COM1_TX_AF, RBL_COM2_TX_AF};
 const uint8_t COM_RX_AF[COMn] = {RBL_COM1_RX_AF, RBL_COM2_RX_AF};
-
+const uint16_t COM_RX_BUFFER_SIZE[COMn] = {RBL_COM1_RX_SIZE, RBL_COM2_RX_SIZE};
 
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
-#ifdef PRINTF_DEBUG
-const uint16_t COM_RX_BUFFER_SIZE[COMn] = {RBL_COM1_RX_SIZE, RBL_COM2_RX_SIZE};
-ST_PRINT_CTRL g_Print;
-u8 g_DebugRxBuffer[RBL_COM2_RX_SIZE];
-//static  int uart_debug_rx_finish = 2;
-//static  int PrintEvent_state = END;
+
+u8 g_DebugRxBuffer[UART_BUFFER_SIZE];
 struct etimer timer_debug_uart_tx; 
+
+#ifdef PRINTF_DEBUG
+ST_PRINT_CTRL g_Print;
+#else
+u8 g_DebugTxBuffer[UART_BUFFER_SIZE];
 #endif
+
+
+
 
 typedef enum
 {
@@ -89,6 +94,10 @@ em_UART_state g_DebugRx_state = UART_DEBUG_RX_END;
 struct etimer timer_uart_tx; 
 struct etimer timer_uart_rx; 
 struct etimer timer_debug_uart_tx;
+struct etimer timer_debug_uart_rx;
+
+void apl_ProcessDDCmd(void);
+
 
 PROCESS(hal_urat_process, "uart_process");
 PROCESS_THREAD(hal_urat_process, ev, data)
@@ -101,13 +110,15 @@ PROCESS_THREAD(hal_urat_process, ev, data)
 
     if (ev == PROCESS_EVENT_MSG)
     {
+      #if 0
          if (*(em_UART_state*)data == UART_TX_START)
          {
-           etimer_set(&timer_uart_tx, (u16)(g_UartTxFlag.fLen * UART_BAUD_COFF + 10));
+           etimer_set(&timer_uart_tx, (u16)(g_UartTxFlag.fLen * UART_BAUD_COFF + 30));
          }
          else if (*((em_UART_state*)data) == UART_TX_FINISH)
          {
-           //printf("uart tx finish\r\n");
+           printf("uart tx finish\r\n");
+           etimer_stop(&timer_uart_tx);
          }
          else if (*((em_UART_state*)data) == UART_RX_START)
          {
@@ -116,65 +127,145 @@ PROCESS_THREAD(hal_urat_process, ev, data)
          else if (*((em_UART_state*)data) == UART_RX_FINISH)
          {
            //apl_ProcessUartCmd();
+           etimer_stop(&timer_uart_rx);
          }
-         #ifdef PRINTF_DEBUG
-         else if ((*(em_UART_state*)data) ==  UART_DEBUG_TX_RUNNING)
+         #endif
+         
+         if ((*(em_UART_state*)data) ==  UART_DEBUG_TX_RUNNING)
          {
-           etimer_set(&timer_debug_uart_tx, PRINT_TOTAL_TIMEOUT);
+            #ifdef PRINTF_DEBUG
+            etimer_set(&timer_debug_uart_tx, PRINT_TOTAL_TIMEOUT);
+            #else
+            etimer_set(&timer_debug_uart_tx, (u32)UART_BAUD_COFF + 300);
+            #endif
          }
-        #endif
-        else if ((*(em_UART_state*)data) == UART_DEBUG_TX_FINISH)
-        {
+         else if ((*(em_UART_state*)data) == UART_DEBUG_TX_FINISH)
+         {
+           g_DebugTx_state = UART_DEBUG_TX_END;
            etimer_stop(&timer_debug_uart_tx);
+         }
+         /*
+         else if (*((em_UART_state*)data) == UART_DEBUG_RX_START)
+         {
+           etimer_set(&timer_debug_uart_rx, 100);
+         }*/
+              
+         else if ((*(em_UART_state*)data) == UART_DEBUG_RX_FINISH)
+         {
+           //etimer_stop(&timer_debug_uart_rx);
+          #ifdef PRINTF_DEBUG
+          g_DebugRx_state = UART_DEBUG_RX_END;
+          apl_ProcessDebugCmd();
+          #else
+          apl_ProcessDDCmd();
+          g_DebugRx_state     = UART_DEBUG_RX_END;
+          g_DebugRxFlag.index = 0;
+          #endif
         }
-        
-       else if ((*(em_UART_state*)data) == UART_DEBUG_RX_FINISH)
-       {
-    #ifdef PRINTF_DEBUG
-         g_DebugRx_state = UART_DEBUG_RX_END;
-         apl_ProcessDebugCmd();
-    #endif
-       }
     }
     else if (ev == PROCESS_EVENT_TIMER)
     {
+      #if 0
        if ((struct etimer *)data == &timer_uart_tx)
        {    
-            /* uart tx start */
             g_UartTx_state = UART_TX_END;
             printf("uart tx timeout\r\n");
             hal_BlindLED(TXD_LED);
             hal_InitCOM(COM1);
-      #ifdef PRINTF_DEBUG
+            #ifdef PRINTF_DEBUG
             hal_DebugDMATx(UART_TXD_TIMEOUT_ERROR, strlen(UART_TXD_TIMEOUT_ERROR));
-      #endif
+            #endif
        }
        if ((struct etimer *)data == &timer_uart_rx)
        {
-            g_UartRxFlag.index = 0;
             g_UartRx_state = UART_RX_END;
+            g_UartRxFlag.index = 0;
             hal_BlindLED(RXD_LED);
             hal_InitCOM(COM1);
-       #ifdef PRINTF_DEBUG
+            #ifdef PRINTF_DEBUG
             hal_DebugDMATx(UART_RXD_TIMEOUT_ERROR, strlen(UART_RXD_TIMEOUT_ERROR));
-       #endif
+            #endif
        }
+       #endif
        
-       #ifdef PRINTF_DEBUG
        if ((struct etimer *)data == &timer_debug_uart_tx)
        {
             g_DebugTx_state = UART_DEBUG_TX_END;
             hal_InitCOM(DEBUG_COM);
+            #ifdef PRINTF_DEBUG
             hal_DebugDMATx(PRINT_TIMEOUT_ERROR, strlen(PRINT_TIMEOUT_ERROR));
+            #endif
        }
-       #endif
        
+       if ((struct etimer *)data == &timer_debug_uart_rx)
+       {
+          #ifdef PRINTF_DEBUG
+          g_DebugTx_state = UART_DEBUG_RX_END;
+          hal_InitCOM(DEBUG_COM);
+          hal_DebugDMATx(PRINT_TIMEOUT_ERROR, strlen(PRINT_TIMEOUT_ERROR));
+          #else
+          g_DebugRxFlag.index = 0;
+          g_DebugRx_state = UART_DEBUG_RX_END;
+          hal_InitCOM(DEBUG_COM);
+          #endif
+       }
     }
  }
  PROCESS_END();
 }
 
-
+/**
+  * @brief  apl_ProcessDDCmd, include RCC, GPIO, Uart and DMA, exclude NVIC.
+  * @param  COM: Specifies the COM port to be configured.
+  *   This parameter can be one of following parameters:    
+  *     @arg COM1
+  *     @arg COM2  
+  * @retval None.
+  */
+void apl_ProcessDDCmd(void)
+{
+/**********************************
+    DD DD XX CMD DATA  CS  
+    修改单灯地址命令 01
+    DD DD 07 01 0B 9A 09 03 00 11 CS
+    **************************************/
+    if (getSum(&g_DebugRxBuffer[2], g_DebugRxFlag.fLen - 3) == g_DebugRxBuffer[g_DebugRxFlag.fLen- 1] )
+    {
+     
+      switch (g_DebugRxBuffer[3])
+      {
+        case 0x01:
+          set_addr(&g_DebugRxBuffer[4]);
+          read_addr(&g_DebugRxBuffer[4]);
+          g_DebugRxBuffer[0] = 0xDD;
+          g_DebugRxBuffer[1] = 0xDD;
+          g_DebugRxBuffer[2] = 0X07;
+          g_DebugRxBuffer[3] = 0X01;
+          g_DebugRxBuffer[10] = getSum(&g_DebugRxBuffer[2], g_DebugRxBuffer[2]+1);
+          hal_DebugDMATx(g_DebugRxBuffer, 11);
+          g_DebugRxFlag.index = 0;
+          g_DebugRx_state = UART_DEBUG_RX_END;
+          break;
+      case 0x02:
+          read_addr(&g_DebugRxBuffer[4]);
+          g_DebugRxBuffer[0] = 0xDD;
+          g_DebugRxBuffer[1] = 0xDD;
+          g_DebugRxBuffer[2] = 0X07;
+          g_DebugRxBuffer[3] = 0X02;
+          g_DebugRxBuffer[10] = getSum(&g_DebugRxBuffer[2], g_DebugRxBuffer[2]+1);
+          hal_DebugDMATx(g_DebugRxBuffer, 11);
+          g_DebugRxFlag.index = 0;
+          g_DebugRx_state = UART_DEBUG_RX_END;
+        break;
+      }
+    }
+    else
+    {
+         g_DebugRxFlag.index = 0;
+         g_DebugRx_state = UART_DEBUG_RX_END;
+    }
+ 
+}
 
 /**
   * @brief  Initialize UART global variable
@@ -224,8 +315,8 @@ void hal_InitPrintVariable(void)
 void hal_InitUART(void)
 {
   hal_InitCOM(COM1);
-#ifdef PRINTF_DEBUG
   hal_InitCOM(COM2);
+#ifdef PRINTF_DEBUG
 #endif
 }
 
@@ -339,13 +430,12 @@ void hal_InitCOM(COM_TypeDef COM)
  
   if (COM == COM2)
   {    
-#ifdef PRINTF_DEBUG
+
     /* Enable USART DMA TX request */
     USART_DMACmd(COM_USART[COM], USART_DMAReq_Tx, ENABLE);
 
     /* Enable DMA Clock */
     RCC_AHBPeriphClockCmd(RBL_COM2_DMA_CLK, ENABLE);
-#endif
   }
 
 }
@@ -441,7 +531,6 @@ int printf(const char *format ,... )
   * @param  length: Send data length.
   * @retval None.
   */
-#ifdef PRINTF_DEBUG
 void hal_DebugDMATx(u8 *pBuf, u16 length)
 {
   DMA_InitTypeDef DMA_InitStructure;
@@ -475,8 +564,9 @@ void hal_DebugDMATx(u8 *pBuf, u16 length)
     DMA_Cmd(RBL_COM2_TX_DMA_CHANNEL, ENABLE);
   }
 }
-#endif
 
+
+#if 0
 /**
   * @brief  Start Main Uart send data in interrupt mode.
   * @param  pBuf: Send data pointer.
@@ -512,6 +602,26 @@ void hal_UartINTTx(u8 *pBuf, u16 length)
   }
 }
 
+void SendUart(void)
+{
+  u16 length = 0;
+  
+  Getu16Parameter(&length, 1);
+
+  if (length > 0 & length < RBL_COM1_TX_SIZE)
+  {
+    for (u16 i = 0; i < length; i++)
+    {
+      g_UartTxBuffer[i] = i + 1;
+    }
+    hal_UartINTTx(g_UartTxBuffer, length);
+  }
+  else
+  {
+    HALLST(printf("length input error\r\n"););
+  }
+}
+
 /******************************************************************************/
 /*            STM32F10x Peripherals Interrupt Handlers                        */
 /******************************************************************************/
@@ -537,16 +647,9 @@ void RBL_COM1_IRQHandler(void)
     //UartRxEvent.timeToExecute = hal_GetSystickCounter() + (u32)UART_BAUD_COFF + 300;
     //etimer_set(&timer_uart_rx, (u32)UART_BAUD_COFF + 300);
     
-    /* UART rx start */
-    if (g_UartRxFlag.index == 0)
-    {
-      g_UartRx_state = UART_RX_START;
-      process_post(&hal_urat_process, PROCESS_EVENT_MSG, &g_UartRx_state);
-    }
-    else
-    {
-      etimer_remodify(&timer_uart_rx, (u32)UART_BAUD_COFF + 300);
-    }
+    /* UART time out */
+    g_UartRx_state = UART_RX_START;
+    process_post(&hal_urat_process, PROCESS_EVENT_MSG, &g_UartRx_state);
     
     switch (g_UartRxFlag.index)
     {
@@ -581,9 +684,8 @@ void RBL_COM1_IRQHandler(void)
         {
           if (g_UartRxBuffer[g_UartRxFlag.index] == 0x16)
           {
-            //UartRxEvent.startoption = FINISH;
-            g_UartRx_state = UART_RX_FINISH;
             etimer_stop(&timer_uart_rx);
+            g_UartRx_state = UART_RX_FINISH;
             process_post(&hal_urat_process, PROCESS_EVENT_MSG, &g_UartRx_state);
             g_UartRxFlag.fLen = g_UartRxFlag.index + 1;
           }
@@ -605,13 +707,10 @@ void RBL_COM1_IRQHandler(void)
     USART_SendData(RBL_COM1, g_UartTxBuffer[g_UartTxFlag.index++]);
     if (g_UartTxFlag.index >= g_UartTxFlag.fLen)
     {
-      //UartTxEvent.startoption = FINISH;
-      //etimer_stop(&timer_uart_tx);
-      
       /* uart tx start */
       etimer_stop(&timer_uart_tx);
       g_UartTx_state = UART_TX_FINISH;
-      //process_post(&hal_urat_process, PROCESS_EVENT_MSG, &g_UartTx_state);
+      process_post(&hal_urat_process, PROCESS_EVENT_MSG, &g_UartTx_state);
     
       hal_BlindLED(TXD_LED);
       
@@ -620,13 +719,13 @@ void RBL_COM1_IRQHandler(void)
     }
   }
 }
-
+#endif
 /**
   * @brief  This function handles COM2 global interrupt request.
   * @param  None.
   * @retval None.
   */
-#ifdef PRINTF_DEBUG
+
 void RBL_COM2_IRQHandler(void)
 {
   if (USART_GetITStatus(RBL_COM2, USART_IT_RXNE) != RESET)
@@ -637,7 +736,9 @@ void RBL_COM2_IRQHandler(void)
     {
       g_DebugRxFlag.index = 0;
     }
-
+    
+    #ifdef PRINTF_DEBUG
+    
     if (receivedByte == '\b')//Backspace
     {
       if (g_DebugRxFlag.index > 0)
@@ -656,60 +757,107 @@ void RBL_COM2_IRQHandler(void)
         g_DebugRxFlag.index = 0;
       }
     }
+    #else
+    /*****************************************/
+    g_DebugRxBuffer[g_DebugRxFlag.index] =receivedByte;
+    
+    g_DebugRx_state = UART_DEBUG_RX_START;
+    process_post(&hal_urat_process, PROCESS_EVENT_MSG, &g_DebugRx_state);
+  
+    switch (g_DebugRxFlag.index)
+    {
+      case 0:
+          if(g_DebugRxBuffer[0] == 0xDD)
+          {
+            g_DebugRxFlag.index++;
+          }
+      break;
+
+      case 1:
+          if ((g_DebugRxBuffer[0] == 0xDD) && (g_DebugRxBuffer[1] == 0xDD))
+          {
+             g_DebugRxFlag.index++;
+          }
+          else
+          {
+            g_DebugRxFlag.index = 0;
+          }
+      break;
+
+      case 2:
+          g_DebugRxFlag.fLen = g_DebugRxBuffer[2] + 4;
+          g_DebugRxFlag.index++;
+        break;
+
+        default:
+          g_DebugRxFlag.index++;
+          if (g_DebugRxFlag.index >= g_DebugRxFlag.fLen)
+          {
+            g_DebugRx_state = UART_DEBUG_RX_FINISH;  
+            process_post(&hal_urat_process, PROCESS_EVENT_MSG, &g_DebugRx_state);
+          }
+          break;
+    }
+    #endif   
   }
+ 
 }
-#endif
+
+
 /**
   * @brief  This function handles USART2 DMA TX Transfer Complete interrupt and Transfer Error interrupt.
   * @param  None.
   * @retval None.
   */
-#ifdef PRINTF_DEBUG
+
 void RBL_COM2_DMA_IRQHandler(void)
 {
-
-  u8 err = 0;
-  
-  if (DMA_GetITStatus(RBL_COM2_TX_DMA_COMPLETE) != RESET)
-  {
-    DMA_ClearITPendingBit(RBL_COM2_TX_DMA_COMPLETE);
+    u8 err = 0;
     
-    err = OSMemPut(g_Print.part, g_Print.block[g_Print.tail].pblk - sizeof(void *));
-    if (err == OS_ERR_NONE)
+    if (DMA_GetITStatus(RBL_COM2_TX_DMA_COMPLETE) != RESET)
     {
-      g_Print.tail++;
-      if (g_Print.tail >= PRINT_BLOCK_NUMBER)
-      {
-        g_Print.tail = 0;
-      }
+        DMA_ClearITPendingBit(RBL_COM2_TX_DMA_COMPLETE);
 
-      if (g_Print.tail != g_Print.head)
-      {
-        //PrintEvent.timeToExecute = hal_GetSystickCounter() + PRINT_TOTAL_TIMEOUT;
-        //PrintEvent_state = WAIT;
-        /* 继续发送，修改超时时间 */
-        g_DebugTx_state = UART_DEBUG_TX_RUNNING;
-        hal_DebugDMATx(g_Print.block[g_Print.tail].pblk, g_Print.block[g_Print.tail].len);
-        etimer_remodify(&timer_debug_uart_tx, PRINT_TOTAL_TIMEOUT);
-       
-      }
-      else
-      {
-         /* printf 调试打印完成 */
-         g_DebugTx_state = UART_DEBUG_TX_FINISH;
-         process_post(&hal_urat_process, PROCESS_EVENT_MSG, &g_DebugTx_state);
-      }
+        #ifdef PRINTF_DEBUG
+        err = OSMemPut(g_Print.part, g_Print.block[g_Print.tail].pblk - sizeof(void *));
+        if (err == OS_ERR_NONE)
+        {
+            g_Print.tail++;
+            if (g_Print.tail >= PRINT_BLOCK_NUMBER)
+            {
+              g_Print.tail = 0;
+            }
+
+            if (g_Print.tail != g_Print.head)
+            {
+              //PrintEvent.timeToExecute = hal_GetSystickCounter() + PRINT_TOTAL_TIMEOUT;
+              //PrintEvent_state = WAIT;
+              /* 继续发送，修改超时时间 */
+              g_DebugTx_state = UART_DEBUG_TX_RUNNING;
+              hal_DebugDMATx(g_Print.block[g_Print.tail].pblk, g_Print.block[g_Print.tail].len);
+              etimer_remodify(&timer_debug_uart_tx, PRINT_TOTAL_TIMEOUT);
+            }
+            else
+            {
+               /* printf 调试打印完成 */
+               g_DebugTx_state = UART_DEBUG_TX_FINISH;
+               process_post(&hal_urat_process, PROCESS_EVENT_MSG, &g_DebugTx_state);
+            }
+        }
+        #else
+        g_DebugTx_state = UART_DEBUG_TX_END;
+        etimer_stop(&timer_debug_uart_tx);
+        #endif
     }
-  }
 
-  if (DMA_GetITStatus(RBL_COM2_TX_DMA_ERROR) != RESET)
-  {
-    DMA_ClearITPendingBit(RBL_COM2_TX_DMA_ERROR);
-    g_DebugTx_state = UART_DEBUG_TX_END;
-    etimer_stop(&timer_debug_uart_tx);
-  }
+    if (DMA_GetITStatus(RBL_COM2_TX_DMA_ERROR) != RESET)
+    {
+      DMA_ClearITPendingBit(RBL_COM2_TX_DMA_ERROR);
+      g_DebugTx_state = UART_DEBUG_TX_END;
+      etimer_stop(&timer_debug_uart_tx);
+    }
 }
-#endif
+
 
 /******************************************************************************/
 /*            Debug Command Function                        */
@@ -720,24 +868,6 @@ void RBL_COM2_DMA_IRQHandler(void)
   * @param  None.
   * @retval  None.
   */
-void SendUart(void)
-{
-  u16 length = 0;
-  
-  Getu16Parameter(&length, 1);
 
-  if (length > 0 & length < RBL_COM1_TX_SIZE)
-  {
-    for (u16 i = 0; i < length; i++)
-    {
-      g_UartTxBuffer[i] = i + 1;
-    }
-    hal_UartINTTx(g_UartTxBuffer, length);
-  }
-  else
-  {
-    HALLST(printf("length input error\r\n"););
-  }
-}
 
 /******************* (C) COPYRIGHT 2013 Robulink Technology Ltd.*****END OF FILE****/

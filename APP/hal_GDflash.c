@@ -452,40 +452,6 @@ void GDflash_read(u32 startAddr, u8 *buf, u32 length)
 *****************************************************************************/
 void GDflash_write(u32 startAddr, u8 *buf, u32 length)
 {
-#if 0
-   u16 integrated_Pages = length / GDFLASH_PAGE_SIZE;
-   u16 left_Page_bytes  = length % GDFLASH_PAGE_SIZE;
-   u16 total_pages = (left_Page_bytes == 0) ? integrated_Pages : (integrated_Pages + 1);
-
-   u32 current_startAddr  = startAddr;
-   u8  current_page_size  = GDFLASH_PAGE_SIZE - (current_startAddr % GDFLASH_PAGE_SIZE);
-   u8 * current_data_ptr  = buf;
-   u32 left_length        = length;
-  
-
-   for (u16 i = 0; i < total_pages; i++)
-   {
-      if ( (left_length >= current_page_size) && (left_length > 0) )
-      {
-        GDflash_page_program( current_startAddr, current_data_ptr, current_page_size, false);
-        current_startAddr = current_startAddr + current_page_size;
-        current_page_size  = GDFLASH_PAGE_SIZE - (current_startAddr % GDFLASH_PAGE_SIZE); 
-        current_data_ptr += current_page_size;
-        left_length -= current_page_size;
-      }
-      else if ((left_length < current_page_size) && (left_length > 0))
-      {
-        GDflash_page_program( current_startAddr, current_data_ptr, left_length, false);
-      }
-   }
-   
-
-   u8 first_page_byte = GDFLASH_PAGE_SIZE - (startAddr % GDFLASH_PAGE_SIZE);
-   u32 left_length        = length - first_page_byte;
-   u16 integrated_Pages = left_length / GDFLASH_PAGE_SIZE;
-   u16 end_page_byte  = left_length % GDFLASH_PAGE_SIZE;
-   #endif
-
    u32 current_startAddr  = startAddr;
    u8  first_page_byte    = GDFLASH_PAGE_SIZE - (startAddr % GDFLASH_PAGE_SIZE);
    u8 * current_data_ptr  = buf;

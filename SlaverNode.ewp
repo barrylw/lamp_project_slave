@@ -171,8 +171,8 @@
           <state>USE_STDPERIPH_DRIVER</state>
           <state>STM32F030X8</state>
           <state>AUTOSTART_ENABLE</state>
-          <state>PRINTF_DEBUG</state>
           <state>USE_LORA_MODE</state>
+          <state>PRINTF_DEBUG</state>
         </option>
         <option>
           <name>CCPreprocFile</name>
@@ -608,7 +608,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>slaveAPP07.bin</state>
+          <state>slaveAPPnoprintf.bin</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>

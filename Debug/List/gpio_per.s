@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  18:37:34
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       13/Dec/2015  23:36:17
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -8,7 +8,7 @@
 //    Source file  =  G:\git_hub_lamp\lamp_slave_git\APP\gpio_per.c
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\APP\gpio_per.c -D USE_STDPERIPH_DRIVER
-//        -D STM32F030X8 -D AUTOSTART_ENABLE -D PRINTF_DEBUG -D USE_LORA_MODE
+//        -D STM32F030X8 -D AUTOSTART_ENABLE -D USE_LORA_MODE -D PRINTF_DEBUG
 //        -lb G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050
 //        -o G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
 //        --no_inline --no_code_motion --no_tbaa --no_clustering
@@ -53,8 +53,6 @@
         EXTERN GPIO_ResetBits
         EXTERN GPIO_SetBits
         EXTERN GetCRC16
-        EXTERN MemCpy
-        EXTERN MemSet
         EXTERN RCC_ADCCLKConfig
         EXTERN RCC_AHBPeriphClockCmd
         EXTERN RCC_APB1PeriphClockCmd
@@ -75,7 +73,6 @@
         EXTERN USART_GetFlagStatus
         EXTERN USART_ReceiveData
         EXTERN USART_SendData
-        EXTERN __aeabi_d2f
         EXTERN __aeabi_d2iz
         EXTERN __aeabi_d2uiz
         EXTERN __aeabi_ddiv
@@ -84,34 +81,27 @@
         EXTERN __aeabi_fmul
         EXTERN __aeabi_idiv
         EXTERN __aeabi_idivmod
-        EXTERN __aeabi_memclr4
         EXTERN __aeabi_ui2d
         EXTERN __aeabi_ui2f
         EXTERN __aeabi_uidiv
-        EXTERN __iar_Strstr
-        EXTERN atof
-        EXTERN atoi
         EXTERN clear_light_time
         EXTERN etimer_set
         EXTERN hal_InitUART
-        EXTERN paralist
         EXTERN printf
         EXTERN process_post
         EXTERN process_start
-        EXTERN read_flash
         EXTERN read_light_time
-        EXTERN sprintf
         EXTERN sqrt
-        EXTERN strlen
+        EXTERN w_memcpy
 
         PUBLIC BCD_code
         PUBLIC BCD_decode
         PUBLIC TIM14_IRQHandler
         PUBLIC config_8209c_reg
+        PUBLIC currentUIP
         PUBLIC drop_down_timer_init
         PUBLIC find_free_addr
         PUBLIC find_old_data
-        PUBLIC find_params
         PUBLIC format_elc_data
         PUBLIC g_cal_Buf
         PUBLIC get_light_time
@@ -127,7 +117,7 @@
         PUBLIC read_LED_state
         PUBLIC read_PWM_volt
         PUBLIC read_UIP
-        PUBLIC read_params_area
+        PUBLIC read_cal_flash
         PUBLIC read_pow_factor
         PUBLIC relay_gpio_init
         PUBLIC rn8209c_checkSum
@@ -143,21 +133,8 @@
         PUBLIC set_8209c_params
         PUBLIC set_PWM
         PUBLIC start_time_detect_process
-        PUBLIC strstr
+        PUBLIC write_cal_flash
 
-
-        SECTION `.text`:CODE:REORDER:NOROOT(1)
-        SECTION_GROUP strstr
-        THUMB
-// __intrinsic __nounwind __interwork __softfp char *strstr(char const *, char const *)
-strstr:
-        PUSH     {R3-R5,LR}
-        MOVS     R5,R0
-        MOVS     R4,R1
-        MOVS     R1,R4
-        MOVS     R0,R5
-        BL       __iar_Strstr
-        POP      {R1,R4,R5,PC}    ;; return
 
         SECTION `.bss`:DATA:REORDER:NOROOT(2)
 g_cal_Buf:
@@ -168,24 +145,63 @@ flash_ok:
         DATA
         DC8 1
 
+        SECTION `.bss`:DATA:REORDER:NOROOT(2)
+currentUIP:
+        DS8 12
+
         SECTION `.data`:DATA:REORDER:NOROOT(2)
 rn8209c_papameter:
         DATA
-        DC16 4968, 6400
-        DC8 0, 0
-        DC16 0, 0
-        DC8 0, 0
-        DC16 0
-        DC8 0, 0
-        DC32 0, 0, 0H
-        DC16 0, 0
+        DC32 1188111, 100500, 41BCB852H, 0, 0
+        DC16 4968, 6400, 234, 9165
+        DC8 25, 1
+        DC16 0, 0, 0
         DC32 0
-        DC16 0
-        DC8 0, 0
-        DC32 0, 0
-        DC16 0
-        DC8 100, 0
-        DC32 0
+        DC8 100, 0, 0, 0
+
+        SECTION `.text`:CODE:NOROOT(1)
+        THUMB
+read_cal_flash:
+        PUSH     {R3-R5,LR}
+        MOVS     R4,R0
+        MOVS     R2,#+44
+        LDR      R1,??DataTable5  ;; 0x800fc00
+        MOVS     R0,R4
+        BL       w_memcpy
+        MOVS     R1,#+42
+        MOVS     R0,R4
+        BL       GetCRC16
+        LDRH     R1,[R4, #+42]
+        CMP      R0,R1
+        BNE      ??read_cal_flash_0
+        MOVS     R5,#+1
+        B        ??read_cal_flash_1
+??read_cal_flash_0:
+        MOVS     R5,#+0
+??read_cal_flash_1:
+        MOVS     R0,R5
+        UXTB     R0,R0
+        POP      {R1,R4,R5,PC}    ;; return
+
+        SECTION `.text`:CODE:NOROOT(1)
+        THUMB
+write_cal_flash:
+        PUSH     {R4,LR}
+        MOVS     R4,R0
+        MOVS     R1,#+42
+        MOVS     R0,R4
+        BL       GetCRC16
+        STRH     R0,[R4, #+42]
+        LDR      R0,??DataTable5  ;; 0x800fc00
+        BL       FLASH_ErasePage
+        CMP      R0,#+4
+        BNE      ??write_cal_flash_0
+        MOVS     R2,#+44
+        MOVS     R1,R4
+        LDR      R0,??DataTable5  ;; 0x800fc00
+        BL       FLASH_Write_chars
+??write_cal_flash_0:
+        POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -196,144 +212,6 @@ gpio_per_init:
         BL       init_zero_detect
         BL       hal_ADC_Init
         POP      {R0,PC}          ;; return
-
-        SECTION `.text`:CODE:NOROOT(1)
-        THUMB
-read_params_area:
-        PUSH     {R3-R7,LR}
-        MOVS     R5,R0
-        MOV      R0,SP
-        LDR      R1,??DataTable3
-        LDR      R2,[R1, #0]
-        STR      R2,[R0, #0]
-        MOVS     R4,#+0
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+3        ;; #+1024
-        MOVS     R1,R5
-        LDR      R0,??DataTable3_1
-        BL       MemCpy
-        MOV      R1,SP
-        LDR      R0,??DataTable3_1
-        BL       strstr
-        MOVS     R4,R0
-        CMP      R4,#+0
-        BEQ      ??read_params_area_0
-        LDR      R0,??DataTable3_1
-        SUBS     R0,R4,R0
-        ADDS     R0,R0,#+3
-        MOVS     R7,R0
-        LDRB     R0,[R4, #+3]
-        MOVS     R1,#+128
-        LSLS     R1,R1,#+1        ;; #+256
-        MULS     R0,R1,R0
-        LDRB     R1,[R4, #+4]
-        ADDS     R0,R0,R1
-        MOVS     R6,R0
-        MOVS     R1,R7
-        UXTH     R1,R1
-        LDR      R0,??DataTable3_1
-        BL       GetCRC16
-        UXTH     R6,R6
-        CMP      R0,R6
-        BNE      ??read_params_area_1
-        MOVS     R0,#+1
-        B        ??read_params_area_2
-??read_params_area_1:
-        MOVS     R0,#+0
-        B        ??read_params_area_2
-??read_params_area_0:
-        MOVS     R0,#+0
-??read_params_area_2:
-        POP      {R1,R4-R7,PC}    ;; return
-
-        SECTION `.text`:CODE:NOROOT(1)
-        THUMB
-find_params:
-        PUSH     {R4-R7,LR}
-        SUB      SP,SP,#+20
-        MOVS     R4,R0
-        MOVS     R7,R1
-        MOVS     R5,#+0
-        MOV      R0,SP
-        MOVS     R1,#+16
-        BL       __aeabi_memclr4
-        UXTB     R4,R4
-        MOVS     R0,#+4
-        MULS     R0,R4,R0
-        LDR      R1,??DataTable4
-        LDR      R1,[R1, R0]
-        LDR      R0,??DataTable3_1
-        BL       strstr
-        MOVS     R5,R0
-        CMP      R5,#+0
-        BNE      ??find_params_0
-        MOVS     R0,#+0
-        B        ??find_params_1
-??find_params_0:
-        MOVS     R6,#+0
-??find_params_2:
-        UXTB     R6,R6
-        CMP      R6,#+15
-        BGE      ??find_params_3
-        UXTB     R4,R4
-        MOVS     R0,#+4
-        MULS     R0,R4,R0
-        LDR      R1,??DataTable4
-        LDR      R0,[R1, R0]
-        BL       strlen
-        UXTB     R6,R6
-        ADDS     R0,R5,R0
-        LDRB     R0,[R0, R6]
-        CMP      R0,#+59
-        BEQ      ??find_params_4
-        UXTB     R4,R4
-        MOVS     R0,#+4
-        MULS     R0,R4,R0
-        LDR      R1,??DataTable4
-        LDR      R0,[R1, R0]
-        BL       strlen
-        UXTB     R6,R6
-        ADDS     R0,R5,R0
-        LDRB     R0,[R0, R6]
-        UXTB     R6,R6
-        MOV      R1,SP
-        STRB     R0,[R1, R6]
-        ADDS     R6,R6,#+1
-        B        ??find_params_2
-??find_params_4:
-??find_params_3:
-        UXTB     R4,R4
-        CMP      R4,#+5
-        BEQ      ??find_params_5
-        UXTB     R4,R4
-        CMP      R4,#+6
-        BEQ      ??find_params_5
-        UXTB     R4,R4
-        CMP      R4,#+10
-        BNE      ??find_params_6
-??find_params_5:
-        MOV      R0,SP
-        BL       atoi
-        STR      R0,[R7, #+0]
-        B        ??find_params_7
-??find_params_6:
-        UXTB     R4,R4
-        CMP      R4,#+7
-        BNE      ??find_params_8
-        MOV      R0,SP
-        BL       atof
-        BL       __aeabi_d2f
-        STR      R0,[R7, #+0]
-        B        ??find_params_7
-??find_params_8:
-        MOV      R0,SP
-        BL       atoi
-        STRH     R0,[R7, #+0]
-??find_params_7:
-        MOVS     R0,#+1
-??find_params_1:
-        ADD      SP,SP,#+20
-        POP      {R4-R7,PC}       ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -350,7 +228,7 @@ drop_down_timer_init:
         MOVS     R0,#+0
         MOV      R1,SP
         STRH     R0,[R1, #+2]
-        LDR      R0,??DataTable4_1  ;; 0xbb80
+        LDR      R0,??DataTable5_1  ;; 0xbb80
         MOV      R1,SP
         STRH     R0,[R1, #+0]
         MOVS     R0,#+60
@@ -387,32 +265,29 @@ process_thread_period_save_data_process:
         LDRH     R0,[R4, #+0]
         CMP      R0,#+0
         BEQ      ??process_thread_period_save_data_process_0
-        MOVS     R2,#+179
-        LSLS     R2,R2,#+1        ;; #+358
-        CMP      R0,R2
+        CMP      R0,#+163
         BEQ      ??process_thread_period_save_data_process_1
         B        ??process_thread_period_save_data_process_2
 ??process_thread_period_save_data_process_0:
         UXTB     R5,R5
         CMP      R5,#+129
         BNE      ??process_thread_period_save_data_process_3
-        LDR      R0,??DataTable5
+        LDR      R0,??DataTable6_1
         BL       printf
-        LDR      R0,??DataTable5_1
-        LDRH     R0,[R0, #+48]
-        LDR      R1,??DataTable5_2
+        LDR      R0,??DataTable6_2
+        LDRH     R0,[R0, #+34]
+        LDR      R1,??DataTable6_3
         STR      R0,[R1, #+0]
-        LDR      R0,??DataTable5_2
+        LDR      R0,??DataTable6_3
         LDR      R1,[R0, #+0]
-        LDR      R0,??DataTable5_3
+        LDR      R0,??DataTable6_4
         BL       printf
 ??process_thread_period_save_data_process_3:
-        LDR      R1,??DataTable5_4  ;; 0x7530
-        LDR      R0,??DataTable5_5
+        LDR      R1,??DataTable6_5  ;; 0x7530
+        LDR      R0,??DataTable6_6
         BL       etimer_set
         MOVS     R1,#+0
-        MOVS     R0,#+179
-        LSLS     R0,R0,#+1        ;; #+358
+        MOVS     R0,#+163
         STRH     R0,[R4, #+0]
 ??process_thread_period_save_data_process_1:
         UXTB     R1,R1
@@ -421,7 +296,7 @@ process_thread_period_save_data_process:
         UXTB     R5,R5
         CMP      R5,#+136
         BNE      ??process_thread_period_save_data_process_4
-        LDR      R0,??DataTable5_5
+        LDR      R0,??DataTable6_6
         CMP      R6,R0
         BEQ      ??process_thread_period_save_data_process_5
 ??process_thread_period_save_data_process_4:
@@ -430,27 +305,23 @@ process_thread_period_save_data_process:
 ??process_thread_period_save_data_process_5:
         BL       get_light_time
         BL       read_8209c_energyP
-        LDR      R0,??DataTable5_1
-        LDRH     R0,[R0, #+2]
+        LDR      R0,??DataTable6_2
+        LDRH     R0,[R0, #+22]
         MOVS     R1,#+100
         BL       __aeabi_idiv
-        LDR      R1,??DataTable5_1
-        LDRH     R1,[R1, #+48]
-        LDR      R2,??DataTable5_2
+        LDR      R1,??DataTable6_2
+        LDRH     R1,[R1, #+34]
+        LDR      R2,??DataTable6_3
         LDR      R2,[R2, #+0]
         SUBS     R1,R1,R2
         CMP      R1,R0
-        BCC      ??process_thread_period_save_data_process_7
+        BCC      ??process_thread_period_save_data_process_3
         BL       save_elc_datas
-        LDR      R0,??DataTable5_1
-        LDRH     R0,[R0, #+48]
-        LDR      R1,??DataTable5_2
-        STR      R0,[R1, #+0]
-        LDR      R0,??DataTable6_1
-        BL       printf
-        B        ??process_thread_period_save_data_process_3
-??process_thread_period_save_data_process_7:
         LDR      R0,??DataTable6_2
+        LDRH     R0,[R0, #+34]
+        LDR      R1,??DataTable6_3
+        STR      R0,[R1, #+0]
+        LDR      R0,??DataTable6_7
         BL       printf
         B        ??process_thread_period_save_data_process_3
 ??process_thread_period_save_data_process_2:
@@ -461,18 +332,6 @@ process_thread_period_save_data_process:
         MOVS     R0,#+3
 ??process_thread_period_save_data_process_6:
         POP      {R4-R6,PC}       ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable3:
-        DC32     `?<Constant "end">`
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable3_1:
-        DC32     g_cal_Buf
 
         SECTION `.bss`:DATA:REORDER:NOROOT(2)
 ??tempPulse:
@@ -500,18 +359,15 @@ process_thread_start_time_detect_process:
         LDRH     R0,[R5, #+0]
         CMP      R0,#+0
         BEQ      ??process_thread_start_time_detect_process_0
-        MOVS     R1,#+255
-        ADDS     R1,R1,#+144      ;; #+399
-        CMP      R0,R1
+        CMP      R0,#+203
         BEQ      ??process_thread_start_time_detect_process_1
         B        ??process_thread_start_time_detect_process_2
 ??process_thread_start_time_detect_process_0:
-        LDR      R1,??DataTable5_4  ;; 0x7530
-        LDR      R0,??DataTable6_3
+        LDR      R1,??DataTable6_5  ;; 0x7530
+        LDR      R0,??DataTable6_8
         BL       etimer_set
         MOVS     R4,#+0
-        MOVS     R0,#+255
-        ADDS     R0,R0,#+144      ;; #+399
+        MOVS     R0,#+203
         STRH     R0,[R5, #+0]
 ??process_thread_start_time_detect_process_1:
         UXTB     R4,R4
@@ -520,87 +376,79 @@ process_thread_start_time_detect_process:
         UXTB     R7,R7
         CMP      R7,#+136
         BNE      ??process_thread_start_time_detect_process_3
-        LDR      R0,??DataTable6_3
+        LDR      R0,??DataTable6_8
         CMP      R6,R0
         BEQ      ??process_thread_start_time_detect_process_4
 ??process_thread_start_time_detect_process_3:
         MOVS     R0,#+1
         B        ??process_thread_start_time_detect_process_5
 ??process_thread_start_time_detect_process_4:
-        LDR      R0,??DataTable6_4
+        LDR      R0,??DataTable6_9
         BL       printf
-        LDR      R0,??DataTable5_1
-        LDRB     R0,[R0, #+4]
+        LDR      R0,??DataTable6_2
+        LDRB     R0,[R0, #+29]
         CMP      R0,#+1
-        BNE      ??process_thread_start_time_detect_process_6
-        LDR      R0,??DataTable6_5
+        BNE      ??process_thread_start_time_detect_process_2
+        LDR      R0,??DataTable6_10
         LDRB     R0,[R0, #+0]
         CMP      R0,#+1
-        BNE      ??process_thread_start_time_detect_process_7
-        LDR      R0,??DataTable6_6
+        BNE      ??process_thread_start_time_detect_process_6
+        LDR      R0,??DataTable6_11
         BL       printf
-        LDR      R0,??DataTable6_7  ;; 0x800f800
+        LDR      R0,??DataTable6_12  ;; 0x800f800
         BL       find_free_addr
-        LDR      R1,??DataTable6_8
+        LDR      R1,??DataTable6_13
         STRH     R0,[R1, #+0]
-        LDR      R0,??DataTable6_8
+        LDR      R0,??DataTable6_13
         LDRH     R0,[R0, #+0]
         MOVS     R1,#+252
         LSLS     R1,R1,#+2        ;; #+1008
         CMP      R0,R1
-        BLT      ??process_thread_start_time_detect_process_8
-        LDR      R0,??DataTable6_9
-        BL       printf
+        BLT      ??process_thread_start_time_detect_process_7
         BL       read_8209c_energyP
         BL       format_elc_data
-        LDR      R0,??DataTable6_7  ;; 0x800f800
+        LDR      R0,??DataTable6_12  ;; 0x800f800
         BL       FLASH_ErasePage
         CMP      R0,#+4
-        BNE      ??process_thread_start_time_detect_process_9
+        BNE      ??process_thread_start_time_detect_process_8
         MOVS     R2,#+18
         LDR      R1,??DataTable7
-        LDR      R0,??DataTable6_7  ;; 0x800f800
+        LDR      R0,??DataTable6_12  ;; 0x800f800
         BL       FLASH_Write_chars
-        B        ??process_thread_start_time_detect_process_9
-??process_thread_start_time_detect_process_8:
-        LDR      R0,??DataTable6_8
+        B        ??process_thread_start_time_detect_process_8
+??process_thread_start_time_detect_process_7:
+        LDR      R0,??DataTable6_13
         LDRH     R0,[R0, #+0]
         CMP      R0,#+0
-        BNE      ??process_thread_start_time_detect_process_9
+        BNE      ??process_thread_start_time_detect_process_8
+        BL       read_8209c_energyP
+        BL       format_elc_data
+        MOVS     R2,#+18
+        LDR      R1,??DataTable7
+        LDR      R0,??DataTable6_12  ;; 0x800f800
+        BL       FLASH_Write_chars
+        B        ??process_thread_start_time_detect_process_8
+??process_thread_start_time_detect_process_6:
         LDR      R0,??DataTable7_1
         BL       printf
         BL       read_8209c_energyP
         BL       format_elc_data
-        MOVS     R2,#+18
-        LDR      R1,??DataTable7
-        LDR      R0,??DataTable6_7  ;; 0x800f800
-        BL       FLASH_Write_chars
-        B        ??process_thread_start_time_detect_process_9
-??process_thread_start_time_detect_process_7:
-        LDR      R0,??DataTable7_2
-        BL       printf
-        BL       read_8209c_energyP
-        BL       format_elc_data
-        LDR      R0,??DataTable6_7  ;; 0x800f800
+        LDR      R0,??DataTable6_12  ;; 0x800f800
         BL       FLASH_ErasePage
         CMP      R0,#+4
-        BNE      ??process_thread_start_time_detect_process_9
+        BNE      ??process_thread_start_time_detect_process_8
         MOVS     R2,#+18
         LDR      R1,??DataTable7
-        LDR      R0,??DataTable6_7  ;; 0x800f800
+        LDR      R0,??DataTable6_12  ;; 0x800f800
         BL       FLASH_Write_chars
         MOVS     R0,#+1
-        LDR      R1,??DataTable6_5
+        LDR      R1,??DataTable6_10
         STRB     R0,[R1, #+0]
-??process_thread_start_time_detect_process_9:
+??process_thread_start_time_detect_process_8:
         MOVS     R1,#+0
-        LDR      R0,??DataTable8
+        LDR      R0,??DataTable9
         BL       process_start
         BL       drop_down_timer_init
-        B        ??process_thread_start_time_detect_process_2
-??process_thread_start_time_detect_process_6:
-        ADR      R0,??DataTable9  ;; 0x0D, 0x0A, 0x00, 0x00
-        BL       printf
 ??process_thread_start_time_detect_process_2:
         MOVS     R0,#+0
         MOVS     R4,R0
@@ -609,18 +457,6 @@ process_thread_start_time_detect_process:
         MOVS     R0,#+3
 ??process_thread_start_time_detect_process_5:
         POP      {R1,R4-R7,PC}    ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable4:
-        DC32     paralist
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable4_1:
-        DC32     0xbb80
 
         SECTION `.bss`:DATA:REORDER:NOROOT(2)
 ??start_etimer:
@@ -711,7 +547,7 @@ TIM14_IRQHandler:
         BL       TIM_Cmd
         MOVS     R2,#+0
         MOVS     R1,#+131
-        LDR      R0,??DataTable8
+        LDR      R0,??DataTable9
         BL       process_post
         MOVS     R1,#+0
         LDR      R0,??DataTable10
@@ -723,37 +559,13 @@ TIM14_IRQHandler:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable5:
-        DC32     `?<Constant "period save process s...">`
+        DC32     0x800fc00
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable5_1:
-        DC32     rn8209c_papameter
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable5_2:
-        DC32     ??tempPulse
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable5_3:
-        DC32     `?<Constant "power on pulse = %d\\r\\n">`
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable5_4:
-        DC32     0x7530
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable5_5:
-        DC32     ??save_timer
+        DC32     0xbb80
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -827,55 +639,79 @@ hal_ADC_Init:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable6_1:
-        DC32     `?<Constant "save elc data finish\\r\\n">`
+        DC32     `?<Constant "period save process s...">`
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable6_2:
-        DC32     `?<Constant "not full the save con...">`
+        DC32     rn8209c_papameter
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable6_3:
-        DC32     ??start_etimer
+        DC32     ??tempPulse
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable6_4:
-        DC32     `?<Constant "protected time end\\r\\n">`
+        DC32     `?<Constant "power on pulse = %d\\r\\n">`
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable6_5:
-        DC32     flash_ok
+        DC32     0x7530
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable6_6:
-        DC32     `?<Constant "flash data ok\\r\\n">`
+        DC32     ??save_timer
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable6_7:
-        DC32     0x800f800
+        DC32     `?<Constant "save elc data finish\\r\\n">`
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable6_8:
-        DC32     ??length
+        DC32     ??start_etimer
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable6_9:
-        DC32     `?<Constant "flash  full  erase an...">`
+        DC32     `?<Constant "protected time end\\r\\n">`
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable6_10:
+        DC32     flash_ok
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable6_11:
+        DC32     `?<Constant "flash data ok\\r\\n">`
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable6_12:
+        DC32     0x800f800
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable6_13:
+        DC32     ??length
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -980,10 +816,10 @@ hal_init_PWM:
         LSLS     R0,R0,#+2        ;; #+1000
         STR      R0,[SP, #+12]
         ADD      R1,SP,#+8
-        LDR      R0,??DataTable13  ;; 0x40014800
+        LDR      R0,??DataTable14  ;; 0x40014800
         BL       TIM_TimeBaseInit
         ADD      R1,SP,#+8
-        LDR      R0,??DataTable14_4  ;; 0x40014400
+        LDR      R0,??DataTable14_5  ;; 0x40014400
         BL       TIM_TimeBaseInit
         MOVS     R0,#+96
         MOV      R1,SP
@@ -1011,34 +847,34 @@ hal_init_PWM:
         LSLS     R0,R0,#+2        ;; #+1000
         STR      R0,[SP, #+28]
         ADD      R1,SP,#+20
-        LDR      R0,??DataTable13  ;; 0x40014800
+        LDR      R0,??DataTable14  ;; 0x40014800
         BL       TIM_OC1Init
         ADD      R1,SP,#+20
-        LDR      R0,??DataTable14_4  ;; 0x40014400
+        LDR      R0,??DataTable14_5  ;; 0x40014400
         BL       TIM_OC1Init
         MOVS     R1,#+8
-        LDR      R0,??DataTable13  ;; 0x40014800
+        LDR      R0,??DataTable14  ;; 0x40014800
         BL       TIM_OC1PreloadConfig
         MOVS     R1,#+8
-        LDR      R0,??DataTable14_4  ;; 0x40014400
+        LDR      R0,??DataTable14_5  ;; 0x40014400
         BL       TIM_OC1PreloadConfig
         MOVS     R1,#+1
-        LDR      R0,??DataTable13  ;; 0x40014800
+        LDR      R0,??DataTable14  ;; 0x40014800
         BL       TIM_ARRPreloadConfig
         MOVS     R1,#+1
-        LDR      R0,??DataTable14_4  ;; 0x40014400
+        LDR      R0,??DataTable14_5  ;; 0x40014400
         BL       TIM_ARRPreloadConfig
         MOVS     R1,#+1
-        LDR      R0,??DataTable13  ;; 0x40014800
+        LDR      R0,??DataTable14  ;; 0x40014800
         BL       TIM_Cmd
         MOVS     R1,#+1
-        LDR      R0,??DataTable14_4  ;; 0x40014400
+        LDR      R0,??DataTable14_5  ;; 0x40014400
         BL       TIM_Cmd
         MOVS     R1,#+1
-        LDR      R0,??DataTable13  ;; 0x40014800
+        LDR      R0,??DataTable14  ;; 0x40014800
         BL       TIM_CtrlPWMOutputs
         MOVS     R1,#+1
-        LDR      R0,??DataTable14_4  ;; 0x40014400
+        LDR      R0,??DataTable14_5  ;; 0x40014400
         BL       TIM_CtrlPWMOutputs
         ADD      SP,SP,#+44
         POP      {PC}             ;; return
@@ -1053,12 +889,6 @@ hal_init_PWM:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable7_1:
-        DC32     `?<Constant "flash  not full, write\\r\\n">`
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable7_2:
         DC32     `?<Constant "flash data err, erase...">`
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -1074,7 +904,7 @@ set_PWM:
 ??set_PWM_0:
         MOVS     R0,R4
 ??set_PWM_1:
-        LDR      R1,??DataTable14
+        LDR      R1,??DataTable14_1
         STRB     R0,[R1, #+0]
         UXTB     R4,R4
         MOVS     R0,#+250
@@ -1083,17 +913,11 @@ set_PWM:
         MOVS     R1,#+100
         BL       __aeabi_idiv
         MOVS     R5,R0
-        LDR      R0,??DataTable14_1  ;; 0x40014834
+        LDR      R0,??DataTable14_2  ;; 0x40014834
         STR      R5,[R0, #+0]
-        LDR      R0,??DataTable14_5  ;; 0x40014434
+        LDR      R0,??DataTable14_6  ;; 0x40014434
         STR      R5,[R0, #+0]
         POP      {R4,R5,PC}       ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable8:
-        DC32     period_save_data_process
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1118,14 +942,14 @@ read_PWM_volt:
         UXTH     R4,R4
         MOVS     R0,R4
         BL       __aeabi_ui2d
-        ADR      R2,??DataTable14_2
+        ADR      R2,??DataTable14_3
         LDM      R2,{R2,R3}
         BL       __aeabi_dmul
         MOVS     R2,#+0
-        LDR      R3,??DataTable14_3  ;; 0x408f4000
+        LDR      R3,??DataTable14_4  ;; 0x408f4000
         BL       __aeabi_dmul
         MOVS     R2,#+0
-        LDR      R3,??DataTable14_6  ;; 0x40900000
+        LDR      R3,??DataTable14_7  ;; 0x40900000
         BL       __aeabi_ddiv
         BL       __aeabi_d2iz
         MOVS     R4,R0
@@ -1137,7 +961,7 @@ read_PWM_volt:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable9:
-        DC8      0x0D, 0x0A, 0x00, 0x00
+        DC32     period_save_data_process
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -1222,25 +1046,25 @@ rn8209c_write_byte:
         ORRS     R5,R5,R6
 ??rn8209c_write_byte_0:
         MOVS     R1,#+64
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_GetFlagStatus
         CMP      R0,#+0
         BEQ      ??rn8209c_write_byte_0
         UXTB     R5,R5
         MOVS     R1,R5
         UXTH     R1,R1
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_SendData
 ??rn8209c_write_byte_1:
         MOVS     R1,#+64
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_GetFlagStatus
         CMP      R0,#+0
         BEQ      ??rn8209c_write_byte_1
         UXTB     R4,R4
         MOVS     R1,R4
         UXTH     R1,R1
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_SendData
         UXTB     R5,R5
         UXTB     R4,R4
@@ -1248,14 +1072,14 @@ rn8209c_write_byte:
         MVNS     R5,R0
 ??rn8209c_write_byte_2:
         MOVS     R1,#+64
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_GetFlagStatus
         CMP      R0,#+0
         BEQ      ??rn8209c_write_byte_2
         UXTB     R5,R5
         MOVS     R1,R5
         UXTH     R1,R1
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_SendData
         POP      {R4-R6,PC}       ;; return
 
@@ -1281,14 +1105,14 @@ rn8209c_write:
         MOVS     R4,R0
 ??rn8209c_write_0:
         MOVS     R1,#+64
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_GetFlagStatus
         CMP      R0,#+0
         BEQ      ??rn8209c_write_0
         MOV      R0,SP
         LDRB     R1,[R0, #+0]
         UXTH     R1,R1
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_SendData
         MOVS     R5,#+0
 ??rn8209c_write_1:
@@ -1299,14 +1123,14 @@ rn8209c_write:
         BCS      ??rn8209c_write_2
 ??rn8209c_write_3:
         MOVS     R1,#+64
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_GetFlagStatus
         CMP      R0,#+0
         BEQ      ??rn8209c_write_3
         UXTB     R5,R5
         LDRB     R1,[R6, R5]
         UXTH     R1,R1
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_SendData
         UXTB     R5,R5
         LDRB     R0,[R6, R5]
@@ -1319,14 +1143,14 @@ rn8209c_write:
         MVNS     R4,R0
 ??rn8209c_write_4:
         MOVS     R1,#+64
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_GetFlagStatus
         CMP      R0,#+0
         BEQ      ??rn8209c_write_4
         UXTB     R4,R4
         MOVS     R1,R4
         UXTH     R1,R1
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_SendData
         POP      {R0-R2,R4-R7,PC}  ;; return
 
@@ -1346,14 +1170,14 @@ rn8209c_read:
         LDRB     R4,[R0, #+4]
 ??rn8209c_read_0:
         MOVS     R1,#+64
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_GetFlagStatus
         CMP      R0,#+0
         BEQ      ??rn8209c_read_0
         MOV      R0,SP
         LDRB     R1,[R0, #+4]
         UXTH     R1,R1
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_SendData
         MOVS     R5,#+0
 ??rn8209c_read_1:
@@ -1364,11 +1188,11 @@ rn8209c_read:
         BCS      ??rn8209c_read_2
 ??rn8209c_read_3:
         MOVS     R1,#+32
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_GetFlagStatus
         CMP      R0,#+0
         BEQ      ??rn8209c_read_3
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_ReceiveData
         UXTB     R5,R5
         STRB     R0,[R6, R5]
@@ -1379,11 +1203,11 @@ rn8209c_read:
         B        ??rn8209c_read_1
 ??rn8209c_read_2:
         MOVS     R1,#+32
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_GetFlagStatus
         CMP      R0,#+0
         BEQ      ??rn8209c_read_2
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_ReceiveData
         MOVS     R7,R0
         MOVS     R0,R4
@@ -1401,18 +1225,12 @@ rn8209c_read:
         UXTB     R0,R0
         POP      {R1-R7,PC}       ;; return
 
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable13:
-        DC32     0x40014800
-
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 rn8209c_reset:
         PUSH     {R7,LR}
         MOVS     R1,#+0
-        LDR      R0,??DataTable14_7  ;; 0x40004400
+        LDR      R0,??DataTable14_8  ;; 0x40004400
         BL       USART_Cmd
         MOVS     R1,#+4
         MOVS     R0,#+144
@@ -1433,48 +1251,54 @@ rn8209c_reset:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable14:
-        DC32     rn8209c_papameter+0x32
+        DC32     0x40014800
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable14_1:
-        DC32     0x40014834
+        DC32     rn8209c_papameter+0x28
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable14_2:
-        DC32     0x66666666,0x400A6666
+        DC32     0x40014834
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable14_3:
-        DC32     0x408f4000
+        DC32     0x66666666,0x400A6666
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable14_4:
-        DC32     0x40014400
+        DC32     0x408f4000
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable14_5:
-        DC32     0x40014434
+        DC32     0x40014400
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable14_6:
-        DC32     0x40900000
+        DC32     0x40014434
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable14_7:
+        DC32     0x40900000
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable14_8:
         DC32     0x40004400
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -1744,144 +1568,46 @@ find_free_addr:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 save_8209c_params:
-        PUSH     {R4,R5,LR}
-        SUB      SP,SP,#+68
-        MOVS     R2,#+200
-        MOVS     R1,#+0
-        LDR      R0,??DataTable17
-        BL       MemSet
-        LDR      R0,??DataTable17_1
-        LDR      R0,[R0, #+24]
-        BL       __aeabi_f2d
-        STR      R0,[SP, #+56]
-        STR      R1,[SP, #+60]
-        LDR      R0,??DataTable17_2
-        LDR      R0,[R0, #+28]
-        STR      R0,[SP, #+48]
-        LDR      R0,??DataTable17_1
-        LDR      R0,[R0, #+20]
-        STR      R0,[SP, #+44]
-        LDR      R0,??DataTable17_2
-        LDR      R0,[R0, #+24]
-        STR      R0,[SP, #+40]
-        LDR      R0,??DataTable17_1
-        LDR      R0,[R0, #+16]
-        STR      R0,[SP, #+36]
-        LDR      R0,??DataTable17_2
-        LDR      R0,[R0, #+20]
-        STR      R0,[SP, #+32]
-        LDR      R0,??DataTable17_1
-        LDRH     R0,[R0, #+12]
-        STR      R0,[SP, #+28]
-        LDR      R0,??DataTable17_2
-        LDR      R0,[R0, #+16]
-        STR      R0,[SP, #+24]
-        LDR      R0,??DataTable17_1
-        LDRB     R0,[R0, #+10]
-        STR      R0,[SP, #+20]
-        LDR      R0,??DataTable17_2
-        LDR      R0,[R0, #+12]
-        STR      R0,[SP, #+16]
-        LDR      R0,??DataTable17_1
-        LDRH     R0,[R0, #+8]
-        STR      R0,[SP, #+12]
-        LDR      R0,??DataTable17_2
-        LDR      R0,[R0, #+8]
-        STR      R0,[SP, #+8]
-        LDR      R0,??DataTable17_1
-        LDRH     R0,[R0, #+6]
-        STR      R0,[SP, #+4]
-        LDR      R0,??DataTable17_2
-        LDR      R0,[R0, #+4]
-        STR      R0,[SP, #+0]
-        LDR      R0,??DataTable17_1
-        LDRB     R3,[R0, #+4]
-        LDR      R0,??DataTable17_2
-        LDR      R2,[R0, #+0]
-        LDR      R1,??DataTable18
-        LDR      R0,??DataTable17
-        BL       sprintf
-        LDR      R0,??DataTable17
-        BL       strlen
-        MOVS     R4,R0
-        MOVS     R1,R4
-        UXTH     R1,R1
-        LDR      R0,??DataTable17
-        BL       GetCRC16
-        MOVS     R5,R0
-        MOVS     R0,R5
-        UXTH     R0,R0
-        LSRS     R0,R0,#+8
-        UXTH     R4,R4
-        LDR      R1,??DataTable17
-        STRB     R0,[R1, R4]
-        MOVS     R0,R5
-        UXTH     R4,R4
-        LDR      R1,??DataTable17
-        ADDS     R1,R1,R4
-        STRB     R0,[R1, #+1]
-        MOVS     R0,#+0
-        UXTH     R4,R4
-        LDR      R1,??DataTable17
-        ADDS     R1,R1,R4
-        STRB     R0,[R1, #+2]
-        LDR      R0,??DataTable18_1  ;; 0x800fc00
-        BL       FLASH_ErasePage
-        CMP      R0,#+4
-        BNE      ??save_8209c_params_0
-        MOVS     R2,R4
-        ADDS     R2,R2,#+3
-        UXTH     R2,R2
-        LDR      R1,??DataTable17
-        LDR      R0,??DataTable18_1  ;; 0x800fc00
-        BL       FLASH_Write_chars
-        CMP      R0,#+0
-        BEQ      ??save_8209c_params_1
-        LDR      R0,??DataTable20
-        BL       printf
-        B        ??save_8209c_params_1
-??save_8209c_params_0:
-        LDR      R0,??DataTable20
-        BL       printf
-??save_8209c_params_1:
-        ADD      SP,SP,#+68
-        POP      {R4,R5,PC}       ;; return
+        PUSH     {R7,LR}
+        LDR      R0,??DataTable21
+        BL       write_cal_flash
+        POP      {R0,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 set_8209c_params:
         PUSH     {R7,LR}
-        LDR      R0,??DataTable17_1
-        LDRH     R1,[R0, #+0]
+        LDR      R0,??DataTable21
+        LDRH     R1,[R0, #+20]
         MOVS     R0,#+2
         BL       config_8209c_reg
-        LDR      R0,??DataTable17_1
-        LDRH     R1,[R0, #+6]
+        LDR      R0,??DataTable21
+        LDRH     R1,[R0, #+24]
         MOVS     R0,#+3
         BL       config_8209c_reg
-        LDR      R0,??DataTable17_1
-        LDRH     R1,[R0, #+8]
+        LDR      R0,??DataTable21
+        LDRH     R1,[R0, #+26]
         MOVS     R0,#+5
         BL       config_8209c_reg
-        LDR      R0,??DataTable17_1
-        LDRB     R1,[R0, #+10]
+        LDR      R0,??DataTable21
+        LDRB     R1,[R0, #+28]
         MOVS     R0,#+7
         BL       config_8209c_reg
-        LDR      R0,??DataTable17_1
-        LDRH     R1,[R0, #+28]
+        LDR      R0,??DataTable21
+        LDRH     R1,[R0, #+32]
         MOVS     R0,#+32
         BL       config_8209c_reg
         MOV      R1,SP
         MOVS     R0,#+45
         BL       read_8209c_regs
         BL       rn8209c_checkSum
-        LDR      R1,??DataTable17_1
-        STR      R0,[R1, #+40]
+        LDR      R1,??DataTable21
+        STR      R0,[R1, #+12]
         LDR      R0,[SP, #+0]
         LSLS     R0,R0,#+15
         BMI      ??set_8209c_params_0
-        LDR      R0,??DataTable17_1
-        LDR      R0,[R0, #+40]
+        LDR      R0,??DataTable21
+        LDR      R0,[R0, #+12]
         LDR      R1,[SP, #+0]
         UXTH     R1,R1
         CMP      R0,R1
@@ -1902,78 +1628,78 @@ find_old_data:
         CMP      R4,#+0
         BMI      ??find_old_data_1
         MOVS     R2,#+18
-        LDR      R1,??DataTable17
         UXTH     R5,R5
-        LDR      R0,??DataTable20_1  ;; 0x800f7ee
-        ADDS     R0,R5,R0
-        BL       read_flash
-        LDR      R0,??DataTable17
+        LDR      R0,??DataTable21_1  ;; 0x800f7ee
+        ADDS     R1,R5,R0
+        LDR      R0,??DataTable21_2
+        BL       w_memcpy
+        LDR      R0,??DataTable21_2
         LDRB     R0,[R0, #+15]
         MOVS     R1,#+128
         LSLS     R1,R1,#+1        ;; #+256
         MULS     R0,R1,R0
-        LDR      R1,??DataTable17
+        LDR      R1,??DataTable21_2
         LDRB     R1,[R1, #+16]
         ADDS     R0,R0,R1
         MOVS     R6,R0
         MOVS     R1,#+15
-        LDR      R0,??DataTable17
+        LDR      R0,??DataTable21_2
         BL       GetCRC16
         UXTH     R6,R6
         CMP      R0,R6
         BNE      ??find_old_data_2
-        LDR      R0,??DataTable17
+        LDR      R0,??DataTable21_2
         LDRB     R0,[R0, #+9]
         MOVS     R1,#+128
         LSLS     R1,R1,#+1        ;; #+256
         MULS     R0,R1,R0
-        LDR      R1,??DataTable17
+        LDR      R1,??DataTable21_2
         LDRB     R1,[R1, #+10]
         ADDS     R0,R0,R1
-        LDR      R1,??DataTable17_1
-        STRH     R0,[R1, #+28]
-        LDR      R0,??DataTable17
+        LDR      R1,??DataTable22
+        STRH     R0,[R1, #+32]
+        LDR      R0,??DataTable21_2
         LDRB     R0,[R0, #+5]
         MOVS     R1,#+0
         MULS     R1,R0,R1
-        LDR      R0,??DataTable17
+        LDR      R0,??DataTable21_2
         LDRB     R0,[R0, #+6]
         MOVS     R2,#+0
         MULS     R2,R0,R2
         ADDS     R0,R1,R2
-        LDR      R1,??DataTable17
+        LDR      R1,??DataTable21_2
         LDRB     R1,[R1, #+7]
         MOVS     R2,#+128
         LSLS     R2,R2,#+1        ;; #+256
         MULS     R2,R1,R2
         ADDS     R0,R0,R2
-        LDR      R1,??DataTable17
+        LDR      R1,??DataTable21_2
         LDRB     R1,[R1, #+8]
         ADDS     R0,R0,R1
-        LDR      R1,??DataTable17_1
-        STRH     R0,[R1, #+48]
-        LDR      R0,??DataTable17
+        LDR      R1,??DataTable22
+        STRH     R0,[R1, #+34]
+        LDR      R0,??DataTable21_2
         LDRB     R0,[R0, #+11]
         MOVS     R1,#+128
         LSLS     R1,R1,#+17       ;; #+16777216
         MULS     R0,R1,R0
-        LDR      R1,??DataTable17
+        LDR      R1,??DataTable21_2
         LDRB     R1,[R1, #+12]
         MOVS     R2,#+128
         LSLS     R2,R2,#+9        ;; #+65536
         MULS     R1,R2,R1
         ADDS     R0,R0,R1
-        LDR      R1,??DataTable17
+        LDR      R1,??DataTable21_2
         LDRB     R1,[R1, #+13]
         MOVS     R2,#+128
         LSLS     R2,R2,#+1        ;; #+256
         MULS     R1,R2,R1
         ADDS     R0,R0,R1
-        LDR      R1,??DataTable17
+        LDR      R1,??DataTable21_2
         LDRB     R1,[R1, #+14]
         ADDS     R0,R0,R1
-        LDR      R1,??DataTable17_1
-        STR      R0,[R1, #+52]
+        LDR      R1,??DataTable22
+        STR      R0,[R1, #+36]
         MOVS     R0,#+1
         B        ??find_old_data_3
 ??find_old_data_2:
@@ -1984,196 +1710,126 @@ find_old_data:
 ??find_old_data_3:
         POP      {R4-R6,PC}       ;; return
 
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable17:
-        DC32     g_cal_Buf
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable17_1:
-        DC32     rn8209c_papameter
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable17_2:
-        DC32     paralist
-
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 init_8209c_params:
         PUSH     {R3-R5,LR}
-        LDR      R0,??DataTable18_1  ;; 0x800fc00
-        BL       read_params_area
+        LDR      R0,??DataTable21
+        LDRB     R0,[R0, #+29]
         CMP      R0,#+1
-        BEQ      .+4
-        B        ??init_8209c_params_0
-        LDR      R1,??DataTable21
-        MOVS     R0,#+0
-        BL       find_params
-        CMP      R0,#+0
-        BNE      .+4
-        B        ??init_8209c_params_1
-        LDR      R0,??DataTable22
-        LDRB     R0,[R0, #+4]
-        CMP      R0,#+1
-        BEQ      .+4
-        B        ??init_8209c_params_2
-        LDR      R1,??DataTable21_1
-        MOVS     R0,#+1
-        BL       find_params
-        LDR      R1,??DataTable21_2
-        MOVS     R0,#+2
-        BL       find_params
-        LDR      R1,??DataTable21_3
-        MOVS     R0,#+3
-        BL       find_params
-        LDR      R1,??DataTable21_4
-        MOVS     R0,#+5
-        BL       find_params
-        LDR      R1,??DataTable22_1
-        MOVS     R0,#+6
-        BL       find_params
-        LDR      R1,??DataTable22_2
-        MOVS     R0,#+7
-        BL       find_params
-        LDR      R0,??DataTable22_3  ;; 0x800f800
+        BNE      ??init_8209c_params_0
+        LDR      R0,??DataTable22_1  ;; 0x800f800
         BL       find_free_addr
         MOVS     R4,R0
         UXTH     R4,R4
         MOVS     R0,#+252
         LSLS     R0,R0,#+2        ;; #+1008
         CMP      R4,R0
-        BGE      ??init_8209c_params_3
+        BGE      ??init_8209c_params_1
         UXTH     R4,R4
         CMP      R4,#+0
-        BEQ      ??init_8209c_params_3
+        BEQ      ??init_8209c_params_1
         MOVS     R2,#+18
-        LDR      R1,??DataTable22_4
         UXTH     R4,R4
-        LDR      R0,??DataTable20_1  ;; 0x800f7ee
-        ADDS     R0,R4,R0
-        BL       read_flash
-        LDR      R0,??DataTable22_4
+        LDR      R0,??DataTable21_1  ;; 0x800f7ee
+        ADDS     R1,R4,R0
+        LDR      R0,??DataTable21_2
+        BL       w_memcpy
+        LDR      R0,??DataTable21_2
         LDRB     R0,[R0, #+15]
         MOVS     R1,#+128
         LSLS     R1,R1,#+1        ;; #+256
         MULS     R0,R1,R0
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         LDRB     R1,[R1, #+16]
         ADDS     R0,R0,R1
         MOVS     R5,R0
         MOVS     R1,#+15
-        LDR      R0,??DataTable22_4
+        LDR      R0,??DataTable21_2
         BL       GetCRC16
         UXTH     R5,R5
         CMP      R0,R5
-        BNE      ??init_8209c_params_4
+        BNE      ??init_8209c_params_2
         MOVS     R0,#+1
         LDR      R1,??DataTable23
         STRB     R0,[R1, #+0]
-        LDR      R0,??DataTable22_4
+        LDR      R0,??DataTable21_2
         LDRB     R0,[R0, #+9]
         MOVS     R1,#+128
         LSLS     R1,R1,#+1        ;; #+256
         MULS     R0,R1,R0
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         LDRB     R1,[R1, #+10]
         ADDS     R0,R0,R1
-        LDR      R1,??DataTable22
-        STRH     R0,[R1, #+28]
-        LDR      R0,??DataTable22_4
+        LDR      R1,??DataTable21
+        STRH     R0,[R1, #+32]
+        LDR      R0,??DataTable21_2
         LDRB     R0,[R0, #+5]
         MOVS     R1,#+0
         MULS     R1,R0,R1
-        LDR      R0,??DataTable22_4
+        LDR      R0,??DataTable21_2
         LDRB     R0,[R0, #+6]
         MOVS     R2,#+0
         MULS     R2,R0,R2
         ADDS     R0,R1,R2
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         LDRB     R1,[R1, #+7]
         MOVS     R2,#+128
         LSLS     R2,R2,#+1        ;; #+256
         MULS     R2,R1,R2
         ADDS     R0,R0,R2
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         LDRB     R1,[R1, #+8]
         ADDS     R0,R0,R1
-        LDR      R1,??DataTable22
-        STRH     R0,[R1, #+48]
-        LDR      R0,??DataTable22_4
+        LDR      R1,??DataTable21
+        STRH     R0,[R1, #+34]
+        LDR      R0,??DataTable21_2
         LDRB     R0,[R0, #+11]
         MOVS     R1,#+128
         LSLS     R1,R1,#+17       ;; #+16777216
         MULS     R0,R1,R0
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         LDRB     R1,[R1, #+12]
         MOVS     R2,#+128
         LSLS     R2,R2,#+9        ;; #+65536
         MULS     R1,R2,R1
         ADDS     R0,R0,R1
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         LDRB     R1,[R1, #+13]
         MOVS     R2,#+128
         LSLS     R2,R2,#+1        ;; #+256
         MULS     R1,R2,R1
         ADDS     R0,R0,R1
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         LDRB     R1,[R1, #+14]
         ADDS     R0,R0,R1
-        LDR      R1,??DataTable22
-        STR      R0,[R1, #+52]
-        B        ??init_8209c_params_2
-??init_8209c_params_4:
+        LDR      R1,??DataTable21
+        STR      R0,[R1, #+36]
+        B        ??init_8209c_params_0
+??init_8209c_params_2:
         MOVS     R0,R4
         UXTH     R0,R0
         BL       find_old_data
         CMP      R0,#+1
-        BNE      ??init_8209c_params_5
+        BNE      ??init_8209c_params_3
         MOVS     R0,#+1
         LDR      R1,??DataTable23
         STRB     R0,[R1, #+0]
         UXTB     R0,R0
-        B        ??init_8209c_params_2
-??init_8209c_params_5:
-        MOVS     R0,#+0
-        LDR      R1,??DataTable23
-        STRB     R0,[R1, #+0]
-        UXTB     R0,R0
-        B        ??init_8209c_params_2
+        B        ??init_8209c_params_0
 ??init_8209c_params_3:
         MOVS     R0,#+0
         LDR      R1,??DataTable23
         STRB     R0,[R1, #+0]
-        B        ??init_8209c_params_2
+        UXTB     R0,R0
+        B        ??init_8209c_params_0
 ??init_8209c_params_1:
         MOVS     R0,#+0
-        LDR      R1,??DataTable22
-        STRB     R0,[R1, #+4]
-        B        ??init_8209c_params_2
+        LDR      R1,??DataTable23
+        STRB     R0,[R1, #+0]
 ??init_8209c_params_0:
-        MOVS     R0,#+0
-        LDR      R1,??DataTable22
-        STRB     R0,[R1, #+4]
-??init_8209c_params_2:
         BL       set_8209c_params
         POP      {R0,R4,R5,PC}    ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable18:
-        DC32     `?<Constant "%s%d;%s%d;%s%d;%s%d;%...">`
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable18_1:
-        DC32     0x800fc00
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -2187,83 +1843,83 @@ format_elc_data:
         BL       RTC_GetTime
         MOV      R0,SP
         LDRB     R0,[R0, #+3]
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+0]
         MOV      R0,SP
         LDRB     R0,[R0, #+1]
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+1]
         MOV      R0,SP
         LDRB     R0,[R0, #+2]
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+2]
         MOV      R0,SP
         LDRB     R0,[R0, #+4]
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+3]
         ADD      R0,SP,#+4
         LDRB     R0,[R0, #+1]
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+4]
         MOVS     R0,#+0
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+5]
         MOVS     R0,#+0
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+6]
-        LDR      R0,??DataTable22
-        LDRH     R0,[R0, #+48]
+        LDR      R0,??DataTable21
+        LDRH     R0,[R0, #+34]
         UXTH     R0,R0
         LSRS     R0,R0,#+8
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+7]
-        LDR      R0,??DataTable22
-        LDRH     R0,[R0, #+48]
-        LDR      R1,??DataTable22_4
+        LDR      R0,??DataTable21
+        LDRH     R0,[R0, #+34]
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+8]
-        LDR      R0,??DataTable22
-        LDRH     R0,[R0, #+28]
+        LDR      R0,??DataTable21
+        LDRH     R0,[R0, #+32]
         UXTH     R0,R0
         LSRS     R0,R0,#+8
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+9]
-        LDR      R0,??DataTable22
-        LDRH     R0,[R0, #+28]
-        LDR      R1,??DataTable22_4
+        LDR      R0,??DataTable21
+        LDRH     R0,[R0, #+32]
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+10]
-        LDR      R0,??DataTable22
-        LDR      R0,[R0, #+52]
+        LDR      R0,??DataTable21
+        LDR      R0,[R0, #+36]
         LSRS     R0,R0,#+24
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+11]
-        LDR      R0,??DataTable22
-        LDR      R0,[R0, #+52]
+        LDR      R0,??DataTable21
+        LDR      R0,[R0, #+36]
         LSRS     R0,R0,#+16
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+12]
-        LDR      R0,??DataTable22
-        LDR      R0,[R0, #+52]
+        LDR      R0,??DataTable21
+        LDR      R0,[R0, #+36]
         LSRS     R0,R0,#+8
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+13]
-        LDR      R0,??DataTable22
-        LDR      R0,[R0, #+52]
-        LDR      R1,??DataTable22_4
+        LDR      R0,??DataTable21
+        LDR      R0,[R0, #+36]
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+14]
         MOVS     R1,#+15
-        LDR      R0,??DataTable22_4
+        LDR      R0,??DataTable21_2
         BL       GetCRC16
         MOVS     R4,R0
         MOVS     R0,R4
         UXTH     R0,R0
         LSRS     R0,R0,#+8
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+15]
         MOVS     R0,R4
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+16]
         MOVS     R0,#+0
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         STRB     R0,[R1, #+17]
         POP      {R0,R1,R4,PC}    ;; return
 
@@ -2272,59 +1928,47 @@ format_elc_data:
 save_elc_datas:
         PUSH     {R4,LR}
         BL       format_elc_data
-        LDR      R0,??DataTable22_3  ;; 0x800f800
+        LDR      R0,??DataTable22_1  ;; 0x800f800
         BL       find_free_addr
         MOVS     R4,R0
         UXTH     R4,R4
         LDR      R0,??DataTable26  ;; 0x3de
         CMP      R4,R0
         BLT      ??save_elc_datas_0
-        LDR      R0,??DataTable22_3  ;; 0x800f800
+        LDR      R0,??DataTable22_1  ;; 0x800f800
         BL       FLASH_ErasePage
         MOVS     R0,#+0
         MOVS     R4,R0
 ??save_elc_datas_0:
         MOVS     R2,#+18
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         UXTH     R4,R4
-        LDR      R0,??DataTable22_3  ;; 0x800f800
+        LDR      R0,??DataTable22_1  ;; 0x800f800
         ADDS     R0,R4,R0
         BL       FLASH_Write_chars
         POP      {R4,PC}          ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable20:
-        DC32     `?<Constant "save calibration data...">`
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable20_1:
-        DC32     0x800f7ee
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 power_down_protect:
         PUSH     {R4,LR}
         SUB      SP,SP,#+8
-        LDR      R0,??DataTable22_3  ;; 0x800f800
+        LDR      R0,??DataTable22_1  ;; 0x800f800
         BL       find_free_addr
         MOVS     R4,R0
         MOV      R1,SP
         MOVS     R0,#+32
         BL       read_8209c_regs
-        LDR      R1,??DataTable22
-        STRH     R0,[R1, #+28]
+        LDR      R1,??DataTable21
+        STRH     R0,[R1, #+32]
         BL       read_8209c_energyP
         BL       format_elc_data
         UXTH     R4,R4
-        LDR      R0,??DataTable22_3  ;; 0x800f800
+        LDR      R0,??DataTable22_1  ;; 0x800f800
         ADDS     R0,R4,R0
         STR      R0,[SP, #+0]
         MOVS     R2,#+18
-        LDR      R1,??DataTable22_4
+        LDR      R1,??DataTable21_2
         LDR      R0,[SP, #+0]
         BL       FLASH_Write_chars
         POP      {R0,R1,R4,PC}    ;; return
@@ -2333,31 +1977,19 @@ power_down_protect:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable21:
-        DC32     rn8209c_papameter+0x4
+        DC32     rn8209c_papameter
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable21_1:
-        DC32     rn8209c_papameter+0x6
+        DC32     0x800f7ee
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable21_2:
-        DC32     rn8209c_papameter+0x8
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable21_3:
-        DC32     rn8209c_papameter+0xA
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable21_4:
-        DC32     rn8209c_papameter+0x10
+        DC32     g_cal_Buf
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -2372,8 +2004,8 @@ read_UIP:
         MOVS     R0,#+0
         B        ??read_UIP_1
 ??read_UIP_0:
-        LDR      R0,??DataTable25
-        LDR      R0,[R0, #+16]
+        LDR      R0,??DataTable22
+        LDR      R0,[R0, #+0]
         BL       __aeabi_ui2d
         MOVS     R2,R0
         MOVS     R3,R1
@@ -2388,9 +2020,10 @@ read_UIP:
         MOVS     R3,R5
         BL       __aeabi_dmul
         BL       __aeabi_d2iz
+        UXTH     R0,R0
 ??read_UIP_1:
-        LDR      R1,??DataTable25
-        STRH     R0,[R1, #+30]
+        LDR      R1,??DataTable26_2
+        STR      R0,[R1, #+0]
         MOV      R1,SP
         MOVS     R0,#+34
         BL       read_8209c_regs
@@ -2400,13 +2033,13 @@ read_UIP:
         MOVS     R0,#+0
         B        ??read_UIP_3
 ??read_UIP_2:
-        LDR      R0,??DataTable25
-        LDR      R0,[R0, #+20]
+        LDR      R0,??DataTable22
+        LDR      R0,[R0, #+4]
         BL       __aeabi_ui2d
         MOVS     R2,R0
         MOVS     R3,R1
         MOVS     R0,#+0
-        LDR      R1,??DataTable26_2  ;; 0x3fe00000
+        LDR      R1,??DataTable26_3  ;; 0x3fe00000
         BL       __aeabi_ddiv
         MOVS     R4,R0
         MOVS     R5,R1
@@ -2416,12 +2049,12 @@ read_UIP:
         MOVS     R3,R5
         BL       __aeabi_dmul
         MOVS     R2,#+0
-        LDR      R3,??DataTable26_3  ;; 0x408f4000
+        LDR      R3,??DataTable26_4  ;; 0x408f4000
         BL       __aeabi_dmul
         BL       __aeabi_d2uiz
 ??read_UIP_3:
-        LDR      R1,??DataTable25
-        STR      R0,[R1, #+32]
+        LDR      R1,??DataTable26_2
+        STR      R0,[R1, #+4]
         MOV      R1,SP
         MOVS     R0,#+38
         BL       read_8209c_regs
@@ -2435,16 +2068,17 @@ read_UIP:
 ??read_UIP_4:
         LDR      R0,[SP, #+0]
         BL       __aeabi_ui2f
-        LDR      R1,??DataTable25
-        LDR      R1,[R1, #+24]
+        LDR      R1,??DataTable22
+        LDR      R1,[R1, #+8]
         BL       __aeabi_fmul
         BL       __aeabi_f2d
         MOVS     R2,#+0
-        LDR      R3,??DataTable26_4  ;; 0x412e8480
+        LDR      R3,??DataTable26_5  ;; 0x412e8480
         BL       __aeabi_ddiv
         BL       __aeabi_d2iz
-        LDR      R1,??DataTable25
-        STRH     R0,[R1, #+36]
+        UXTH     R0,R0
+        LDR      R1,??DataTable26_2
+        STR      R0,[R1, #+8]
         POP      {R0,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -2457,25 +2091,7 @@ read_UIP:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable22_1:
-        DC32     rn8209c_papameter+0x14
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable22_2:
-        DC32     rn8209c_papameter+0x18
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable22_3:
         DC32     0x800f800
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable22_4:
-        DC32     g_cal_Buf
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -2485,28 +2101,28 @@ read_8209c_energyP:
         MOVS     R0,#+32
         BL       read_8209c_regs
         LDR      R0,[SP, #+0]
-        LDR      R1,??DataTable25
-        STRH     R0,[R1, #+28]
+        LDR      R1,??DataTable26_6
+        STRH     R0,[R1, #+32]
         MOV      R1,SP
         MOVS     R0,#+42
         BL       read_8209c_regs
-        LDR      R0,??DataTable25
-        LDRH     R0,[R0, #+48]
+        LDR      R0,??DataTable26_6
+        LDRH     R0,[R0, #+34]
         LDR      R1,[SP, #+0]
         ADDS     R0,R0,R1
-        LDR      R1,??DataTable25
-        STRH     R0,[R1, #+48]
-        LDR      R0,??DataTable25
-        LDRH     R0,[R0, #+48]
+        LDR      R1,??DataTable26_6
+        STRH     R0,[R1, #+34]
+        LDR      R0,??DataTable26_6
+        LDRH     R0,[R0, #+34]
         BL       __aeabi_ui2f
         BL       __aeabi_f2d
         MOVS     R2,#+0
-        LDR      R3,??DataTable26_3  ;; 0x408f4000
+        LDR      R3,??DataTable26_4  ;; 0x408f4000
         BL       __aeabi_dmul
         MOVS     R4,R0
         MOVS     R5,R1
-        LDR      R0,??DataTable25
-        LDRH     R0,[R0, #+2]
+        LDR      R0,??DataTable26_6
+        LDRH     R0,[R0, #+22]
         BL       __aeabi_ui2d
         MOVS     R2,R0
         MOVS     R3,R1
@@ -2514,10 +2130,10 @@ read_8209c_energyP:
         MOVS     R1,R5
         BL       __aeabi_ddiv
         BL       __aeabi_d2uiz
-        LDR      R1,??DataTable25
-        STR      R0,[R1, #+44]
-        LDR      R0,??DataTable25
-        LDR      R0,[R0, #+44]
+        LDR      R1,??DataTable26_6
+        STR      R0,[R1, #+16]
+        LDR      R0,??DataTable26_6
+        LDR      R0,[R0, #+16]
         POP      {R1,R4,R5,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -2546,12 +2162,12 @@ read_pow_factor:
 ??read_pow_factor_0:
         LDR      R0,[SP, #+0]
         BL       __aeabi_ui2f
-        LDR      R1,??DataTable25
-        LDR      R1,[R1, #+24]
+        LDR      R1,??DataTable26_6
+        LDR      R1,[R1, #+8]
         BL       __aeabi_fmul
         BL       __aeabi_f2d
         MOVS     R2,#+0
-        LDR      R3,??DataTable26_4  ;; 0x412e8480
+        LDR      R3,??DataTable26_5  ;; 0x412e8480
         BL       __aeabi_ddiv
         BL       __aeabi_d2uiz
         STR      R0,[SP, #+0]
@@ -2565,12 +2181,12 @@ read_pow_factor:
 ??read_pow_factor_1:
         LDR      R0,[SP, #+4]
         BL       __aeabi_ui2f
-        LDR      R1,??DataTable25
-        LDR      R1,[R1, #+24]
+        LDR      R1,??DataTable26_6
+        LDR      R1,[R1, #+8]
         BL       __aeabi_fmul
         BL       __aeabi_f2d
         MOVS     R2,#+0
-        LDR      R3,??DataTable26_4  ;; 0x412e8480
+        LDR      R3,??DataTable26_5  ;; 0x412e8480
         BL       __aeabi_ddiv
         BL       __aeabi_d2uiz
         STR      R0,[SP, #+4]
@@ -2588,7 +2204,7 @@ read_pow_factor:
         LDR      R0,[SP, #+0]
         BL       __aeabi_ui2d
         MOVS     R2,#+0
-        LDR      R3,??DataTable26_5  ;; 0x40590000
+        LDR      R3,??DataTable26_7  ;; 0x40590000
         BL       __aeabi_dmul
         MOVS     R2,R4
         MOVS     R3,R5
@@ -2604,35 +2220,29 @@ read_pow_factor:
 get_light_time:
         PUSH     {R4,LR}
         BL       read_light_time
-        LDR      R1,??DataTable26_6  ;; 0xea60
+        LDR      R1,??DataTable26_8  ;; 0xea60
         BL       __aeabi_uidiv
         CMP      R0,#+0
         BEQ      ??get_light_time_0
         BL       read_light_time
-        LDR      R1,??DataTable25
-        LDR      R4,[R1, #+52]
-        LDR      R1,??DataTable26_6  ;; 0xea60
+        LDR      R1,??DataTable26_6
+        LDR      R4,[R1, #+36]
+        LDR      R1,??DataTable26_8  ;; 0xea60
         BL       __aeabi_uidiv
         ADDS     R0,R4,R0
-        LDR      R1,??DataTable25
-        STR      R0,[R1, #+52]
+        LDR      R1,??DataTable26_6
+        STR      R0,[R1, #+36]
         BL       clear_light_time
 ??get_light_time_0:
-        LDR      R0,??DataTable25
-        LDR      R0,[R0, #+52]
+        LDR      R0,??DataTable26_6
+        LDR      R0,[R0, #+36]
         POP      {R4,PC}          ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable25:
-        DC32     rn8209c_papameter
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 read_LED_state:
         PUSH     {LR}
-        LDR      R0,??DataTable26_7
+        LDR      R0,??DataTable26_9
         LDRB     R0,[R0, #+0]
         CMP      R0,#+0
         BNE      ??read_LED_state_0
@@ -2659,37 +2269,49 @@ read_LED_state:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable26_2:
-        DC32     0x3fe00000
+        DC32     currentUIP
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable26_3:
-        DC32     0x408f4000
+        DC32     0x3fe00000
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable26_4:
-        DC32     0x412e8480
+        DC32     0x408f4000
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable26_5:
-        DC32     0x40590000
+        DC32     0x412e8480
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable26_6:
-        DC32     0xea60
+        DC32     rn8209c_papameter
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable26_7:
-        DC32     rn8209c_papameter+0x32
+        DC32     0x40590000
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable26_8:
+        DC32     0xea60
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable26_9:
+        DC32     rn8209c_papameter+0x28
 
         SECTION `.iar_vfe_header`:DATA:NOALLOC:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -2714,15 +2336,6 @@ read_LED_state:
         DC8 0
 
         SECTION `.rodata`:CONST:REORDER:NOROOT(2)
-`?<Constant "end">`:
-        DATA
-        DC8 "end"
-
-        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
-        DATA
-        DC8 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-
-        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
 `?<Constant "period save process s...">`:
         DATA
         DC8 "period save process start\015\012"
@@ -2740,12 +2353,6 @@ read_LED_state:
         DC8 0
 
         SECTION `.rodata`:CONST:REORDER:NOROOT(2)
-`?<Constant "not full the save con...">`:
-        DATA
-        DC8 "not full the save condition\015\012"
-        DC8 0, 0
-
-        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
 `?<Constant "protected time end\\r\\n">`:
         DATA
         DC8 "protected time end\015\012"
@@ -2757,26 +2364,9 @@ read_LED_state:
         DC8 "flash data ok\015\012"
 
         SECTION `.rodata`:CONST:REORDER:NOROOT(2)
-`?<Constant "flash  full  erase an...">`:
-        DATA
-        DC8 "flash  full  erase and write\015\012"
-        DC8 0
-
-        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
-`?<Constant "flash  not full, write\\r\\n">`:
-        DATA
-        DC8 "flash  not full, write\015\012"
-        DC8 0, 0, 0
-
-        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
 `?<Constant "flash data err, erase...">`:
         DATA
         DC8 "flash data err, erase and write new data\015\012"
-        DC8 0
-
-        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
-        DATA
-        DC8 "\015\012"
         DC8 0
 
         SECTION `.rodata`:CONST:REORDER:NOROOT(2)
@@ -2793,27 +2383,15 @@ read_LED_state:
         DATA
         DC8 0, 0, 0, 0, 0, 0, 0, 0
 
-        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
-`?<Constant "%s%d;%s%d;%s%d;%s%d;%...">`:
-        DATA
-        DC8 "%s%d;%s%d;%s%d;%s%d;%s%d;%s%d;%s%d;%s%.3f;end"
-        DC8 0, 0
-
-        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
-`?<Constant "save calibration data...">`:
-        DATA
-        DC8 "save calibration data error\015\012"
-        DC8 0, 0
-
         END
 // 
-// 1 062 bytes in section .bss
-//    89 bytes in section .data
-//   406 bytes in section .rodata
-// 4 422 bytes in section .text
+// 1 074 bytes in section .bss
+//    77 bytes in section .data
+//   210 bytes in section .rodata
+// 3 820 bytes in section .text
 // 
-// 4 406 bytes of CODE  memory (+ 16 bytes shared)
-//   406 bytes of CONST memory
+// 3 820 bytes of CODE  memory
+//   210 bytes of CONST memory
 // 1 151 bytes of DATA  memory
 //
 //Errors: none

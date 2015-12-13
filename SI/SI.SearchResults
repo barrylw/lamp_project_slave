@@ -1,2 +1,22 @@
----- packet no error Matches (1 in 1 files) ----
-APL.c (app):      printf("packet no error\r\n");
+---- SendUart Matches (21 in 5 files) ----
+Apl_debug.c (app):  {"senduart", SendUart},
+Apl_debug.s (debug\list):        EXTERN SendUart
+Apl_debug.s (debug\list):        DC32 SendUart, `?<Constant "setpow">`, set_power
+Hal_uart.c (app):void SendUart(void)
+Hal_uart.h (app):void SendUart(void);
+Hal_uart.s (debug\list):        PUBLIC SendUart
+Hal_uart.s (debug\list):SendUart:
+Hal_uart.s (debug\list):        BEQ      ??SendUart_0
+Hal_uart.s (debug\list):        B        ??SendUart_1
+Hal_uart.s (debug\list):??SendUart_0:
+Hal_uart.s (debug\list):??SendUart_1:
+Hal_uart.s (debug\list):        BGE      ??SendUart_2
+Hal_uart.s (debug\list):        B        ??SendUart_3
+Hal_uart.s (debug\list):??SendUart_2:
+Hal_uart.s (debug\list):??SendUart_3:
+Hal_uart.s (debug\list):        BEQ      ??SendUart_4
+Hal_uart.s (debug\list):??SendUart_5:
+Hal_uart.s (debug\list):        BCS      ??SendUart_6
+Hal_uart.s (debug\list):        B        ??SendUart_5
+Hal_uart.s (debug\list):??SendUart_6:
+Hal_uart.s (debug\list):??SendUart_4:

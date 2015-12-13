@@ -162,54 +162,35 @@ typedef enum
 /*Ku,KIa 只保留寄存器值，计算电压时 直接计算 220/Ku*REG  计算电流 0.5/KIa*REG ,Kp以微瓦为单位，或者以NW 为单位*/
 
 //---start 校表参数文件-------（可根据计量芯片更改） 
-/*
+
 typedef struct 
 {      
-      u16     HFConst;           //表常数项设置
-      u16     PStart ;           //启动设置
-      u16     GPQA;              //A有功增益校正 
-      u16     PhsA;              //A有功角度校正 
-      u16     QPhsCal;           //无功角度校正
       u32     Ku;                //电压系数 
       u32     KIa;               //电流A系数
-      float   Kp;               //功率系数
-      u16     PFcount;           //保存的能量积分，掉电时保存
-      u16     Uv;                //电压有效值
-      u32     Ia;                //电流有效值
-      u16     Pa;                //功率有效值
+      float   Kp;                //功率系数
       u32     ChkSum;            //校验和
-      u16     calibration;      //是否校正
-      u32    energyA;           //有功电量，单位度  
-      u16    energyAPulse;      //电量余数，脉冲数
-      u16    EC;
-      u8     pwmValue;
-      u32   lightTime;
-}RN8209C_PARAM;
-*/
-
-
-typedef struct 
-{      
-      u16     HFConst;           //表常数项设置
-      u16     EC;
-      u8      calibration;      //是否校正
+      u32     energyA;           //有功电量，单位度  
+      u16     HFConst;           
+      u16     EC;                //表常数项设置
       u16     PStart ;           //启动设置
       u16     GPQA;              //A有功增益校正 
       u8      PhsA;              //A有功角度校正 
+      u8      calibration;       //是否校正
       u16     QPhsCal;           //无功角度校正
-      u32     Ku;                //电压系数 
-      u32     KIa;               //电流A系数
-      float   Kp;               //功率系数
       u16     PFcount;           //保存的能量积分，掉电时保存
-      u16     Uv;                //电压有效值
-      u32     Ia;                //电流有效值
-      u16     Pa;                //功率有效值
-      u32     ChkSum;            //校验和
-      u32     energyA;           //有功电量，单位度  
       u16     energyAPulse;      //电量余数，脉冲数
-      u8      pwmValue;
       u32     lightTime;
+      u8      pwmValue;
+      u8      reserved;
+      u16     crcValue;  
 }RN8209C_PARAM;
+
+typedef struct
+{
+  u32 Uv;
+  u32 Ia;
+  u32 Pa;
+}st_CurUIP;
 
 
 
@@ -240,5 +221,6 @@ void save_elc_datas(void);
 bool read_LED_state(void);
 void rn8209c_reset(void);
 u16 read_PWM_volt(void);
+void gpio_per_init(void);
 PROCESS_NAME(start_time_detect_process);
 #endif

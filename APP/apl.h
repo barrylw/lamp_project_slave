@@ -127,27 +127,31 @@ typedef enum
     UPDATE_FAILED,
 }EM_UPDATE_STATUS;
 
-
+/**********************************************************************************************************************************************
+升级flash参数区排列：版本号   总字节数(2byte)  总段数2byte  段序号2byte   升级状态/1B(status) 升级包状态表/128byte(packets_states)   CRC校验2byte
+************************************************************************************************************************************************/
 typedef struct
 {
+  u16 version;
   u16 totoalBytes;
   u16 total_packets;
   u16 current_packet_No;
-  u16 crcValue;
-  u16  version;
   u8  status;
-  u8  packetsState[128];
+  u8  packetsState[UPDATE_PACKETS_STATUS_LEN + 1];//这里是为了对齐数据，凑成偶数，修改此处数据长度时一定注意
+  u16 crcValue;
 }ST_UPDATE;
 
+/**********************************************************************************************************************************************
+升级包帧结构：68 xx xx xx xx xx xx(目标长地址或广播地址) 68   C  L    0x9D, 0x33, 0x33, 0x34(数据标识)  版本号2byte  总字节数2byte    总段数2byte  段序号2byte 段长度1byte 段数据 CS 16
+************************************************************************************************************************************************/
 typedef struct
 {
-    u16 total_packets;
-    u16 total_bytes;
-    u16 current_packet_No;
-    u16  version;
-    u8  *data;
-    u8  packet_length;
-    
+  u16  version;
+  u16 total_bytes;
+  u16 total_packets;
+  u16 current_packet_No;
+  u8  packet_length;
+  u8  *data;
 }ST_update_packet_info;
 
 

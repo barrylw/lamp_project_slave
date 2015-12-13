@@ -56,11 +56,12 @@ typedef enum
 extern sRF_FSK g_fsk ;
 extern st_RF_LoRa_DypeDef g_RF_LoRa;
 extern RN8209C_PARAM rn8209c_papameter;
+extern st_CurUIP currentUIP;
 extern u8 tedtbuf[];
 extern const Manufacturer_Version aplVersion;
 struct etimer timer_rf; 
 
-u8 local_addr[6]    = {0xFE, 0xFF, 0xFF, 0xFF, 0xFF, 0xFE};
+u8 local_addr[6]    = {0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFE};
 u8 bordcast_addr[6] = {0x99, 0x99, 0x99, 0x99, 0x99, 0x99};
 
 
@@ -193,9 +194,9 @@ void apl_ProcessRadioCmd()
                            
                             if (rn8209c_papameter.pwmValue == 0)
                             {
-                                 rn8209c_papameter.Uv = 0;          //关灯，回复确认值
-                                 rn8209c_papameter.Ia = 0;   
-                                 rn8209c_papameter.Pa = 0;
+                                 currentUIP.Uv = 0;          //关灯，回复确认值
+                                 currentUIP.Ia = 0;   
+                                 currentUIP.Pa = 0;
                                  
                             }
                             else
@@ -205,18 +206,18 @@ void apl_ProcessRadioCmd()
                             }
                             
                             
-                            g_RF_LoRa.rf_DataBuffer[19]          = (u8)(rn8209c_papameter.Uv & 0xFF);
-                            g_RF_LoRa.rf_DataBuffer[20]          = (u8)((rn8209c_papameter.Uv >>8) & 0xFF); //voltage
+                            g_RF_LoRa.rf_DataBuffer[19]          = (u8)(currentUIP.Uv & 0xFF);
+                            g_RF_LoRa.rf_DataBuffer[20]          = (u8)((currentUIP.Uv >>8) & 0xFF); //voltage
                             
                             
-                            g_RF_LoRa.rf_DataBuffer[21]          = (u8)(rn8209c_papameter.Ia & 0xFF);
-                            g_RF_LoRa.rf_DataBuffer[22]          = (u8)((rn8209c_papameter.Ia >>8) & 0xFF); 
-                            g_RF_LoRa.rf_DataBuffer[23]          = (u8)((rn8209c_papameter.Ia >>16) & 0xFF);        
-                            g_RF_LoRa.rf_DataBuffer[24]          = (u8)((rn8209c_papameter.Ia >>24) & 0xFF); //current
+                            g_RF_LoRa.rf_DataBuffer[21]          = (u8)(currentUIP.Ia & 0xFF);
+                            g_RF_LoRa.rf_DataBuffer[22]          = (u8)((currentUIP.Ia >>8) & 0xFF); 
+                            g_RF_LoRa.rf_DataBuffer[23]          = (u8)((currentUIP.Ia >>16) & 0xFF);        
+                            g_RF_LoRa.rf_DataBuffer[24]          = (u8)((currentUIP.Ia >>24) & 0xFF); //current
                             
                            
-                            g_RF_LoRa.rf_DataBuffer[25]          = (u8)(rn8209c_papameter.Pa & 0xFF); 
-                            g_RF_LoRa.rf_DataBuffer[26]          = (u8)((rn8209c_papameter.Pa >>8) & 0xFF); //power
+                            g_RF_LoRa.rf_DataBuffer[25]          = (u8)(currentUIP.Pa & 0xFF); 
+                            g_RF_LoRa.rf_DataBuffer[26]          = (u8)((currentUIP.Pa >>8) & 0xFF); //power
                             
                             if (rn8209c_papameter.pwmValue == 0)
                             {
@@ -1127,7 +1128,6 @@ void hal_sRF_Config(u8 startReg, u8 *pBuffer, u8 length)
 
   if (startReg >= TOTAL_REGISTER_NUMBER)
   {
-    printf("startReg input error\r\n");
     return;
   }
   if (length > 0)
@@ -1282,16 +1282,31 @@ void hal_sRF_Transmit(u8 *pBuffer, u8 length, u8 channel)
 
 void read_addr(u8 *addrbuf)
 {
-   u16 crcval;
-   u8  temp[8];
-   memcpy(temp, (u8*)FLASH_LOCAL_ADDR_ADDRESS, 8);
+   st_local_addr tempaddr;
    
-   crcval = temp[6] + temp[7]*256;
+   memcpy(&tempaddr, (u8*)FLASH_LOCAL_ADDR_ADDRESS, 8);
    
-   if (crcval == GetCRC16(temp,6))
+   if (tempaddr.crcVal == GetCRC16(tempaddr.addr,6))
    {
-     memcpy(addrbuf, temp, 6);
+     memcpy(addrbuf, tempaddr.addr, 6);
    }
+   else
+   {
+     memcpy(addrbuf, local_addr, 6);
+   }
+}
+
+void set_addr(u8 *newaddr)
+{
+   st_local_addr tempaddr;
+   memcpy(tempaddr.addr, newaddr, 6);
+   tempaddr.crcVal = GetCRC16(tempaddr.addr,6);
+   
+  if (FLASH_ErasePage(FLASH_LOCAL_ADDR_ADDRESS) == FLASH_COMPLETE)
+  {
+     FLASH_Write_chars( FLASH_LOCAL_ADDR_ADDRESS,  (u8*)&tempaddr, 8);
+  }  
+     
 }
 /*****************************************************************************
  Prototype    : hal_InitRF
@@ -1313,7 +1328,10 @@ void hal_InitRF(void)
   SX1276_lora_init(false);
 #endif
   read_addr(local_addr);
+
+#ifdef PRINTF_DEBUG
   printf("reset RF\r\n");
+#endif
 }
 
 /******************* (C) COPYRIGHT 2013 Robulink Technology Ltd.*****END OF FILE****/

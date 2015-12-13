@@ -135,9 +135,11 @@
 #define RBL_COM1_RX_SIZE                 UART_BUFFER_SIZE
 #define RBL_COM2_RX_SIZE                 DEBUG_BUFFER_SIZE
 #define UART_BAUD_COFF                  ((11 * 1000) / RBL_COM1_BAUD)
+   
+
 
    
-#ifdef PRINTF_DEBUG
+
 #define DEBUG_BUFFER_SIZE  30
 #define PRINT_BUFFER_SIZE  200
 #define PRINT_BLOCK_NUMBER 50
@@ -149,7 +151,7 @@
 #define PRINT_LENGTH_ERROR ("print length error!\r\n")
 #define UART_TXD_TIMEOUT_ERROR ("uart send timeout!\r\n")
 #define UART_RXD_TIMEOUT_ERROR ("uart receive timeout!\r\n")
-#endif
+
 /* Exported macro ------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 
@@ -211,7 +213,7 @@ void hal_DebugDMATx(u8 *pBuf, u16 length);
 void hal_UartINTTx(u8 *pBuf, u16 length);
 int printf(const char *format ,... );
 void SendUart(void);
-
+void apl_ProcessDDCmd(void);
 PROCESS_NAME(hal_urat_process);
 
 #endif /* __HAL_UART_H__ */

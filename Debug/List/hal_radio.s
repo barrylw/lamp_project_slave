@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  19:30:04
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       14/Dec/2015  00:41:31
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,7 +9,7 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\APP\hal_radio.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        USE_LORA_MODE -D PRINTF_DEBUG -lb
 //        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
 //        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
 //        --no_inline --no_code_motion --no_tbaa --no_clustering
@@ -38,6 +38,8 @@
         EXTERN Delayms
         EXTERN EXTI_ClearITPendingBit
         EXTERN EXTI_Init
+        EXTERN FLASH_ErasePage
+        EXTERN FLASH_Write_chars
         EXTERN GPIO_Init
         EXTERN GPIO_PinAFConfig
         EXTERN GPIO_ResetBits
@@ -66,6 +68,7 @@
         EXTERN aplVersion
         EXTERN apl_update_process
         EXTERN `cmp`
+        EXTERN currentUIP
         EXTERN etimer_set
         EXTERN etimer_stop
         EXTERN g_RF_LoRa
@@ -108,6 +111,7 @@
         PUBLIC local_addr
         PUBLIC read_addr
         PUBLIC read_version
+        PUBLIC set_addr
         PUBLIC spiReadWriteByte
         PUBLIC timer_RFreset
         PUBLIC timer_rf
@@ -156,7 +160,7 @@ timer_rf:
         SECTION `.data`:DATA:REORDER:NOROOT(2)
 local_addr:
         DATA
-        DC8 254, 255, 255, 255, 255, 254, 0, 0
+        DC8 255, 255, 255, 255, 255, 254, 0, 0
 
         SECTION `.data`:DATA:REORDER:NOROOT(2)
 bordcast_addr:
@@ -488,13 +492,13 @@ apl_ProcessRadioCmd:
         BNE      ??apl_ProcessRadioCmd_17
         MOVS     R0,#+0
         LDR      R1,??DataTable1_6
-        STRH     R0,[R1, #+30]
+        STR      R0,[R1, #+0]
         MOVS     R0,#+0
         LDR      R1,??DataTable1_6
-        STR      R0,[R1, #+32]
+        STR      R0,[R1, #+4]
         MOVS     R0,#+0
         LDR      R1,??DataTable1_6
-        STRH     R0,[R1, #+36]
+        STR      R0,[R1, #+8]
         B        ??apl_ProcessRadioCmd_18
 ??apl_ProcessRadioCmd_17:
         MOVS     R0,#+20
@@ -502,41 +506,39 @@ apl_ProcessRadioCmd:
         BL       read_UIP
 ??apl_ProcessRadioCmd_18:
         LDR      R0,??DataTable1_6
-        LDRH     R0,[R0, #+30]
+        LDR      R0,[R0, #+0]
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+19]
         LDR      R0,??DataTable1_6
-        LDRH     R0,[R0, #+30]
-        UXTH     R0,R0
+        LDR      R0,[R0, #+0]
         LSRS     R0,R0,#+8
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+20]
         LDR      R0,??DataTable1_6
-        LDR      R0,[R0, #+32]
+        LDR      R0,[R0, #+4]
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+21]
         LDR      R0,??DataTable1_6
-        LDR      R0,[R0, #+32]
+        LDR      R0,[R0, #+4]
         LSRS     R0,R0,#+8
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+22]
         LDR      R0,??DataTable1_6
-        LDR      R0,[R0, #+32]
+        LDR      R0,[R0, #+4]
         LSRS     R0,R0,#+16
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+23]
         LDR      R0,??DataTable1_6
-        LDR      R0,[R0, #+32]
+        LDR      R0,[R0, #+4]
         LSRS     R0,R0,#+24
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+24]
         LDR      R0,??DataTable1_6
-        LDRH     R0,[R0, #+36]
+        LDR      R0,[R0, #+8]
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+25]
         LDR      R0,??DataTable1_6
-        LDRH     R0,[R0, #+36]
-        UXTH     R0,R0
+        LDR      R0,[R0, #+8]
         LSRS     R0,R0,#+8
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+26]
@@ -659,12 +661,6 @@ apl_ProcessRadioCmd:
         MOVS     R2,#+6
         MOVS     R1,#+0
         LDR      R0,??DataTable3_1
-        B.N      ??apl_ProcessRadioCmd_23
-        DATA
-??apl_ProcessRadioCmd_8:
-        DC32     g_RF_LoRa+0xA
-        THUMB
-??apl_ProcessRadioCmd_23:
         BL       MemSet
         MOVS     R0,#+104
         LDR      R1,??DataTable2
@@ -720,6 +716,12 @@ apl_ProcessRadioCmd:
         LDR      R1,??DataTable2
         STRB     R0,[R1, #+21]
         LDR      R0,??DataTable4
+        B.N      ??apl_ProcessRadioCmd_23
+        DATA
+??apl_ProcessRadioCmd_8:
+        DC32     g_RF_LoRa+0xA
+        THUMB
+??apl_ProcessRadioCmd_23:
         LDRB     R0,[R0, #+8]
         LDR      R1,??DataTable2
         STRB     R0,[R1, #+22]
@@ -792,13 +794,13 @@ apl_ProcessRadioCmd:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable1_5:
-        DC32     rn8209c_papameter+0x32
+        DC32     rn8209c_papameter+0x28
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable1_6:
-        DC32     rn8209c_papameter
+        DC32     currentUIP
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -822,15 +824,15 @@ process_thread_hal_RF_process:
         LDRH     R0,[R4, #+0]
         CMP      R0,#+0
         BEQ      ??process_thread_hal_RF_process_0
-        MOVS     R2,#+170
-        LSLS     R2,R2,#+1        ;; #+340
+        MOVS     R2,#+255
+        ADDS     R2,R2,#+86       ;; #+341
         CMP      R0,R2
         BEQ      ??process_thread_hal_RF_process_1
         B        ??process_thread_hal_RF_process_2
 ??process_thread_hal_RF_process_0:
         MOVS     R1,#+0
-        MOVS     R0,#+170
-        LSLS     R0,R0,#+1        ;; #+340
+        MOVS     R0,#+255
+        ADDS     R0,R0,#+86       ;; #+341
         STRH     R0,[R4, #+0]
 ??process_thread_hal_RF_process_1:
         UXTB     R1,R1
@@ -1031,8 +1033,8 @@ process_thread_hal_RF_reset:
         LDRH     R0,[R4, #+0]
         CMP      R0,#+0
         BEQ      ??process_thread_hal_RF_reset_0
-        MOVS     R2,#+255
-        ADDS     R2,R2,#+232      ;; #+487
+        MOVS     R2,#+244
+        LSLS     R2,R2,#+1        ;; #+488
         SUBS     R0,R0,R2
         BEQ      ??process_thread_hal_RF_reset_1
         SUBS     R0,R0,#+18
@@ -1043,8 +1045,8 @@ process_thread_hal_RF_reset:
         LDR      R0,??DataTable7_1
         BL       etimer_set
         MOVS     R1,#+0
-        MOVS     R0,#+255
-        ADDS     R0,R0,#+232      ;; #+487
+        MOVS     R0,#+244
+        LSLS     R0,R0,#+1        ;; #+488
         STRH     R0,[R4, #+0]
 ??process_thread_hal_RF_reset_1:
         UXTB     R1,R1
@@ -1077,8 +1079,8 @@ process_thread_hal_RF_reset:
         LDR      R0,??DataTable7_1
         BL       etimer_set
         MOVS     R1,#+0
-        MOVS     R0,#+255
-        ADDS     R0,R0,#+250      ;; #+505
+        MOVS     R0,#+253
+        LSLS     R0,R0,#+1        ;; #+506
         STRH     R0,[R4, #+0]
 ??process_thread_hal_RF_reset_2:
         UXTB     R1,R1
@@ -1287,14 +1289,14 @@ SX1276SetReset:
         MOVS     R2,#+0
         MOVS     R1,#+128
         LSLS     R1,R1,#+6        ;; #+8192
-        LDR      R0,??DataTable10  ;; 0x48000800
+        LDR      R0,??DataTable11  ;; 0x48000800
         BL       GPIO_WriteBit
         B        ??SX1276SetReset_1
 ??SX1276SetReset_0:
         MOVS     R2,#+1
         MOVS     R1,#+128
         LSLS     R1,R1,#+6        ;; #+8192
-        LDR      R0,??DataTable10  ;; 0x48000800
+        LDR      R0,??DataTable11  ;; 0x48000800
         BL       GPIO_WriteBit
 ??SX1276SetReset_1:
         POP      {R4,PC}          ;; return
@@ -1397,7 +1399,7 @@ hal_Init_RF_pins:
         LSLS     R0,R0,#+12       ;; #+655360
         BL       RCC_AHBPeriphClockCmd
         MOVS     R1,#+0
-        LDR      R0,??DataTable10_1  ;; 0x1e02
+        LDR      R0,??DataTable11_1  ;; 0x1e02
         BL       hal_sRF_ITConfig
         MOVS     R0,#+16
         STR      R0,[SP, #+0]
@@ -1463,14 +1465,14 @@ hal_Init_RF_pins:
         MOV      R1,SP
         STRB     R0,[R1, #+6]
         MOV      R1,SP
-        LDR      R0,??DataTable10  ;; 0x48000800
+        LDR      R0,??DataTable11  ;; 0x48000800
         BL       GPIO_Init
         MOVS     R2,#+1
         MOVS     R1,#+128
         LSLS     R1,R1,#+6        ;; #+8192
-        LDR      R0,??DataTable10  ;; 0x48000800
+        LDR      R0,??DataTable11  ;; 0x48000800
         BL       GPIO_WriteBit
-        LDR      R0,??DataTable10_1  ;; 0x1e02
+        LDR      R0,??DataTable11_1  ;; 0x1e02
         STR      R0,[SP, #+0]
         MOVS     R0,#+0
         MOV      R1,SP
@@ -1500,7 +1502,7 @@ GPIO_int_Config:
         MOVS     R1,#+1
         MOVS     R0,#+1
         BL       RCC_APB2PeriphClockCmd
-        LDR      R0,??DataTable10_2  ;; 0xe02
+        LDR      R0,??DataTable11_2  ;; 0xe02
         BL       EXTI_ClearITPendingBit
         MOVS     R1,#+1
         MOVS     R0,#+0
@@ -1515,7 +1517,7 @@ GPIO_int_Config:
         MOVS     R0,#+0
         BL       SYSCFG_EXTILineConfig
         MOVS     R1,#+0
-        LDR      R0,??DataTable10_1  ;; 0x1e02
+        LDR      R0,??DataTable11_1  ;; 0x1e02
         BL       hal_sRF_ITConfig
         POP      {R0,PC}          ;; return
 
@@ -1620,34 +1622,34 @@ hal_sRF_Transmit:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 read_addr:
-        PUSH     {R4,R5,LR}
-        SUB      SP,SP,#+12
+        PUSH     {R2-R4,LR}
         MOVS     R4,R0
         MOVS     R2,#+8
-        LDR      R1,??DataTable10_3  ;; 0x800f000
+        LDR      R1,??DataTable11_3  ;; 0x800f000
         MOV      R0,SP
         BL       w_memcpy
-        MOV      R0,SP
-        LDRB     R0,[R0, #+6]
-        MOV      R1,SP
-        LDRB     R1,[R1, #+7]
-        MOVS     R2,#+128
-        LSLS     R2,R2,#+1        ;; #+256
-        MULS     R1,R2,R1
-        ADDS     R0,R0,R1
-        MOVS     R5,R0
         MOVS     R1,#+6
         MOV      R0,SP
+        ADDS     R0,R0,#+2
         BL       GetCRC16
-        UXTH     R5,R5
-        CMP      R5,R0
+        MOV      R1,SP
+        LDRH     R1,[R1, #+0]
+        UXTH     R0,R0
+        CMP      R1,R0
         BNE      ??read_addr_0
         MOVS     R2,#+6
         MOV      R1,SP
+        ADDS     R1,R1,#+2
         MOVS     R0,R4
         BL       w_memcpy
+        B        ??read_addr_1
 ??read_addr_0:
-        POP      {R0-R2,R4,R5,PC}  ;; return
+        MOVS     R2,#+6
+        LDR      R1,??DataTable11_4
+        MOVS     R0,R4
+        BL       w_memcpy
+??read_addr_1:
+        POP      {R0,R1,R4,PC}    ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
@@ -1657,60 +1659,87 @@ read_addr:
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
+set_addr:
+        PUSH     {R2-R4,LR}
+        MOVS     R4,R0
+        MOVS     R2,#+6
+        MOVS     R1,R4
+        MOV      R0,SP
+        ADDS     R0,R0,#+2
+        BL       w_memcpy
+        MOVS     R1,#+6
+        MOV      R0,SP
+        ADDS     R0,R0,#+2
+        BL       GetCRC16
+        MOV      R1,SP
+        STRH     R0,[R1, #+0]
+        LDR      R0,??DataTable11_3  ;; 0x800f000
+        BL       FLASH_ErasePage
+        CMP      R0,#+4
+        BNE      ??set_addr_0
+        MOVS     R2,#+8
+        MOV      R1,SP
+        LDR      R0,??DataTable11_3  ;; 0x800f000
+        BL       FLASH_Write_chars
+??set_addr_0:
+        POP      {R0,R1,R4,PC}    ;; return
+
+        SECTION `.text`:CODE:NOROOT(1)
+        THUMB
 hal_InitRF:
         PUSH     {R7,LR}
-        LDR      R0,??DataTable10_4
+        LDR      R0,??DataTable11_5
         BL       etimer_stop
         BL       hal_sRF_InitSPI
         BL       GPIO_int_Config
         MOVS     R0,#+1
         BL       SX1276_lora_init
-        LDR      R0,??DataTable10_5
+        LDR      R0,??DataTable11_4
         BL       read_addr
-        LDR      R0,??DataTable10_6
+        LDR      R0,??DataTable11_6
         BL       printf
         POP      {R0,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable10:
+??DataTable11:
         DC32     0x48000800
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable10_1:
+??DataTable11_1:
         DC32     0x1e02
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable10_2:
+??DataTable11_2:
         DC32     0xe02
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable10_3:
+??DataTable11_3:
         DC32     0x800f000
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable10_4:
-        DC32     timer_rf
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable10_5:
+??DataTable11_4:
         DC32     local_addr
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable10_6:
+??DataTable11_5:
+        DC32     timer_rf
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable11_6:
         DC32     `?<Constant "reset RF\\r\\n">`
 
         SECTION `.iar_vfe_header`:DATA:NOALLOC:NOROOT(2)
@@ -1793,9 +1822,9 @@ hal_InitRF:
 //    32 bytes in section .bss
 //    68 bytes in section .data
 //   156 bytes in section .rodata
-// 2 682 bytes in section .text
+// 2 730 bytes in section .text
 // 
-// 2 682 bytes of CODE  memory
+// 2 730 bytes of CODE  memory
 //   156 bytes of CONST memory
 //   100 bytes of DATA  memory
 //

@@ -250,12 +250,7 @@ int main()
     {
     tedtbuf[i] = i+1;
     }
-
-  
     
-
- 
-   
     InitVariable();
     InitHardware(); 
 
@@ -268,7 +263,10 @@ int main()
     //len = compress_addr_list(commpress_buf, 18,  result_buf);
     //len = dempress_addr_list(decommpress_buf,result_buf, 1);
 
+    #ifdef PRINTF_DEBUG
     printf("start app\r\n");
+    #endif
+    
     process_init();
     process_start(&etimer_process, NULL);
     process_start(&hal_urat_process, NULL);

@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  12:36:22
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       13/Dec/2015  23:36:30
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,7 +9,7 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\APP\sx1276-LoRa.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        USE_LORA_MODE -D PRINTF_DEBUG -lb
 //        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
 //        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
 //        --no_inline --no_code_motion --no_tbaa --no_clustering
@@ -40,7 +40,6 @@
         EXTERN GPIO_ReadInputDataBit
         EXTERN SX1276LoRaSetErrorCoding
         EXTERN SX1276LoRaSetImplicitHeaderOn
-        EXTERN SX1276LoRaSetLowDatarateOptimize
         EXTERN SX1276LoRaSetPAOutput
         EXTERN SX1276LoRaSetPa20dBm
         EXTERN SX1276LoRaSetPacketCrcOn
@@ -60,7 +59,6 @@
         EXTERN SX1276WriteFifo
         EXTERN TIM_Cmd
         EXTERN TIM_SetCounter
-        EXTERN __aeabi_cdrcmple
         EXTERN __aeabi_d2iz
         EXTERN __aeabi_d2uiz
         EXTERN __aeabi_dadd
@@ -478,7 +476,7 @@ SX1276LoRaSetWokeUpPreambleLenth:
         MOVS     R3,R5
         BL       __aeabi_ddiv
         MOVS     R2,#+0
-        LDR      R3,??DataTable20_4  ;; 0x40340000
+        LDR      R3,??DataTable21  ;; 0x40340000
         BL       __aeabi_dadd
         BL       __aeabi_d2uiz
         LDR      R1,??DataTable23
@@ -546,12 +544,12 @@ SX1276LoRaGetOpMode:
         THUMB
 SX1276LoRaReadRxGain:
         PUSH     {R7,LR}
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R1,[R0, #+0]
         ADDS     R1,R1,#+12
         MOVS     R0,#+12
         BL       SX1276Read
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R0,[R0, #+0]
         LDRB     R0,[R0, #+12]
         UXTB     R0,R0
@@ -561,14 +559,14 @@ SX1276LoRaReadRxGain:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SX1276LoRaGetPacketRxGain:
-        LDR      R0,??DataTable24_1
+        LDR      R0,??DataTable25_1
         LDRB     R0,[R0, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SX1276LoRaGetPacketSnr:
-        LDR      R0,??DataTable24_2
+        LDR      R0,??DataTable25_2
         MOVS     R1,#+0
         LDRSB    R0,[R0, R1]
         BX       LR               ;; return
@@ -576,7 +574,7 @@ SX1276LoRaGetPacketSnr:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SX1276LoRaGetPacketRssi:
-        LDR      R0,??DataTable25
+        LDR      R0,??DataTable25_3
         LDM      R0,{R0,R1}
         BX       LR               ;; return
 
@@ -596,7 +594,7 @@ config_GDOx_Map:
         ADD      R1,SP,#+4
         LDRB     R1,[R1, #+3]
         ORRS     R1,R1,R0
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R0,[R0, #+0]
         ADDS     R0,R0,#+63
         STRB     R1,[R0, #+0]
@@ -605,12 +603,12 @@ config_GDOx_Map:
         ADD      R1,SP,#+4
         LDRB     R1,[R1, #+5]
         ORRS     R1,R1,R0
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R0,[R0, #+0]
         ADDS     R0,R0,#+64
         STRB     R1,[R0, #+0]
         MOVS     R2,#+2
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R1,[R0, #+0]
         ADDS     R1,R1,#+63
         MOVS     R0,#+64
@@ -634,7 +632,7 @@ SX1276LoRaReadRssi:
         BL       SX1276Read
         LDR      R0,??DataTable17
         LDR      R0,[R0, #+0]
-        LDR      R1,??DataTable24_3  ;; 0x33428f00
+        LDR      R1,??DataTable25_4  ;; 0x33428f00
         CMP      R0,R1
         BCS      ??SX1276LoRaReadRssi_0
         LDR      R0,??DataTable16
@@ -642,7 +640,7 @@ SX1276LoRaReadRssi:
         LDRB     R0,[R0, #+27]
         BL       __aeabi_ui2d
         MOVS     R2,#+0
-        LDR      R3,??DataTable24_4  ;; 0xc0648000
+        LDR      R3,??DataTable25_5  ;; 0xc0648000
         BL       __aeabi_dadd
         B        ??SX1276LoRaReadRssi_1
 ??SX1276LoRaReadRssi_0:
@@ -720,29 +718,29 @@ getPacketSnr:
 get_RxPacketRssi:
         PUSH     {R4-R7,LR}
         SUB      SP,SP,#+12
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R1,[R0, #+0]
         ADDS     R1,R1,#+26
         MOVS     R0,#+26
         BL       SX1276Read
         LDR      R0,??DataTable17
         LDR      R0,[R0, #+0]
-        LDR      R1,??DataTable24_3  ;; 0x33428f00
+        LDR      R1,??DataTable25_4  ;; 0x33428f00
         CMP      R0,R1
         BCS      ??get_RxPacketRssi_0
         MOVS     R4,#+0
-        LDR      R5,??DataTable24_4  ;; 0xc0648000
+        LDR      R5,??DataTable25_5  ;; 0xc0648000
         B        ??get_RxPacketRssi_1
 ??get_RxPacketRssi_0:
         MOVS     R4,#+0
         LDR      R5,??DataTable26  ;; 0xc063a000
 ??get_RxPacketRssi_1:
-        LDR      R0,??DataTable24_2
+        LDR      R0,??DataTable25_2
         MOVS     R1,#+0
         LDRSB    R0,[R0, R1]
         CMP      R0,#+0
         BPL      ??get_RxPacketRssi_2
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R0,[R0, #+0]
         LDRB     R0,[R0, #+26]
         BL       __aeabi_ui2d
@@ -751,7 +749,7 @@ get_RxPacketRssi:
         BL       __aeabi_dadd
         MOVS     R6,R0
         MOVS     R7,R1
-        LDR      R0,??DataTable24_2
+        LDR      R0,??DataTable25_2
         MOVS     R1,#+0
         LDRSB    R0,[R0, R1]
         BL       __aeabi_i2d
@@ -763,11 +761,11 @@ get_RxPacketRssi:
         SUBS     R2,R2,#+8
         B        ??get_RxPacketRssi_3
 ??get_RxPacketRssi_2:
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R0,[R0, #+0]
         LDRB     R0,[R0, #+26]
         BL       __aeabi_ui2d
-        ADR      R2,??DataTable26_4
+        ADR      R2,??DataTable26_3
         LDM      R2,{R2,R3}
         BL       __aeabi_dmul
         MOVS     R2,R4
@@ -792,7 +790,7 @@ get_RxPacketRssi:
         THUMB
 hal_get_equal_RxPacketRssi:
         PUSH     {R7,LR}
-        LDR      R0,??DataTable25
+        LDR      R0,??DataTable25_3
         LDM      R0,{R0,R1}
         BL       __aeabi_d2iz
         MOVS     R1,R0
@@ -813,14 +811,14 @@ hal_get_equal_RxPacketRssi:
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SX1276LoRaGetRFState:
-        LDR      R0,??DataTable26_5
+        LDR      R0,??DataTable27
         LDRB     R0,[R0, #+0]
         BX       LR               ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SX1276LoRaSetRFState:
-        LDR      R1,??DataTable26_5
+        LDR      R1,??DataTable27
         STRB     R0,[R1, #+0]
         BX       LR               ;; return
 
@@ -848,12 +846,6 @@ SX1276LoRaSetRFState:
 ??DataTable20_3:
         DC32     0x3ff00000
 
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable20_4:
-        DC32     0x40340000
-
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
 SX1276LoRaInit:
@@ -863,68 +855,49 @@ SX1276LoRaInit:
         MOVS     R0,#+1
         BL       SX1276ReadBuffer
         MOVS     R0,#+32
-        LDR      R1,??DataTable24
+        LDR      R1,??DataTable25
         LDR      R1,[R1, #+0]
         STRB     R0,[R1, #+12]
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R0,[R0, #+0]
         LDRB     R1,[R0, #+12]
         MOVS     R0,#+12
         BL       SX1276Write
         MOVS     R0,#+0
         BL       SX1276LoRaSetOpMode
-        LDR      R0,??DataTable27
+        LDR      R0,??DataTable27_1
         LDR      R0,[R0, #+0]
         BL       SX1276LoRaSetRFFrequency
-        LDR      R0,??DataTable27
+        LDR      R0,??DataTable27_1
         LDRB     R0,[R0, #+6]
         BL       SX1276LoRaSetSpreadingFactor
-        LDR      R0,??DataTable27
+        LDR      R0,??DataTable27_1
         LDRB     R0,[R0, #+7]
         BL       SX1276LoRaSetErrorCoding
-        LDR      R0,??DataTable27
+        LDR      R0,??DataTable27_1
         LDRB     R0,[R0, #+8]
         BL       SX1276LoRaSetPacketCrcOn
-        LDR      R0,??DataTable27
+        LDR      R0,??DataTable27_1
         LDRB     R0,[R0, #+5]
         BL       SX1276LoRaSetSignalBandwidth
-        LDR      R0,??DataTable27
+        LDR      R0,??DataTable27_1
         LDRB     R0,[R0, #+9]
         BL       SX1276LoRaSetImplicitHeaderOn
-        LDR      R0,??DataTable26_3  ;; 0x3ff
+        LDR      R0,??DataTable27_2  ;; 0x3ff
         BL       SX1276LoRaSetSymbTimeout
-        LDR      R0,??DataTable27
+        LDR      R0,??DataTable27_1
         LDRB     R0,[R0, #+24]
         BL       SX1276LoRaSetPayloadLength
-        LDR      R0,??DataTable27
+        LDR      R0,??DataTable27_1
         LDR      R0,[R0, #+28]
         UXTH     R0,R0
         BL       SX1276LoRaSetPreambleLength
-        LDR      R0,??DataTable27
-        LDRB     R1,[R0, #+6]
-        LDR      R0,??DataTable27
-        LDRB     R0,[R0, #+5]
-        BL       SX1276LoRaGetSymbolTs
-        MOVS     R2,#+0
-        LDR      R3,??DataTable27_1  ;; 0x40300000
-        BL       __aeabi_cdrcmple
-        BHI      ??SX1276LoRaInit_0
-        MOVS     R0,#+1
-        BL       SX1276LoRaSetLowDatarateOptimize
-        B        ??SX1276LoRaInit_1
-??SX1276LoRaInit_0:
-        MOVS     R0,#+0
-        BL       SX1276LoRaSetLowDatarateOptimize
-??SX1276LoRaInit_1:
-        BL       SX1276LoRaInitHopPeriod
-        LDR      R1,??DataTable27
-        STRB     R0,[R1, #+12]
         MOVS     R0,#+0
         BL       SX1276LoRaSetPAOutput
         MOVS     R0,#+0
         BL       SX1276LoRaSetPa20dBm
         MOVS     R0,#+4
-        LDR      R1,??DataTable27
+        LDR      R1,??DataTable27_1
         LDRSB    R0,[R1, R0]
         BL       SX1276LoRaSetRFPower
         MOVS     R0,#+1
@@ -932,6 +905,12 @@ SX1276LoRaInit:
         MOVS     R0,#+0
         BL       SX1276LoRa_Receive_Packet
         POP      {R0,PC}          ;; return
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable21:
+        DC32     0x40340000
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -942,9 +921,9 @@ hal_PacketRF_TxData:
         UXTB     R5,R5
         MOVS     R2,R5
         MOVS     R1,R4
-        LDR      R0,??DataTable27_2
-        BL       w_memcpy
         LDR      R0,??DataTable27_3
+        BL       w_memcpy
+        LDR      R0,??DataTable27_4
         STRB     R5,[R0, #+0]
         POP      {R0,R4,R5,PC}    ;; return
 
@@ -953,7 +932,7 @@ hal_PacketRF_TxData:
 SX1276StartSleep:
         PUSH     {R7,LR}
         MOVS     R1,#+0
-        LDR      R0,??DataTable27_4  ;; 0x1e02
+        LDR      R0,??DataTable27_5  ;; 0x1e02
         BL       hal_sRF_ITConfig
         MOVS     R0,#+0
         BL       SX1276LoRaSetOpMode
@@ -976,95 +955,65 @@ SX1276StartSleep:
 receiveRxData:
         PUSH     {R4,LR}
         MOVS     R4,R0
-        LDR      R0,??DataTable27
+        LDR      R0,??DataTable27_1
         LDRB     R0,[R0, #+10]
         CMP      R0,#+1
         BNE      ??receiveRxData_0
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R0,[R0, #+0]
         LDRB     R0,[R0, #+15]
-        LDR      R1,??DataTable24
+        LDR      R1,??DataTable25
         LDR      R1,[R1, #+0]
         STRB     R0,[R1, #+13]
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R0,[R0, #+0]
         LDRB     R1,[R0, #+13]
         MOVS     R0,#+13
         BL       SX1276Write
         B        ??receiveRxData_1
 ??receiveRxData_0:
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R1,[R0, #+0]
         ADDS     R1,R1,#+16
         MOVS     R0,#+16
         BL       SX1276Read
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R0,[R0, #+0]
         LDRB     R0,[R0, #+16]
-        LDR      R1,??DataTable24
+        LDR      R1,??DataTable25
         LDR      R1,[R1, #+0]
         STRB     R0,[R1, #+13]
 ??receiveRxData_1:
-        LDR      R0,??DataTable27
+        LDR      R0,??DataTable27_1
         LDRB     R0,[R0, #+9]
         CMP      R0,#+0
         BNE      ??receiveRxData_2
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R1,[R0, #+0]
         ADDS     R1,R1,#+19
         MOVS     R0,#+19
         BL       SX1276Read
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R0,[R0, #+0]
         LDRB     R0,[R0, #+19]
-        LDR      R1,??DataTable27_5
+        LDR      R1,??DataTable27_6
         STRB     R0,[R1, #+0]
         B        ??receiveRxData_3
 ??receiveRxData_2:
-        LDR      R0,??DataTable24
+        LDR      R0,??DataTable25
         LDR      R0,[R0, #+0]
         ADDS     R0,R0,#+34
         LDRB     R0,[R0, #+0]
-        LDR      R1,??DataTable27_5
+        LDR      R1,??DataTable27_6
         STRB     R0,[R1, #+0]
 ??receiveRxData_3:
-        LDR      R0,??DataTable27_5
+        LDR      R0,??DataTable27_6
         LDRB     R1,[R0, #+0]
-        LDR      R0,??DataTable27_2
+        LDR      R0,??DataTable27_3
         BL       SX1276ReadFifo
         MOVS     R0,#+1
         BL       RxEndProcess
         POP      {R4,PC}          ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable24:
-        DC32     SX1276LR
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable24_1:
-        DC32     RxGain
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable24_2:
-        DC32     RxPacketSnrEstimate
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable24_3:
-        DC32     0x33428f00
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable24_4:
-        DC32     0xc0648000
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1072,14 +1021,14 @@ RxEndProcess:
         PUSH     {R4,LR}
         MOVS     R4,R0
         MOVS     R0,#+3
-        LDR      R1,??DataTable26_5
+        LDR      R1,??DataTable27
         STRB     R0,[R1, #+0]
-        LDR      R0,??DataTable27_6
+        LDR      R0,??DataTable27_7
         STRB     R4,[R0, #+0]
         MOVS     R0,#+0
-        LDR      R1,??DataTable27_7
+        LDR      R1,??DataTable27_8
         STRB     R0,[R1, #+0]
-        LDR      R2,??DataTable26_5
+        LDR      R2,??DataTable27
         MOVS     R1,#+134
         LDR      R0,??DataTable28
         BL       process_post
@@ -1089,7 +1038,37 @@ RxEndProcess:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable25:
+        DC32     SX1276LR
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable25_1:
+        DC32     RxGain
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable25_2:
+        DC32     RxPacketSnrEstimate
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable25_3:
         DC32     RxPacketRssiValue
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable25_4:
+        DC32     0x33428f00
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable25_5:
+        DC32     0xc0648000
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1098,18 +1077,18 @@ SX1276LoRa_CAD_Scan:
         MOVS     R0,#+1
         BL       SX1276LoRaSetOpMode
         MOVS     R0,#+255
-        LDR      R1,??DataTable27_8
+        LDR      R1,??DataTable27_9
         LDR      R1,[R1, #+0]
         STRB     R0,[R1, #+17]
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R0,[R0, #+0]
         LDRB     R0,[R0, #+17]
         MOVS     R1,#+250
         ANDS     R1,R1,R0
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R0,[R0, #+0]
         STRB     R1,[R0, #+17]
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R0,[R0, #+0]
         LDRB     R1,[R0, #+17]
         MOVS     R0,#+17
@@ -1132,7 +1111,7 @@ SX1276LoRa_CAD_Scan:
         MOVS     R0,#+7
         BL       SX1276LoRaSetOpMode
         MOVS     R0,#+11
-        LDR      R1,??DataTable27_9
+        LDR      R1,??DataTable27
         STRB     R0,[R1, #+0]
         POP      {R0,PC}          ;; return
 
@@ -1158,19 +1137,7 @@ SX1276LoRa_CAD_Scan:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable26_3:
-        DC32     0x3ff
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable26_4:
         DC32     0x295E9E1B,0x3FF110CB
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable26_5:
-        DC32     g_RF_LoRa+0x100
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1181,34 +1148,34 @@ SX1276LoRa_Send_Packet:
         MOVS     R0,#+1
         BL       SX1276LoRaSetOpMode
         MOVS     R0,#+255
-        LDR      R1,??DataTable27_8
+        LDR      R1,??DataTable27_9
         LDR      R1,[R1, #+0]
         STRB     R0,[R1, #+17]
         MOVS     R1,#+255
         MOVS     R0,#+18
         BL       SX1276Write
         MOVS     R1,#+0
-        LDR      R0,??DataTable27_4  ;; 0x1e02
+        LDR      R0,??DataTable27_5  ;; 0x1e02
         BL       hal_sRF_ITConfig
-        LDR      R0,??DataTable27
+        LDR      R0,??DataTable27_1
         LDRB     R0,[R0, #+11]
         CMP      R0,#+0
         BEQ      ??SX1276LoRa_Send_Packet_0
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R0,[R0, #+0]
         LDRB     R0,[R0, #+17]
         MOVS     R1,#+245
         ANDS     R1,R1,R0
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R0,[R0, #+0]
         STRB     R1,[R0, #+17]
-        LDR      R0,??DataTable27
+        LDR      R0,??DataTable27_1
         LDRB     R0,[R0, #+12]
-        LDR      R1,??DataTable27_8
+        LDR      R1,??DataTable27_9
         LDR      R1,[R1, #+0]
         ADDS     R1,R1,#+36
         STRB     R0,[R1, #+0]
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R1,[R0, #+0]
         ADDS     R1,R1,#+28
         MOVS     R0,#+28
@@ -1230,19 +1197,19 @@ SX1276LoRa_Send_Packet:
         STRB     R0,[R1, #+2]
         B        ??SX1276LoRa_Send_Packet_1
 ??SX1276LoRa_Send_Packet_0:
-        LDR      R0,??DataTable27
+        LDR      R0,??DataTable27_1
         LDR      R0,[R0, #+0]
         BL       SX1276LoRaSetRFFrequency
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R0,[R0, #+0]
         LDRB     R0,[R0, #+17]
         MOVS     R1,#+247
         ANDS     R1,R1,R0
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R0,[R0, #+0]
         STRB     R1,[R0, #+17]
         MOVS     R0,#+0
-        LDR      R1,??DataTable27_8
+        LDR      R1,??DataTable27_9
         LDR      R1,[R1, #+0]
         ADDS     R1,R1,#+36
         STRB     R0,[R1, #+0]
@@ -1250,13 +1217,13 @@ SX1276LoRa_Send_Packet:
         LDR      R1,??DataTable28_2
         STRB     R0,[R1, #+0]
 ??SX1276LoRa_Send_Packet_1:
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R0,[R0, #+0]
         ADDS     R0,R0,#+36
         LDRB     R1,[R0, #+0]
         MOVS     R0,#+36
         BL       SX1276Write
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R0,[R0, #+0]
         LDRB     R1,[R0, #+17]
         MOVS     R0,#+17
@@ -1264,32 +1231,32 @@ SX1276LoRa_Send_Packet:
         LDR      R0,??DataTable28_2
         LDM      R0,{R0,R1}
         BL       config_GDOx_Map
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R0,[R0, #+0]
         ADDS     R0,R0,#+34
         STRB     R4,[R0, #+0]
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R0,[R0, #+0]
         ADDS     R0,R0,#+34
         LDRB     R1,[R0, #+0]
         MOVS     R0,#+34
         BL       SX1276Write
         MOVS     R0,#+0
-        LDR      R1,??DataTable27_8
+        LDR      R1,??DataTable27_9
         LDR      R1,[R1, #+0]
         STRB     R0,[R1, #+14]
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R0,[R0, #+0]
         LDRB     R1,[R0, #+14]
         MOVS     R0,#+14
         BL       SX1276Write
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R0,[R0, #+0]
         LDRB     R0,[R0, #+14]
-        LDR      R1,??DataTable27_8
+        LDR      R1,??DataTable27_9
         LDR      R1,[R1, #+0]
         STRB     R0,[R1, #+13]
-        LDR      R0,??DataTable27_8
+        LDR      R0,??DataTable27_9
         LDR      R0,[R0, #+0]
         LDRB     R1,[R0, #+13]
         MOVS     R0,#+13
@@ -1302,12 +1269,12 @@ SX1276LoRa_Send_Packet:
         BL       hal_PacketRF_TxData
         MOVS     R1,R4
         UXTB     R1,R1
-        LDR      R0,??DataTable27_2
+        LDR      R0,??DataTable27_3
         BL       SX1276WriteFifo
         MOVS     R1,#+1
         MOVS     R0,#+2
         BL       hal_sRF_ITConfig
-        LDR      R0,??DataTable27
+        LDR      R0,??DataTable27_1
         LDRB     R0,[R0, #+11]
         CMP      R0,#+0
         BEQ      ??SX1276LoRa_Send_Packet_2
@@ -1318,7 +1285,7 @@ SX1276LoRa_Send_Packet:
 ??SX1276LoRa_Send_Packet_2:
         MOVS     R0,#+3
         BL       SX1276LoRaSetOpMode
-        LDR      R2,??DataTable27_9
+        LDR      R2,??DataTable27
         MOVS     R1,#+134
         LDR      R0,??DataTable30
         BL       process_post
@@ -1328,61 +1295,61 @@ SX1276LoRa_Send_Packet:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable27:
-        DC32     LoRaSettings
+        DC32     g_RF_LoRa+0x100
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable27_1:
-        DC32     0x40300000
+        DC32     LoRaSettings
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable27_2:
-        DC32     g_RF_LoRa
+        DC32     0x3ff
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable27_3:
-        DC32     g_RF_LoRa+0x102
+        DC32     g_RF_LoRa
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable27_4:
-        DC32     0x1e02
+        DC32     g_RF_LoRa+0x102
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable27_5:
-        DC32     g_RF_LoRa+0x101
+        DC32     0x1e02
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable27_6:
-        DC32     g_RF_LoRa+0xFF
+        DC32     g_RF_LoRa+0x101
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable27_7:
-        DC32     g_RF_LoRa+0x103
+        DC32     g_RF_LoRa+0xFF
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable27_8:
-        DC32     SX1276LR
+        DC32     g_RF_LoRa+0x103
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable27_9:
-        DC32     g_RF_LoRa+0x100
+        DC32     SX1276LR
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1878,9 +1845,9 @@ EXTI4_15_IRQHandler:
 //   402 bytes in section .bss
 //    73 bytes in section .data
 //   280 bytes in section .rodata
-// 2 922 bytes in section .text
+// 2 870 bytes in section .text
 // 
-// 2 922 bytes of CODE  memory
+// 2 870 bytes of CODE  memory
 //   280 bytes of CONST memory
 //   475 bytes of DATA  memory
 //

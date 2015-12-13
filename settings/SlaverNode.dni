@@ -28,7 +28,7 @@ ITMportsTermIO=0
 ITMportsLogFile=0
 ITMlogFile=$PROJ_DIR$\ITM.log
 [DebugChecksum]
-Checksum=-1396136278
+Checksum=1396269303
 [Exceptions]
 StopOnUncaught=_ 0
 StopOnThrow=_ 0
@@ -38,19 +38,24 @@ ShowArgs=0
 MixedMode=1
 [struct_types]
 Fmt0=RN8209C_PARAM-PhsA	4	0
-Fmt1=ST_UPDATE-status	4	0
+Fmt1=ST_UPDATE-crcValue	4	0
+Fmt2=ST_UPDATE-status	4	0
+Fmt3=ST_UPDATE-total_packets	4	0
+Fmt4=ST_UPDATE-totoalBytes	4	0
+Fmt5=ST_UPDATE-version	4	0
 [array_types]
-Fmt0=char[1024]	5	0
+Fmt0=char[1024]	4	0
 Fmt1=u8[11]	4	0
 Fmt2=u8[128]	4	0
-Fmt3=u8[144]	4	0
-Fmt4=u8[20]	5	0
-Fmt5=u8[255]	4	0
-Fmt6=u8[5]	4	0
-Fmt7=u8[64]	4	0
-Fmt8=u8[6]	4	0
-Fmt9=u8[8]	4	0
-Fmt10=uint8_t[112]	4	0
+Fmt3=u8[12]	4	0
+Fmt4=u8[144]	4	0
+Fmt5=u8[20]	5	0
+Fmt6=u8[255]	4	0
+Fmt7=u8[5]	4	0
+Fmt8=u8[64]	4	0
+Fmt9=u8[6]	4	0
+Fmt10=u8[8]	4	0
+Fmt11=uint8_t[112]	4	0
 [watch_formats]
 Fmt0={W}0:crcvalue	4	0
 Fmt1={W}0:input[12]	4	0

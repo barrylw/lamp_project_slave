@@ -178,6 +178,12 @@ typedef enum
   WORK_GROUP,
 }FREQUENCY_GROUP_TYPE;
 
+typedef struct
+{
+  u16 crcVal;
+  u8 addr[6];
+}st_local_addr;
+
 //#define PUBLIC_GROUP_NO                           0
 
 /* END:   Added by Barry, 2014/3/1 */
@@ -234,7 +240,8 @@ void hal_start_CSMA(void);
 
 void hal_sRF_readFIFO_DMA(u8 * pBuffer, u8 length);
 u8 * get_phy_ptr(void);
-
+void set_addr(u8 *newaddr);
+void read_addr(u8 *addrbuf);
 /*!
  * DIO state read functions mapping
  */

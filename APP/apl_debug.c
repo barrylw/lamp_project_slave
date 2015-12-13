@@ -25,14 +25,15 @@
 #include "sx1276-Fsk.h"
 #include "gpio_per.h"  
 #include "stdlib.h"
-
+#include <string.h>
+    
 extern u8 tedtbuf[];
 void set_reg(void);
 void start_longSend(void);
 void changeHopChannel(void);
 void read_params_flash(void);
 void reset_update(void);
-
+extern st_CurUIP currentUIP;
 extern RN8209C_PARAM rn8209c_papameter;
 extern char *paralist[];
 extern u8 local_addr[];
@@ -72,7 +73,6 @@ static const ST_DEBUG_COMMAND CmdList[] =
   {"reset", SoftReset},
   {"settime", SetTime},
   {"gettime", GetTime},
-  {"senduart", SendUart},
   {"setpow",set_power},
   {"readreg",get_reg},
   {"writereg",set_reg},
@@ -647,7 +647,7 @@ void set_8209c_Kx(void)
     process_start(&start_time_detect_process, NULL);
 #endif
     
-    rn8209c_papameter.PStart       = 72;
+    rn8209c_papameter.PStart       = 0XEA;//72;//这里感觉应该设置为在校准后，没有负载的情况下，比功率寄存器稍大一点
     rn8209c_papameter.GPQA         = 9165;
     rn8209c_papameter.PhsA         = 25;
     rn8209c_papameter.Ku           = 1188111;  
@@ -751,7 +751,7 @@ void debug_save(void)
 void read_u_i_p(void)
 {
   read_UIP();
-  printf("U = %d I = %d P = %d",rn8209c_papameter.Uv,rn8209c_papameter.Ia,rn8209c_papameter.Pa);
+  printf("U = %d I = %d P = %d",currentUIP.Uv,currentUIP.Ia,currentUIP.Pa);
 }
 
 void read_adc(void)
@@ -807,7 +807,7 @@ u16 find_string16_len(char * str)
   return len;
 }
 
-void change_string_to_arry16(char * input, char *output)
+void change_string_to_arry16(char * input, u8 *output)
 {
   u16 len;
   
@@ -844,9 +844,8 @@ void set_local_addr(void)
    char str[20];
    u8   flashtemp[8];
    u16  crcvalue;
-   u8   temp[3] = {0,0,0};
 
-   GetStringParameter(str, 1);
+   GetStringParameter((u8*)str, 1);
    
 
    if ( (str[0] == '0') && (str[1] == 'x') && (str[14] == 0))
@@ -864,8 +863,7 @@ void set_local_addr(void)
         {
             FLASH_Write_chars( FLASH_LOCAL_ADDR_ADDRESS,  flashtemp, 8);
         }  
-        memset(flashtemp, 0,8);
-        memcpy(flashtemp, (u8*)FLASH_LOCAL_ADDR_ADDRESS, 8);
+     
         
         printf("local_addr 0x%.2x%.2x%.2x%.2x%.2x%.2x\r\n",local_addr[0],local_addr[1],local_addr[2], \
            local_addr[3],local_addr[4],local_addr[5]); 

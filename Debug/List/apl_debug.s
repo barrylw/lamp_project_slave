@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       12/Dec/2015  18:20:04
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       13/Dec/2015  23:36:15
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -9,7 +9,7 @@
 //    Command line =  
 //        G:\git_hub_lamp\lamp_slave_git\APP\apl_debug.c -D
 //        USE_STDPERIPH_DRIVER -D STM32F030X8 -D AUTOSTART_ENABLE -D
-//        PRINTF_DEBUG -D USE_LORA_MODE -lb
+//        USE_LORA_MODE -D PRINTF_DEBUG -lb
 //        G:\git_hub_lamp\lamp_slave_git\Debug\List\ --diag_suppress Pa050 -o
 //        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ --no_cse --no_unroll
 //        --no_inline --no_code_motion --no_tbaa --no_clustering
@@ -48,7 +48,6 @@
         EXTERN SX1276LoRa_Send_Packet
         EXTERN SX1276Read
         EXTERN SX1276Write
-        EXTERN SendUart
         EXTERN SetTime
         EXTERN SoftReset
         EXTERN __aeabi_f2d
@@ -57,6 +56,7 @@
         EXTERN __aeabi_memclr4
         EXTERN atoi
         EXTERN config_8209c_reg
+        EXTERN currentUIP
         EXTERN g_DebugRxBuffer
         EXTERN g_DebugRxFlag
         EXTERN g_SystickCounter
@@ -81,7 +81,6 @@
         EXTERN strtol
         EXTERN tedtbuf
         EXTERN w_memcpy
-        EXTERN w_memset
         EXTERN write_finish_debug
 
         PUBLIC GetStringParameter
@@ -148,12 +147,6 @@ hal_GetSystickCounter:
 `?<Constant "gettime">`:
         DATA
         DC8 "gettime"
-
-        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
-`?<Constant "senduart">`:
-        DATA
-        DC8 "senduart"
-        DC8 0, 0, 0
 
         SECTION `.rodata`:CONST:REORDER:NOROOT(2)
 `?<Constant "setpow">`:
@@ -416,10 +409,6 @@ hal_GetSystickCounter:
         DC8 0, 0, 0, 0
 
         SECTION `.rodata`:CONST:REORDER:NOROOT(2)
-        DATA
-        DC8 0, 0, 0, 0
-
-        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
 `?<Constant "local_addr 0x%.2x%.2x...">`:
         DATA
         DC8 "local_addr 0x%.2x%.2x%.2x%.2x%.2x%.2x\015\012"
@@ -446,12 +435,11 @@ CmdList:
         DATA
         DC32 `?<Constant "version">`, ReadVersion, `?<Constant "reset">`
         DC32 SoftReset, `?<Constant "settime">`, SetTime
-        DC32 `?<Constant "gettime">`, GetTime, `?<Constant "senduart">`
-        DC32 SendUart, `?<Constant "setpow">`, set_power
-        DC32 `?<Constant "readreg">`, get_reg, `?<Constant "writereg">`
-        DC32 set_reg, `?<Constant "readft">`, read_reg_all, `?<Constant "tx">`
-        DC32 send_packet, `?<Constant "rx">`, receive_packet
-        DC32 `?<Constant "radioreset">`, radio_reset
+        DC32 `?<Constant "gettime">`, GetTime, `?<Constant "setpow">`
+        DC32 set_power, `?<Constant "readreg">`, get_reg
+        DC32 `?<Constant "writereg">`, set_reg, `?<Constant "readft">`
+        DC32 read_reg_all, `?<Constant "tx">`, send_packet, `?<Constant "rx">`
+        DC32 receive_packet, `?<Constant "radioreset">`, radio_reset
         DC32 `?<Constant "hopchannel">`, changeHopChannel
         DC32 `?<Constant "read8209c">`, read_8209c_reg
         DC32 `?<Constant "set8209c">`, set_8209c_Reg, `?<Constant "setgain">`
@@ -499,7 +487,7 @@ apl_ProcessCmdLine:
         STR      R0,[SP, #+0]
         MOVS     R4,#+0
         MOVS     R5,#+0
-        MOVS     R0,#+32
+        MOVS     R0,#+31
         MOV      R1,SP
         STRB     R0,[R1, #+8]
         MOVS     R7,#+1
@@ -1339,36 +1327,36 @@ cal_power_angle:
         THUMB
 set_8209c_Kx:
         PUSH     {R7,LR}
-        MOVS     R0,#+72
+        MOVS     R0,#+234
         LDR      R1,??DataTable22_5
-        STRH     R0,[R1, #+6]
+        STRH     R0,[R1, #+24]
         LDR      R0,??DataTable22_6  ;; 0x23cd
         LDR      R1,??DataTable22_5
-        STRH     R0,[R1, #+8]
+        STRH     R0,[R1, #+26]
         MOVS     R0,#+25
         LDR      R1,??DataTable22_5
-        STRB     R0,[R1, #+10]
+        STRB     R0,[R1, #+28]
         LDR      R0,??DataTable22_7  ;; 0x12210f
         LDR      R1,??DataTable22_5
-        STR      R0,[R1, #+16]
+        STR      R0,[R1, #+0]
         LDR      R0,??DataTable22_8  ;; 0x18894
         LDR      R1,??DataTable22_5
-        STR      R0,[R1, #+20]
+        STR      R0,[R1, #+4]
         LDR      R0,??DataTable22_9  ;; 0x41bcb852
         LDR      R1,??DataTable22_5
-        STR      R0,[R1, #+24]
+        STR      R0,[R1, #+8]
         MOVS     R0,#+0
         LDR      R1,??DataTable22_5
-        STRH     R0,[R1, #+48]
+        STRH     R0,[R1, #+34]
         MOVS     R0,#+0
         LDR      R1,??DataTable22_5
-        STR      R0,[R1, #+44]
+        STR      R0,[R1, #+16]
         MOVS     R0,#+0
         LDR      R1,??DataTable22_5
-        STRH     R0,[R1, #+28]
+        STRH     R0,[R1, #+32]
         MOVS     R0,#+1
         LDR      R1,??DataTable22_5
-        STRB     R0,[R1, #+4]
+        STRB     R0,[R1, #+29]
         BL       save_8209c_params
         LDR      R0,??DataTable22_10  ;; 0x800f800
         BL       FLASH_ErasePage
@@ -1386,37 +1374,37 @@ read_param_all:
         PUSH     {LR}
         SUB      SP,SP,#+36
         LDR      R0,??DataTable22_5
-        LDR      R0,[R0, #+44]
+        LDR      R0,[R0, #+16]
         STR      R0,[SP, #+32]
         LDR      R0,??DataTable22_5
-        LDRH     R0,[R0, #+48]
+        LDRH     R0,[R0, #+34]
         STR      R0,[SP, #+28]
         LDR      R0,??DataTable22_5
-        LDRH     R0,[R0, #+28]
+        LDRH     R0,[R0, #+32]
         STR      R0,[SP, #+24]
         LDR      R0,??DataTable22_5
-        LDR      R0,[R0, #+24]
+        LDR      R0,[R0, #+8]
         BL       __aeabi_f2d
         STR      R0,[SP, #+16]
         STR      R1,[SP, #+20]
         LDR      R0,??DataTable22_5
-        LDR      R0,[R0, #+20]
+        LDR      R0,[R0, #+4]
         STR      R0,[SP, #+12]
         LDR      R0,??DataTable22_5
-        LDR      R0,[R0, #+16]
+        LDR      R0,[R0, #+0]
         STR      R0,[SP, #+8]
         LDR      R0,??DataTable22_5
-        LDRH     R0,[R0, #+12]
+        LDRH     R0,[R0, #+30]
         STR      R0,[SP, #+4]
         LDR      R0,??DataTable22_5
-        LDRB     R0,[R0, #+10]
+        LDRB     R0,[R0, #+28]
         STR      R0,[SP, #+0]
         LDR      R0,??DataTable22_5
-        LDRH     R3,[R0, #+8]
+        LDRH     R3,[R0, #+26]
         LDR      R0,??DataTable22_5
-        LDRH     R2,[R0, #+6]
+        LDRH     R2,[R0, #+24]
         LDR      R0,??DataTable22_5
-        LDRH     R1,[R0, #+0]
+        LDRH     R1,[R0, #+20]
         LDR      R0,??DataTable23
         BL       printf
         ADD      SP,SP,#+36
@@ -1428,39 +1416,39 @@ reset_8029c:
         PUSH     {R7,LR}
         BL       rn8209c_init
         LDR      R0,??DataTable22_5
-        LDRH     R1,[R0, #+0]
+        LDRH     R1,[R0, #+20]
         MOVS     R0,#+2
         BL       config_8209c_reg
         MOVS     R0,#+0
         LDR      R1,??DataTable22_5
-        STRH     R0,[R1, #+6]
+        STRH     R0,[R1, #+24]
         MOVS     R0,#+0
         LDR      R1,??DataTable22_5
-        STRH     R0,[R1, #+8]
+        STRH     R0,[R1, #+26]
         MOVS     R0,#+0
         LDR      R1,??DataTable22_5
-        STRB     R0,[R1, #+10]
+        STRB     R0,[R1, #+28]
         MOVS     R0,#+0
         LDR      R1,??DataTable22_5
-        STRH     R0,[R1, #+12]
+        STRH     R0,[R1, #+30]
+        MOVS     R0,#+0
+        LDR      R1,??DataTable22_5
+        STR      R0,[R1, #+0]
+        MOVS     R0,#+0
+        LDR      R1,??DataTable22_5
+        STR      R0,[R1, #+4]
+        MOVS     R0,#+0
+        LDR      R1,??DataTable22_5
+        STR      R0,[R1, #+8]
+        MOVS     R0,#+0
+        LDR      R1,??DataTable22_5
+        STRH     R0,[R1, #+32]
+        MOVS     R0,#+0
+        LDR      R1,??DataTable22_5
+        STRH     R0,[R1, #+34]
         MOVS     R0,#+0
         LDR      R1,??DataTable22_5
         STR      R0,[R1, #+16]
-        MOVS     R0,#+0
-        LDR      R1,??DataTable22_5
-        STR      R0,[R1, #+20]
-        MOVS     R0,#+0
-        LDR      R1,??DataTable22_5
-        STR      R0,[R1, #+24]
-        MOVS     R0,#+0
-        LDR      R1,??DataTable22_5
-        STRH     R0,[R1, #+28]
-        MOVS     R0,#+0
-        LDR      R1,??DataTable22_5
-        STRH     R0,[R1, #+48]
-        MOVS     R0,#+0
-        LDR      R1,??DataTable22_5
-        STR      R0,[R1, #+44]
         POP      {R0,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -1518,9 +1506,9 @@ read_energy:
         BL       get_light_time
         MOVS     R4,R0
         LDR      R0,??DataTable22_5
-        LDR      R3,[R0, #+44]
+        LDR      R3,[R0, #+16]
         LDR      R0,??DataTable22_5
-        LDRH     R2,[R0, #+48]
+        LDRH     R2,[R0, #+34]
         MOVS     R1,R4
         LDR      R0,??DataTable25_2
         BL       printf
@@ -1558,13 +1546,13 @@ debug_save:
 read_u_i_p:
         PUSH     {R7,LR}
         BL       read_UIP
-        LDR      R0,??DataTable22_5
-        LDRH     R3,[R0, #+36]
-        LDR      R0,??DataTable22_5
-        LDR      R2,[R0, #+32]
-        LDR      R0,??DataTable22_5
-        LDRH     R1,[R0, #+30]
         LDR      R0,??DataTable25_5
+        LDR      R3,[R0, #+8]
+        LDR      R0,??DataTable25_5
+        LDR      R2,[R0, #+4]
+        LDR      R0,??DataTable25_5
+        LDR      R1,[R0, #+0]
+        LDR      R0,??DataTable25_6
         BL       printf
         POP      {R0,PC}          ;; return
 
@@ -1576,7 +1564,7 @@ read_adc:
         MOVS     R4,R0
         UXTH     R4,R4
         MOVS     R1,R4
-        LDR      R0,??DataTable25_6
+        LDR      R0,??DataTable25_7
         BL       printf
         POP      {R4,PC}          ;; return
 
@@ -1805,38 +1793,35 @@ change_string_to_arry16:
         THUMB
 set_local_addr:
         PUSH     {R4,LR}
-        SUB      SP,SP,#+48
-        ADD      R0,SP,#+20
-        MOVS     R1,#+0
-        STR      R1,[R0, #0]
+        SUB      SP,SP,#+40
         MOVS     R1,#+1
-        ADD      R0,SP,#+24
+        ADD      R0,SP,#+20
         BL       GetStringParameter
         MOV      R0,SP
-        LDRB     R0,[R0, #+24]
+        LDRB     R0,[R0, #+20]
         CMP      R0,#+48
         BNE      ??set_local_addr_0
-        ADD      R0,SP,#+24
+        ADD      R0,SP,#+20
         LDRB     R0,[R0, #+1]
         CMP      R0,#+120
         BNE      ??set_local_addr_0
-        ADD      R0,SP,#+24
+        ADD      R0,SP,#+20
         LDRB     R0,[R0, #+14]
         CMP      R0,#+0
         BNE      ??set_local_addr_0
-        ADD      R0,SP,#+24
+        ADD      R0,SP,#+20
         BL       find_string16_len
         CMP      R0,#+12
         BNE      ??set_local_addr_1
-        LDR      R1,??DataTable25_7
-        ADD      R0,SP,#+24
+        LDR      R1,??DataTable25_8
+        ADD      R0,SP,#+20
         BL       change_string_to_arry16
         MOVS     R1,#+6
-        LDR      R0,??DataTable25_7
+        LDR      R0,??DataTable25_8
         BL       GetCRC16
         MOVS     R4,R0
         MOVS     R2,#+6
-        LDR      R1,??DataTable25_7
+        LDR      R1,??DataTable25_8
         ADD      R0,SP,#+12
         BL       w_memcpy
         MOVS     R0,R4
@@ -1847,50 +1832,42 @@ set_local_addr:
         LSRS     R0,R0,#+8
         ADD      R1,SP,#+12
         STRB     R0,[R1, #+7]
-        LDR      R0,??DataTable25_8  ;; 0x800f000
+        LDR      R0,??DataTable25_9  ;; 0x800f000
         BL       FLASH_ErasePage
         CMP      R0,#+4
         BNE      ??set_local_addr_2
         MOVS     R2,#+8
         ADD      R1,SP,#+12
-        LDR      R0,??DataTable25_8  ;; 0x800f000
+        LDR      R0,??DataTable25_9  ;; 0x800f000
         BL       FLASH_Write_chars
 ??set_local_addr_2:
-        MOVS     R2,#+8
-        MOVS     R1,#+0
-        ADD      R0,SP,#+12
-        BL       w_memset
-        MOVS     R2,#+8
-        LDR      R1,??DataTable25_8  ;; 0x800f000
-        ADD      R0,SP,#+12
-        BL       w_memcpy
-        LDR      R0,??DataTable25_7
+        LDR      R0,??DataTable25_8
         LDRB     R0,[R0, #+5]
         STR      R0,[SP, #+8]
-        LDR      R0,??DataTable25_7
+        LDR      R0,??DataTable25_8
         LDRB     R0,[R0, #+4]
         STR      R0,[SP, #+4]
-        LDR      R0,??DataTable25_7
+        LDR      R0,??DataTable25_8
         LDRB     R0,[R0, #+3]
         STR      R0,[SP, #+0]
-        LDR      R0,??DataTable25_7
+        LDR      R0,??DataTable25_8
         LDRB     R3,[R0, #+2]
-        LDR      R0,??DataTable25_7
+        LDR      R0,??DataTable25_8
         LDRB     R2,[R0, #+1]
-        LDR      R0,??DataTable25_7
+        LDR      R0,??DataTable25_8
         LDRB     R1,[R0, #+0]
-        LDR      R0,??DataTable25_9
-        BL       printf
-        B        ??set_local_addr_3
-??set_local_addr_1:
         LDR      R0,??DataTable25_10
         BL       printf
         B        ??set_local_addr_3
-??set_local_addr_0:
+??set_local_addr_1:
         LDR      R0,??DataTable25_11
         BL       printf
+        B        ??set_local_addr_3
+??set_local_addr_0:
+        LDR      R0,??DataTable25_12
+        BL       printf
 ??set_local_addr_3:
-        ADD      SP,SP,#+48
+        ADD      SP,SP,#+40
         POP      {R4,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(2)
@@ -1903,22 +1880,22 @@ set_local_addr:
         THUMB
 read_local_addr:
         PUSH     {R5-R7,LR}
-        LDR      R0,??DataTable25_7
+        LDR      R0,??DataTable25_8
         LDRB     R0,[R0, #+5]
         STR      R0,[SP, #+8]
-        LDR      R0,??DataTable25_7
+        LDR      R0,??DataTable25_8
         LDRB     R0,[R0, #+4]
         STR      R0,[SP, #+4]
-        LDR      R0,??DataTable25_7
+        LDR      R0,??DataTable25_8
         LDRB     R0,[R0, #+3]
         STR      R0,[SP, #+0]
-        LDR      R0,??DataTable25_7
+        LDR      R0,??DataTable25_8
         LDRB     R3,[R0, #+2]
-        LDR      R0,??DataTable25_7
+        LDR      R0,??DataTable25_8
         LDRB     R2,[R0, #+1]
-        LDR      R0,??DataTable25_7
+        LDR      R0,??DataTable25_8
         LDRB     R1,[R0, #+0]
-        LDR      R0,??DataTable25_9
+        LDR      R0,??DataTable25_10
         BL       printf
         POP      {R0-R2,PC}       ;; return
 
@@ -1927,7 +1904,7 @@ read_local_addr:
 write_finish:
         PUSH     {R7,LR}
         BL       write_finish_debug
-        LDR      R0,??DataTable25_12
+        LDR      R0,??DataTable25_13
         BL       printf
         POP      {R0,PC}          ;; return
 
@@ -1965,48 +1942,54 @@ write_finish:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable25_5:
-        DC32     `?<Constant "U = %d I = %d P = %d">`
+        DC32     currentUIP
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable25_6:
-        DC32     `?<Constant "adc = %d">`
+        DC32     `?<Constant "U = %d I = %d P = %d">`
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable25_7:
-        DC32     local_addr
+        DC32     `?<Constant "adc = %d">`
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable25_8:
-        DC32     0x800f000
+        DC32     local_addr
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable25_9:
-        DC32     `?<Constant "local_addr 0x%.2x%.2x...">`
+        DC32     0x800f000
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable25_10:
-        DC32     `?<Constant "input  err\\r\\n">`
+        DC32     `?<Constant "local_addr 0x%.2x%.2x...">`
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable25_11:
-        DC32     `?<Constant "input haven\\'t start a...">`
+        DC32     `?<Constant "input  err\\r\\n">`
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable25_12:
+        DC32     `?<Constant "input haven\\'t start a...">`
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable25_13:
         DC32     `?<Constant "OK\\r\\n">`
 
         SECTION `.iar_vfe_header`:DATA:NOALLOC:NOROOT(2)
@@ -2022,11 +2005,11 @@ write_finish:
 
         END
 // 
-// 1 020 bytes in section .rodata
-// 2 564 bytes in section .text
+//   996 bytes in section .rodata
+// 2 542 bytes in section .text
 // 
-// 2 564 bytes of CODE  memory
-// 1 020 bytes of CONST memory
+// 2 542 bytes of CODE  memory
+//   996 bytes of CONST memory
 //
 //Errors: none
-//Warnings: 4
+//Warnings: none
