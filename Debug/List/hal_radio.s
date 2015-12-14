@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       14/Dec/2015  14:25:46
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       14/Dec/2015  19:06:10
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -99,6 +99,7 @@
         PUBLIC cmd_broadcast
         PUBLIC cmd_op_light
         PUBLIC cmd_read_data
+        PUBLIC cmd_read_uid
         PUBLIC cmd_update
         PUBLIC hal_InitRF
         PUBLIC hal_Init_RF_pins
@@ -192,6 +193,11 @@ cmd_read_data:
 cmd_op_light:
         DATA
         DC8 1, 0, 0, 96
+
+        SECTION `.data`:DATA:REORDER:NOROOT(2)
+cmd_read_uid:
+        DATA
+        DC8 15, 0, 0, 96
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -297,38 +303,38 @@ apl_ProcessRadioCmd:
         B        ??apl_ProcessRadioCmd_6
 ??apl_ProcessRadioCmd_7:
         MOVS     R2,#+4
-        LDR      R1,??apl_ProcessRadioCmd_8
-        LDR      R0,??apl_ProcessRadioCmd_0+0x10
+        LDR      R1,??apl_ProcessRadioCmd_0+0x10
+        LDR      R0,??apl_ProcessRadioCmd_0+0x14
         BL       `cmp`
         CMP      R0,#+1
-        BNE      ??apl_ProcessRadioCmd_9
+        BNE      ??apl_ProcessRadioCmd_8
         MOVS     R2,#+6
         LDR      R1,??apl_ProcessRadioCmd_0+0x4
         LDR      R0,??apl_ProcessRadioCmd_0+0x8
         BL       `cmp`
         CMP      R0,#+1
-        BNE      ??apl_ProcessRadioCmd_9
+        BNE      ??apl_ProcessRadioCmd_8
         LDR      R0,??apl_ProcessRadioCmd_0
         LDRB     R0,[R0, #+14]
         MOVS     R4,R0
         UXTB     R4,R4
         CMP      R4,#+0
-        BNE      ??apl_ProcessRadioCmd_10
+        BNE      ??apl_ProcessRadioCmd_9
         MOVS     R1,#+2
-        LDR      R0,??apl_ProcessRadioCmd_0+0x14  ;; 0x48000400
+        LDR      R0,??apl_ProcessRadioCmd_0+0x18  ;; 0x48000400
         BL       GPIO_SetBits
         MOVS     R0,R4
         UXTB     R0,R0
         BL       set_PWM
-        B        ??apl_ProcessRadioCmd_11
-??apl_ProcessRadioCmd_10:
+        B        ??apl_ProcessRadioCmd_10
+??apl_ProcessRadioCmd_9:
         MOVS     R1,#+2
-        LDR      R0,??apl_ProcessRadioCmd_0+0x14  ;; 0x48000400
+        LDR      R0,??apl_ProcessRadioCmd_0+0x18  ;; 0x48000400
         BL       GPIO_ResetBits
         MOVS     R0,R4
         UXTB     R0,R0
         BL       set_PWM
-??apl_ProcessRadioCmd_11:
+??apl_ProcessRadioCmd_10:
         LDR      R0,??apl_ProcessRadioCmd_0
         LDRB     R0,[R0, #+8]
         MOVS     R1,#+128
@@ -339,8 +345,8 @@ apl_ProcessRadioCmd:
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+9]
         MOVS     R2,#+4
-        LDR      R1,??apl_ProcessRadioCmd_0+0x10
-        LDR      R0,??apl_ProcessRadioCmd_8
+        LDR      R1,??apl_ProcessRadioCmd_0+0x14
+        LDR      R0,??apl_ProcessRadioCmd_0+0x10
         BL       MemCpy
         LDR      R0,??apl_ProcessRadioCmd_0
         LDRB     R1,[R0, #+9]
@@ -391,73 +397,73 @@ apl_ProcessRadioCmd:
         UXTB     R1,R1
         LDR      R0,??apl_ProcessRadioCmd_0
         BL       SX1276LoRa_Send_Packet
-        B        ??apl_ProcessRadioCmd_12
-??apl_ProcessRadioCmd_9:
+        B        ??apl_ProcessRadioCmd_11
+??apl_ProcessRadioCmd_8:
         MOVS     R2,#+4
-        LDR      R1,??apl_ProcessRadioCmd_8
-        LDR      R0,??DataTable1
+        LDR      R1,??apl_ProcessRadioCmd_0+0x10
+        LDR      R0,??apl_ProcessRadioCmd_0+0x1C
         BL       `cmp`
         CMP      R0,#+1
-        BNE      ??apl_ProcessRadioCmd_13
+        BNE      ??apl_ProcessRadioCmd_12
         MOVS     R2,#+6
         LDR      R1,??apl_ProcessRadioCmd_0+0x4
         LDR      R0,??apl_ProcessRadioCmd_0+0xC
         BL       `cmp`
         CMP      R0,#+1
-        BNE      ??apl_ProcessRadioCmd_13
+        BNE      ??apl_ProcessRadioCmd_12
         LDR      R0,??apl_ProcessRadioCmd_0
         LDRB     R0,[R0, #+14]
         MOVS     R4,R0
         UXTB     R4,R4
         CMP      R4,#+0
-        BNE      ??apl_ProcessRadioCmd_14
+        BNE      ??apl_ProcessRadioCmd_13
         MOVS     R1,#+2
-        LDR      R0,??apl_ProcessRadioCmd_0+0x14  ;; 0x48000400
+        LDR      R0,??apl_ProcessRadioCmd_0+0x18  ;; 0x48000400
         BL       GPIO_SetBits
         MOVS     R0,R4
         UXTB     R0,R0
         BL       set_PWM
-        B        ??apl_ProcessRadioCmd_12
-??apl_ProcessRadioCmd_14:
+        B        ??apl_ProcessRadioCmd_11
+??apl_ProcessRadioCmd_13:
         MOVS     R1,#+2
-        LDR      R0,??apl_ProcessRadioCmd_0+0x14  ;; 0x48000400
+        LDR      R0,??apl_ProcessRadioCmd_0+0x18  ;; 0x48000400
         BL       GPIO_ResetBits
         MOVS     R0,R4
         UXTB     R0,R0
         BL       set_PWM
-        B        ??apl_ProcessRadioCmd_12
-??apl_ProcessRadioCmd_13:
+        B        ??apl_ProcessRadioCmd_11
+??apl_ProcessRadioCmd_12:
         MOVS     R2,#+4
-        LDR      R1,??apl_ProcessRadioCmd_8
-        LDR      R0,??DataTable1_1
+        LDR      R1,??apl_ProcessRadioCmd_0+0x10
+        LDR      R0,??DataTable1
         BL       `cmp`
         CMP      R0,#+1
-        BNE      ??apl_ProcessRadioCmd_12
-        LDR      R2,??DataTable1_2
+        BNE      ??apl_ProcessRadioCmd_11
+        LDR      R2,??DataTable1_1
         MOVS     R1,#+134
-        LDR      R0,??DataTable1_3
+        LDR      R0,??DataTable1_2
         BL       process_post
         MOVS     R2,#+6
         LDR      R1,??apl_ProcessRadioCmd_0+0x4
         LDR      R0,??apl_ProcessRadioCmd_0+0x8
         BL       `cmp`
-??apl_ProcessRadioCmd_12:
+??apl_ProcessRadioCmd_11:
         B        ??apl_ProcessRadioCmd_1
 ??apl_ProcessRadioCmd_5:
         MOVS     R2,#+4
-        LDR      R1,??apl_ProcessRadioCmd_8
-        LDR      R0,??DataTable1_4
+        LDR      R1,??apl_ProcessRadioCmd_0+0x10
+        LDR      R0,??DataTable1_3
+        BL       `cmp`
+        CMP      R0,#+1
+        BEQ      .+4
+        B        ??apl_ProcessRadioCmd_14
+        MOVS     R2,#+4
+        LDR      R1,??apl_ProcessRadioCmd_0+0x10
+        LDR      R0,??DataTable1_3
         BL       `cmp`
         CMP      R0,#+1
         BEQ      .+4
         B        ??apl_ProcessRadioCmd_15
-        MOVS     R2,#+4
-        LDR      R1,??apl_ProcessRadioCmd_8
-        LDR      R0,??DataTable1_4
-        BL       `cmp`
-        CMP      R0,#+1
-        BEQ      .+4
-        B        ??apl_ProcessRadioCmd_16
         LDR      R0,??apl_ProcessRadioCmd_0
         LDRB     R0,[R0, #+8]
         MOVS     R1,#+128
@@ -468,10 +474,10 @@ apl_ProcessRadioCmd:
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+9]
         MOVS     R2,#+4
-        LDR      R1,??DataTable1_4
-        LDR      R0,??apl_ProcessRadioCmd_8
+        LDR      R1,??DataTable1_3
+        LDR      R0,??apl_ProcessRadioCmd_0+0x10
         BL       MemCpy
-        LDR      R0,??DataTable1_5
+        LDR      R0,??DataTable1_4
         LDRB     R0,[R0, #+0]
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+14]
@@ -487,70 +493,70 @@ apl_ProcessRadioCmd:
         MOVS     R0,#+0
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+18]
-        LDR      R0,??DataTable1_5
+        LDR      R0,??DataTable1_4
         LDRB     R0,[R0, #+0]
         CMP      R0,#+0
-        BNE      ??apl_ProcessRadioCmd_17
+        BNE      ??apl_ProcessRadioCmd_16
         MOVS     R0,#+0
-        LDR      R1,??DataTable1_6
+        LDR      R1,??DataTable1_5
         STR      R0,[R1, #+0]
         MOVS     R0,#+0
-        LDR      R1,??DataTable1_6
+        LDR      R1,??DataTable1_5
         STR      R0,[R1, #+4]
         MOVS     R0,#+0
-        LDR      R1,??DataTable1_6
+        LDR      R1,??DataTable1_5
         STR      R0,[R1, #+8]
-        B        ??apl_ProcessRadioCmd_18
-??apl_ProcessRadioCmd_17:
+        B        ??apl_ProcessRadioCmd_17
+??apl_ProcessRadioCmd_16:
         MOVS     R0,#+20
         BL       Delayms
         BL       read_UIP
-??apl_ProcessRadioCmd_18:
-        LDR      R0,??DataTable1_6
+??apl_ProcessRadioCmd_17:
+        LDR      R0,??DataTable1_5
         LDR      R0,[R0, #+0]
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+19]
-        LDR      R0,??DataTable1_6
+        LDR      R0,??DataTable1_5
         LDR      R0,[R0, #+0]
         LSRS     R0,R0,#+8
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+20]
-        LDR      R0,??DataTable1_6
+        LDR      R0,??DataTable1_5
         LDR      R0,[R0, #+4]
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+21]
-        LDR      R0,??DataTable1_6
+        LDR      R0,??DataTable1_5
         LDR      R0,[R0, #+4]
         LSRS     R0,R0,#+8
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+22]
-        LDR      R0,??DataTable1_6
+        LDR      R0,??DataTable1_5
         LDR      R0,[R0, #+4]
         LSRS     R0,R0,#+16
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+23]
-        LDR      R0,??DataTable1_6
+        LDR      R0,??DataTable1_5
         LDR      R0,[R0, #+4]
         LSRS     R0,R0,#+24
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+24]
-        LDR      R0,??DataTable1_6
+        LDR      R0,??DataTable1_5
         LDR      R0,[R0, #+8]
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+25]
-        LDR      R0,??DataTable1_6
+        LDR      R0,??DataTable1_5
         LDR      R0,[R0, #+8]
         LSRS     R0,R0,#+8
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+26]
-        LDR      R0,??DataTable1_5
+        LDR      R0,??DataTable1_4
         LDRB     R0,[R0, #+0]
         CMP      R0,#+0
-        BNE      ??apl_ProcessRadioCmd_19
+        BNE      ??apl_ProcessRadioCmd_18
         MOVS     R0,#+0
         LDR      R1,??apl_ProcessRadioCmd_0
         STRB     R0,[R1, #+27]
-        B        ??apl_ProcessRadioCmd_20
+        B        ??apl_ProcessRadioCmd_19
         Nop      
         DATA
 ??apl_ProcessRadioCmd_0:
@@ -558,203 +564,275 @@ apl_ProcessRadioCmd:
         DC32     g_RF_LoRa+0x1
         DC32     local_addr
         DC32     bordcast_addr
+        DC32     g_RF_LoRa+0xA
         DC32     cmd_op_light
         DC32     0x48000400
+        DC32     cmd_broadcast
         THUMB
-??apl_ProcessRadioCmd_19:
+??apl_ProcessRadioCmd_18:
         BL       read_pow_factor
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+27]
-??apl_ProcessRadioCmd_20:
+??apl_ProcessRadioCmd_19:
         MOVS     R0,#+0
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+28]
         MOVS     R0,#+0
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+29]
         BL       read_8209c_energyP
         MOVS     R0,#+0
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+30]
         MOVS     R0,#+0
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+31]
         MOVS     R0,#+0
-        LDR      R1,??DataTable2_1
+        LDR      R1,??DataTable1_7
         STRB     R0,[R1, #+0]
         MOVS     R0,#+0
-        LDR      R1,??DataTable2_2
+        LDR      R1,??DataTable1_8
         STRB     R0,[R1, #+0]
         BL       get_light_time
         MOVS     R5,R0
         MOVS     R0,R5
-        LDR      R1,??DataTable2_3
+        LDR      R1,??DataTable1_9
         STRB     R0,[R1, #+0]
         MOVS     R0,R5
         LSRS     R0,R0,#+8
-        LDR      R1,??DataTable2_4
+        LDR      R1,??DataTable1_10
         STRB     R0,[R1, #+0]
         MOVS     R0,R5
         LSRS     R0,R0,#+16
-        LDR      R1,??DataTable2_5
+        LDR      R1,??DataTable1_11
         STRB     R0,[R1, #+0]
         MOVS     R0,R5
         LSRS     R0,R0,#+24
-        LDR      R1,??DataTable2_6
+        LDR      R1,??DataTable1_12
         STRB     R0,[R1, #+0]
         MOVS     R0,#+10
-??apl_ProcessRadioCmd_21:
+??apl_ProcessRadioCmd_20:
         UXTH     R0,R0
         CMP      R0,#+38
-        BGE      ??apl_ProcessRadioCmd_22
+        BGE      ??apl_ProcessRadioCmd_21
         UXTH     R0,R0
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         LDRB     R1,[R1, R0]
         ADDS     R1,R1,#+51
         UXTH     R0,R0
-        LDR      R2,??DataTable2
+        LDR      R2,??DataTable1_6
         STRB     R1,[R2, R0]
         ADDS     R0,R0,#+1
-        B        ??apl_ProcessRadioCmd_21
-??apl_ProcessRadioCmd_22:
-        LDR      R0,??DataTable2
+        B        ??apl_ProcessRadioCmd_20
+??apl_ProcessRadioCmd_21:
+        LDR      R0,??DataTable1_6
         LDRB     R1,[R0, #+9]
         ADDS     R1,R1,#+10
         UXTB     R1,R1
-        LDR      R0,??DataTable2
+        LDR      R0,??DataTable1_6
         BL       getSum
-        LDR      R1,??DataTable2_7
+        LDR      R1,??DataTable1_13
         STRB     R0,[R1, #+0]
         MOVS     R0,#+22
-        LDR      R1,??DataTable2_8
+        LDR      R1,??DataTable1_14
         STRB     R0,[R1, #+0]
         MOVS     R2,#+6
         MOV      R1,SP
-        LDR      R0,??DataTable2_9
+        LDR      R0,??DataTable1_15
         BL       MemCpy
         MOVS     R2,#+6
         MOV      R1,SP
         ADDS     R1,R1,#+12
-        LDR      R0,??DataTable2_10
+        LDR      R0,??DataTable1_16
         BL       MemCpy
         MOVS     R2,#+6
         MOV      R1,SP
         ADDS     R1,R1,#+6
-        LDR      R0,??DataTable2_11
+        LDR      R0,??DataTable1_17
         BL       MemCpy
-        LDR      R0,??DataTable2
+        LDR      R0,??DataTable1_6
         LDRB     R1,[R0, #+9]
         ADDS     R1,R1,#+30
         UXTB     R1,R1
-        LDR      R0,??DataTable2
+        LDR      R0,??DataTable1_6
         BL       SX1276LoRa_Send_Packet
-        B        ??apl_ProcessRadioCmd_16
-??apl_ProcessRadioCmd_15:
+        B        ??apl_ProcessRadioCmd_15
+??apl_ProcessRadioCmd_14:
         MOVS     R2,#+4
-        LDR      R1,??apl_ProcessRadioCmd_8
-        LDR      R0,??DataTable3
+        LDR      R1,??DataTable2
+        LDR      R0,??DataTable1_18
         BL       `cmp`
         CMP      R0,#+1
-        BNE      ??apl_ProcessRadioCmd_16
+        BNE      ??apl_ProcessRadioCmd_22
         MOVS     R0,#+104
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+0]
         MOVS     R2,#+6
         MOVS     R1,#+0
-        LDR      R0,??DataTable3_1
+        LDR      R0,??DataTable2_1
         BL       MemSet
         MOVS     R0,#+104
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+7]
         MOVS     R0,#+129
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+8]
         MOVS     R0,#+13
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+9]
         MOVS     R0,#+2
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+10]
         MOVS     R0,#+0
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+11]
         MOVS     R0,#+0
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+12]
         MOVS     R0,#+106
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+13]
-        LDR      R0,??DataTable4
+        LDR      R0,??DataTable2_2
         LDRB     R0,[R0, #+0]
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+14]
-        LDR      R0,??DataTable4
+        LDR      R0,??DataTable2_2
         LDRB     R0,[R0, #+1]
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+15]
-        LDR      R0,??DataTable4
+        LDR      R0,??DataTable2_2
         LDRB     R0,[R0, #+2]
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+16]
-        LDR      R0,??DataTable4
+        LDR      R0,??DataTable2_2
         LDRB     R0,[R0, #+3]
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+17]
-        LDR      R0,??DataTable4
+        LDR      R0,??DataTable2_2
         LDRB     R0,[R0, #+4]
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+18]
-        LDR      R0,??DataTable4
+        LDR      R0,??DataTable2_2
         LDRB     R0,[R0, #+5]
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+19]
-        LDR      R0,??DataTable4
+        LDR      R0,??DataTable2_2
         LDRB     R0,[R0, #+6]
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+20]
-        LDR      R0,??DataTable4
+        LDR      R0,??DataTable2_2
         LDRB     R0,[R0, #+7]
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+21]
-        LDR      R0,??DataTable4
-        B.N      ??apl_ProcessRadioCmd_23
-        DATA
-??apl_ProcessRadioCmd_8:
-        DC32     g_RF_LoRa+0xA
-        THUMB
-??apl_ProcessRadioCmd_23:
+        LDR      R0,??DataTable2_2
         LDRB     R0,[R0, #+8]
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+22]
         MOVS     R1,#+23
-        LDR      R0,??DataTable2
+        LDR      R0,??DataTable1_6
         BL       getSum
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+23]
         MOVS     R0,#+22
-        LDR      R1,??DataTable2
+        LDR      R1,??DataTable1_6
         STRB     R0,[R1, #+24]
         MOVS     R2,#+6
         MOV      R1,SP
-        LDR      R0,??DataTable4_1
+        LDR      R0,??DataTable2_3
         BL       MemCpy
         MOVS     R2,#+6
         MOV      R1,SP
         ADDS     R1,R1,#+12
-        LDR      R0,??DataTable4_2
+        LDR      R0,??DataTable2_4
         BL       MemCpy
         MOVS     R2,#+6
         MOV      R1,SP
         ADDS     R1,R1,#+6
-        LDR      R0,??DataTable2_6
+        LDR      R0,??DataTable1_12
         BL       MemCpy
-        LDR      R0,??DataTable2
+        LDR      R0,??DataTable1_6
         LDRB     R1,[R0, #+9]
         ADDS     R1,R1,#+30
         UXTB     R1,R1
-        LDR      R0,??DataTable2
+        LDR      R0,??DataTable1_6
         BL       SX1276LoRa_Send_Packet
-??apl_ProcessRadioCmd_16:
+        B        ??apl_ProcessRadioCmd_15
+??apl_ProcessRadioCmd_22:
+        MOVS     R2,#+4
+        LDR      R1,??DataTable2
+        LDR      R0,??DataTable2_5
+        BL       `cmp`
+        CMP      R0,#+1
+        BNE      ??apl_ProcessRadioCmd_15
+        MOVS     R2,#+6
+        LDR      R1,??DataTable2_1
+        LDR      R0,??DataTable2_6
+        BL       `cmp`
+        CMP      R0,#+1
+        BNE      ??apl_ProcessRadioCmd_15
+        MOVS     R0,#+104
+        LDR      R1,??DataTable1_6
+        STRB     R0,[R1, #+0]
+        MOVS     R2,#+6
+        LDR      R1,??DataTable3
+        LDR      R0,??DataTable2_1
+        BL       MemCpy
+        MOVS     R0,#+104
+        LDR      R1,??DataTable1_6
+        STRB     R0,[R1, #+7]
+        MOVS     R0,#+129
+        LDR      R1,??DataTable1_6
+        STRB     R0,[R1, #+8]
+        MOVS     R0,#+4
+        LDR      R1,??DataTable1_6
+        STRB     R0,[R1, #+9]
+        MOVS     R2,#+4
+        LDR      R1,??DataTable2_5
+        LDR      R0,??DataTable2
+        BL       MemCpy
+        MOVS     R0,#+0
+??apl_ProcessRadioCmd_23:
+        LDR      R1,??DataTable1_6
+        LDRB     R1,[R1, #+9]
+        UXTB     R0,R0
+        CMP      R0,R1
+        BCS      ??apl_ProcessRadioCmd_24
+        UXTB     R0,R0
+        LDR      R1,??DataTable1_6
+        ADDS     R1,R1,R0
+        LDRB     R1,[R1, #+10]
+        ADDS     R1,R1,#+51
+        UXTB     R0,R0
+        LDR      R2,??DataTable1_6
+        ADDS     R2,R2,R0
+        STRB     R1,[R2, #+10]
+        ADDS     R0,R0,#+1
+        B        ??apl_ProcessRadioCmd_23
+??apl_ProcessRadioCmd_24:
+        LDR      R0,??DataTable1_6
+        LDRB     R1,[R0, #+9]
+        ADDS     R1,R1,#+10
+        UXTB     R1,R1
+        LDR      R0,??DataTable1_6
+        BL       getSum
+        LDR      R1,??DataTable1_6
+        LDRB     R1,[R1, #+9]
+        LDR      R2,??DataTable1_6
+        ADDS     R1,R2,R1
+        STRB     R0,[R1, #+10]
+        MOVS     R0,#+22
+        LDR      R1,??DataTable1_6
+        LDRB     R1,[R1, #+9]
+        LDR      R2,??DataTable1_6
+        ADDS     R1,R2,R1
+        STRB     R0,[R1, #+11]
+        LDR      R0,??DataTable1_6
+        LDRB     R1,[R0, #+9]
+        ADDS     R1,R1,#+12
+        UXTB     R1,R1
+        LDR      R0,??DataTable1_6
+        BL       SX1276LoRa_Send_Packet
+??apl_ProcessRadioCmd_15:
         B        ??apl_ProcessRadioCmd_1
 ??apl_ProcessRadioCmd_6:
 ??apl_ProcessRadioCmd_1:
@@ -765,43 +843,115 @@ apl_ProcessRadioCmd:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable1:
-        DC32     cmd_broadcast
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable1_1:
         DC32     cmd_update
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable1_2:
+??DataTable1_1:
         DC32     g_RF_LoRa+0xE
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable1_3:
+??DataTable1_2:
         DC32     apl_update_process
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable1_4:
+??DataTable1_3:
         DC32     cmd_read_data
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable1_5:
+??DataTable1_4:
         DC32     rn8209c_papameter+0x28
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
-??DataTable1_6:
+??DataTable1_5:
         DC32     currentUIP
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable1_6:
+        DC32     g_RF_LoRa
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable1_7:
+        DC32     g_RF_LoRa+0x20
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable1_8:
+        DC32     g_RF_LoRa+0x21
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable1_9:
+        DC32     g_RF_LoRa+0x22
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable1_10:
+        DC32     g_RF_LoRa+0x23
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable1_11:
+        DC32     g_RF_LoRa+0x24
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable1_12:
+        DC32     g_RF_LoRa+0x25
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable1_13:
+        DC32     g_RF_LoRa+0x26
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable1_14:
+        DC32     g_RF_LoRa+0x27
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable1_15:
+        DC32     g_RF_LoRa+0x28
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable1_16:
+        DC32     g_RF_LoRa+0x2E
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable1_17:
+        DC32     g_RF_LoRa+0x34
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable1_18:
+        DC32     read_version
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -819,21 +969,21 @@ hal_RF_process:
 process_thread_hal_RF_process:
         PUSH     {R3-R7,LR}
         MOVS     R4,R0
-        MOVS     R7,R1
-        MOVS     R6,R2
+        MOVS     R6,R1
+        MOVS     R7,R2
         MOVS     R1,#+1
         LDRH     R0,[R4, #+0]
         CMP      R0,#+0
         BEQ      ??process_thread_hal_RF_process_0
         MOVS     R2,#+255
-        ADDS     R2,R2,#+86       ;; #+341
+        ADDS     R2,R2,#+104      ;; #+359
         CMP      R0,R2
         BEQ      ??process_thread_hal_RF_process_1
         B        ??process_thread_hal_RF_process_2
 ??process_thread_hal_RF_process_0:
         MOVS     R1,#+0
         MOVS     R0,#+255
-        ADDS     R0,R0,#+86       ;; #+341
+        ADDS     R0,R0,#+104      ;; #+359
         STRH     R0,[R4, #+0]
 ??process_thread_hal_RF_process_1:
         UXTB     R1,R1
@@ -842,10 +992,10 @@ process_thread_hal_RF_process:
         MOVS     R0,#+1
         B        ??process_thread_hal_RF_process_4
 ??process_thread_hal_RF_process_3:
-        UXTB     R7,R7
-        CMP      R7,#+134
+        UXTB     R6,R6
+        CMP      R6,#+134
         BNE      ??process_thread_hal_RF_process_5
-        LDRB     R0,[R6, #+0]
+        LDRB     R0,[R7, #+0]
         CMP      R0,#+7
         BNE      ??process_thread_hal_RF_process_6
         MOVS     R1,#+250
@@ -856,7 +1006,7 @@ process_thread_hal_RF_process:
         BL       printf
         B        ??process_thread_hal_RF_process_0
 ??process_thread_hal_RF_process_6:
-        LDRB     R0,[R6, #+0]
+        LDRB     R0,[R7, #+0]
         CMP      R0,#+8
         BNE      ??process_thread_hal_RF_process_7
         MOVS     R0,#+0
@@ -865,7 +1015,7 @@ process_thread_hal_RF_process:
         BL       printf
         B        ??process_thread_hal_RF_process_0
 ??process_thread_hal_RF_process_7:
-        LDRB     R0,[R6, #+0]
+        LDRB     R0,[R7, #+0]
         CMP      R0,#+14
         BNE      ??process_thread_hal_RF_process_8
         MOVS     R1,#+250
@@ -876,7 +1026,7 @@ process_thread_hal_RF_process:
         BL       printf
         B        ??process_thread_hal_RF_process_0
 ??process_thread_hal_RF_process_8:
-        LDRB     R0,[R6, #+0]
+        LDRB     R0,[R7, #+0]
         CMP      R0,#+4
         BNE      ??process_thread_hal_RF_process_9
         MOVS     R0,#+0
@@ -885,7 +1035,7 @@ process_thread_hal_RF_process:
         BL       printf
         B        ??process_thread_hal_RF_process_0
 ??process_thread_hal_RF_process_9:
-        LDRB     R0,[R6, #+0]
+        LDRB     R0,[R7, #+0]
         CMP      R0,#+3
         BNE      ??process_thread_hal_RF_process_0
         MOVS     R0,#+0
@@ -899,36 +1049,53 @@ process_thread_hal_RF_process:
         MOVS     R3,R1
         LDR      R0,??DataTable5_5
         BL       printf
+        MOVS     R5,#+0
+??process_thread_hal_RF_process_10:
         LDR      R0,??DataTable5_6
+        LDRB     R0,[R0, #+0]
+        UXTB     R5,R5
+        CMP      R5,R0
+        BCS      ??process_thread_hal_RF_process_11
+        UXTB     R5,R5
+        LDR      R0,??DataTable5_7
+        LDRB     R1,[R0, R5]
+        ADR      R0,??DataTable5_8  ;; "%X "
+        BL       printf
+        ADDS     R5,R5,#+1
+        B        ??process_thread_hal_RF_process_10
+??process_thread_hal_RF_process_11:
+        ADR      R0,??DataTable5_9  ;; 0x0D, 0x0A, 0x00, 0x00
+        BL       printf
+        LDR      R0,??DataTable5_10
         LDRB     R0,[R0, #+0]
         CMP      R0,#+0
         BEQ      ??process_thread_hal_RF_process_0
         MOVS     R0,#+1
         BL       hal_ToggleLED
         MOVS     R0,#+0
-        LDR      R1,??DataTable5_6
+        LDR      R1,??DataTable5_10
         STRB     R0,[R1, #+0]
         BL       apl_ProcessRadioCmd
         B        ??process_thread_hal_RF_process_0
 ??process_thread_hal_RF_process_5:
-        UXTB     R7,R7
-        CMP      R7,#+136
+        UXTB     R6,R6
+        CMP      R6,#+136
         BNE      ??process_thread_hal_RF_process_0
         LDR      R0,??DataTable5
-        CMP      R6,R0
+        CMP      R7,R0
         BNE      ??process_thread_hal_RF_process_0
         BL       SX1276LoRaGetRFState
         CMP      R0,#+7
-        BNE      ??process_thread_hal_RF_process_10
-        LDR      R0,??DataTable5_7
+        BNE      ??process_thread_hal_RF_process_12
+        LDR      R0,??DataTable5_11
         BL       printf
-??process_thread_hal_RF_process_10:
+??process_thread_hal_RF_process_12:
         BL       SX1276LoRaGetRFState
         CMP      R0,#+14
-        BNE      ??process_thread_hal_RF_process_11
+        BNE      ??process_thread_hal_RF_process_13
         LDR      R0,??DataTable6
         BL       printf
-??process_thread_hal_RF_process_11:
+??process_thread_hal_RF_process_13:
         BL       hal_sRF_InitSPI
         BL       hal_InitRF
         B        ??process_thread_hal_RF_process_0
@@ -945,73 +1112,43 @@ process_thread_hal_RF_process:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable2:
-        DC32     g_RF_LoRa
+        DC32     g_RF_LoRa+0xA
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable2_1:
-        DC32     g_RF_LoRa+0x20
+        DC32     g_RF_LoRa+0x1
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable2_2:
-        DC32     g_RF_LoRa+0x21
+        DC32     aplVersion
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable2_3:
-        DC32     g_RF_LoRa+0x22
+        DC32     g_RF_LoRa+0x19
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable2_4:
-        DC32     g_RF_LoRa+0x23
+        DC32     g_RF_LoRa+0x1F
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable2_5:
-        DC32     g_RF_LoRa+0x24
+        DC32     cmd_read_uid
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable2_6:
-        DC32     g_RF_LoRa+0x25
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable2_7:
-        DC32     g_RF_LoRa+0x26
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable2_8:
-        DC32     g_RF_LoRa+0x27
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable2_9:
-        DC32     g_RF_LoRa+0x28
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable2_10:
-        DC32     g_RF_LoRa+0x2E
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable2_11:
-        DC32     g_RF_LoRa+0x34
+        DC32     bordcast_addr
 
         SECTION `.bss`:DATA:REORDER:NOROOT(2)
 timer_RFreset:
@@ -1034,8 +1171,8 @@ process_thread_hal_RF_reset:
         LDRH     R0,[R4, #+0]
         CMP      R0,#+0
         BEQ      ??process_thread_hal_RF_reset_0
-        MOVS     R2,#+244
-        LSLS     R2,R2,#+1        ;; #+488
+        MOVS     R2,#+253
+        LSLS     R2,R2,#+1        ;; #+506
         SUBS     R0,R0,R2
         BEQ      ??process_thread_hal_RF_reset_1
         SUBS     R0,R0,#+18
@@ -1046,8 +1183,8 @@ process_thread_hal_RF_reset:
         LDR      R0,??DataTable7_1
         BL       etimer_set
         MOVS     R1,#+0
-        MOVS     R0,#+244
-        LSLS     R0,R0,#+1        ;; #+488
+        MOVS     R0,#+253
+        LSLS     R0,R0,#+1        ;; #+506
         STRH     R0,[R4, #+0]
 ??process_thread_hal_RF_reset_1:
         UXTB     R1,R1
@@ -1080,8 +1217,8 @@ process_thread_hal_RF_reset:
         LDR      R0,??DataTable7_1
         BL       etimer_set
         MOVS     R1,#+0
-        MOVS     R0,#+253
-        LSLS     R0,R0,#+1        ;; #+506
+        MOVS     R0,#+131
+        LSLS     R0,R0,#+2        ;; #+524
         STRH     R0,[R4, #+0]
 ??process_thread_hal_RF_reset_2:
         UXTB     R1,R1
@@ -1111,13 +1248,7 @@ process_thread_hal_RF_reset:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable3:
-        DC32     read_version
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable3_1:
-        DC32     g_RF_LoRa+0x1
+        DC32     local_addr
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1143,24 +1274,6 @@ spiReadWriteByte:
         LDR      R0,??DataTable9  ;; 0x40013000
         BL       SPI_ReceiveData8
         POP      {R4,PC}          ;; return
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable4:
-        DC32     aplVersion
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable4_1:
-        DC32     g_RF_LoRa+0x19
-
-        SECTION `.text`:CODE:NOROOT(2)
-        SECTION_TYPE SHT_PROGBITS, 0
-        DATA
-??DataTable4_2:
-        DC32     g_RF_LoRa+0x1F
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -1342,12 +1455,36 @@ SX1276SetReset:
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable5_6:
-        DC32     g_RF_LoRa+0xFF
+        DC32     g_RF_LoRa+0x101
 
         SECTION `.text`:CODE:NOROOT(2)
         SECTION_TYPE SHT_PROGBITS, 0
         DATA
 ??DataTable5_7:
+        DC32     g_RF_LoRa
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable5_8:
+        DC8      "%X "
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable5_9:
+        DC8      0x0D, 0x0A, 0x00, 0x00
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable5_10:
+        DC32     g_RF_LoRa+0xFF
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable5_11:
         DC32     `?<Constant "tx time out\\r\\n">`
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -1795,6 +1932,15 @@ hal_InitRF:
         DC8 0, 0
 
         SECTION `.rodata`:CONST:REORDER:NOROOT(2)
+        DATA
+        DC8 "%X "
+
+        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
+        DATA
+        DC8 "\015\012"
+        DC8 0
+
+        SECTION `.rodata`:CONST:REORDER:NOROOT(2)
 `?<Constant "tx time out\\r\\n">`:
         DATA
         DC8 "tx time out\015\012"
@@ -1821,13 +1967,13 @@ hal_InitRF:
         END
 // 
 //    32 bytes in section .bss
-//    68 bytes in section .data
-//   156 bytes in section .rodata
-// 2 730 bytes in section .text
+//    72 bytes in section .data
+//   164 bytes in section .rodata
+// 2 952 bytes in section .text
 // 
-// 2 730 bytes of CODE  memory
-//   156 bytes of CONST memory
-//   100 bytes of DATA  memory
+// 2 952 bytes of CODE  memory
+//   164 bytes of CONST memory
+//   104 bytes of DATA  memory
 //
 //Errors: none
 //Warnings: none

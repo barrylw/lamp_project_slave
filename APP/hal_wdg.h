@@ -19,7 +19,7 @@
 #define WWDG_INIT 0x7F
 #define WWDG_WINDOW 0x7F
 #define IWDG_PRESCALER IWDG_Prescaler_32 // 3
-#define IWDG_TIMEOUT 250 // ms
+#define IWDG_TIMEOUT 1000 // ms
 
 /* Exported macro ------------------------------------------------------------*/
 #define IWDG_COUNTER ((u16)(IWDG_TIMEOUT) * 40 / ((u16) 1 << (IWDG_PRESCALER + 2)))

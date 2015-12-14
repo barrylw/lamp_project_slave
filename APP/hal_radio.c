@@ -71,6 +71,7 @@ u8 cmd_update[4]    = {0x01, 0x00, 0x00, 0x6A}; //升级
 u8 read_version[4]  = {0x02, 0x00, 0x00, 0x6A}; //读版本号
 u8 cmd_read_data[4] = {0x0F, 0x00, 0x00, 0x61}; //读数据，读所有数据
 u8 cmd_op_light[4]  = {0x01, 0x00, 0x00, 0x60}; //写操作，开关，调光
+u8 cmd_read_uid[4]  = {0x0F, 0x00, 0x00, 0x60}; //广播点名
 
 
 void  analyze_645_packet(u8 * buf)
@@ -262,7 +263,7 @@ void apl_ProcessRadioCmd()
                     }
                     else if ((cmp(read_version, &g_RF_LoRa.rf_DataBuffer[DATA_MARK_645_POINT] , 4) == 1))//读版本号
                     {
-                                            //读从节点版本号
+                          //读从节点版本号
                           g_RF_LoRa.rf_DataBuffer[0] = 0x68;
                           MemSet(&g_RF_LoRa.rf_DataBuffer[1], 0, 6);
                           g_RF_LoRa.rf_DataBuffer[7]  = 0x68;
@@ -294,6 +295,23 @@ void apl_ProcessRadioCmd()
                           
                    
                           SX1276LoRa_Send_Packet(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_DataBuffer[DATA_LENGTH_645_POINT] + 12 + 18);      
+                    }
+                    else if ((cmp(cmd_read_uid, &g_RF_LoRa.rf_DataBuffer[DATA_MARK_645_POINT] , 4) == 1)  && (cmp(bordcast_addr, &g_RF_LoRa.rf_DataBuffer[ADDR_645_POINT] , 6) == 1) )
+                    {
+                          g_RF_LoRa.rf_DataBuffer[0] = 0x68;
+                          MemCpy(&g_RF_LoRa.rf_DataBuffer[1], local_addr, 6);
+                          g_RF_LoRa.rf_DataBuffer[7]  = 0x68;
+                          g_RF_LoRa.rf_DataBuffer[8]  = 0x81;//c
+                          g_RF_LoRa.rf_DataBuffer[9]  = 4; //L
+                          MemCpy(&g_RF_LoRa.rf_DataBuffer[10], cmd_read_uid, 4);
+                          
+                          for (u8 i = 0; i < g_RF_LoRa.rf_DataBuffer[9]; i++)
+                          {
+                            g_RF_LoRa.rf_DataBuffer[10 + i] += 0x33;
+                          }
+                          g_RF_LoRa.rf_DataBuffer[g_RF_LoRa.rf_DataBuffer[9] + 10] = getSum(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_DataBuffer[9] + 10); //cs
+                          g_RF_LoRa.rf_DataBuffer[g_RF_LoRa.rf_DataBuffer[9] + 11] = 0x16;//cs
+                          SX1276LoRa_Send_Packet(g_RF_LoRa.rf_DataBuffer, g_RF_LoRa.rf_DataBuffer[9] + 12);  
                     }
                     
                   break;
@@ -369,14 +387,14 @@ PROCESS_THREAD(hal_RF_process, ev, data)
            
            printf("rssi = %f  snr = %d\r\n",SX1276LoRaGetPacketRssi(), SX1276LoRaGetPacketSnr());
            
- #if 0
+
            for (u8 i = 0; i < g_RF_LoRa.rf_RxPacketSize; i++)
            {
               printf("%X ",g_RF_LoRa.rf_DataBuffer[i]);
            }
            printf("\r\n");
            
-
+ #if 0
         g_RF_LoRa.rf_DataBuffer[0] =   hal_get_equal_RxPacketRssi();
           
         #ifndef USE_LORA_MODE

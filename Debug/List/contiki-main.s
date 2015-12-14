@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       14/Dec/2015  14:25:43
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       14/Dec/2015  19:22:42
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -37,6 +37,7 @@
 
         #define SHT_PROGBITS 0x1
 
+        EXTERN IWDG_ReloadCounter
         EXTERN InitHardware
         EXTERN InitPhyVariable
         EXTERN RCC_APB2PeriphClockCmd
@@ -177,6 +178,7 @@ main:
         BL       process_start
 ??main_4:
 ??main_5:
+        BL       IWDG_ReloadCounter
         BL       process_run
         CMP      R0,#+1
         BGE      ??main_5
@@ -259,9 +261,9 @@ main:
 //  80 bytes in section .data
 // 192 bytes in section .noinit (abs)
 //  12 bytes in section .rodata
-// 196 bytes in section .text
+// 200 bytes in section .text
 // 
-// 196 bytes of CODE  memory
+// 200 bytes of CODE  memory
 //  12 bytes of CONST memory
 // 255 bytes of DATA  memory (+ 192 bytes shared)
 //

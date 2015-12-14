@@ -67,7 +67,7 @@ __root const Manufacturer_Version aplVersion =
   {'B', 'R'},//厂商代码 
   {'2', '3'},//芯片代码
    0x12, 0x12, 0x15,//日月年
-  {0x08, 0x00}//版本
+  {0x011, 0x00}//版本
 };
 
 
@@ -116,6 +116,7 @@ PROCESS_THREAD(apl_update_process, ev, data)
     static ST_update_packet_info st_update_packet =  {0,0,0,0};
     static u8 g_updateBuffer[144] = {0}; //缓存，用来存储数据
     static bool update_buf_full = false;
+    static struct etimer update_timer;
     
     PROCESS_BEGIN();
     
@@ -163,7 +164,21 @@ PROCESS_THREAD(apl_update_process, ev, data)
                            #ifdef PRINTF_DEBUG
                             printf("the same packet\r\n");
                            #endif
-                            break;
+                            
+                           //检测升级是否完成
+                           if (check_update_state(st_update.total_packets) == true)
+                           {
+                               //升级数据正确，马上升级或者等待升级命令再升级
+                               #ifdef PRINTF_DEBUG
+                               printf("update data OK, start update\r\n");
+                               #endif
+                               etimer_set(&update_timer, 500);
+                               PROCESS_WAIT_EVENT_UNTIL((ev == PROCESS_EVENT_TIMER) && ((struct etimer *)data == &update_timer));
+                              
+                              SoftReset();
+                              break;
+                           }
+                           break;
                         }
                         else//save
                         {
@@ -171,6 +186,12 @@ PROCESS_THREAD(apl_update_process, ev, data)
                             if (proceess_packet(&st_update_packet, &st_update) == true)
                             {
                               //升级数据正确，马上升级或者等待升级命令再升级
+                               #ifdef PRINTF_DEBUG
+                               printf("update data OK, start update\r\n");
+                               #endif
+                               etimer_set(&update_timer, 500);
+                               PROCESS_WAIT_EVENT_UNTIL((ev == PROCESS_EVENT_TIMER) && ((struct etimer *)data == &update_timer));
+                              
                               SoftReset();
                               break;
                             }
@@ -589,6 +610,7 @@ bool check_update_state(u16 total_packets)
   {
       if (check_update_packect_state(j) == 0)
       {
+        printf("packet %d not have\r\n", j);
         return false;
       }
   }

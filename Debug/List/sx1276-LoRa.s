@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       14/Dec/2015  14:26:05
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       14/Dec/2015  19:06:22
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -160,7 +160,7 @@ g_SignalBw:
 LoRaSettings:
         DATA
         DC32 492500000
-        DC8 17, 6, 9, 2, 1, 0, 0, 0, 7, 0, 0, 0
+        DC8 17, 7, 9, 2, 1, 0, 0, 0, 7, 0, 0, 0
         DC32 800, 800
         DC8 254, 0, 0, 0
         DC32 32

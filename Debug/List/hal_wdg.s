@@ -1,6 +1,6 @@
 ///////////////////////////////////////////////////////////////////////////////
 //
-// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       14/Dec/2015  14:25:47
+// IAR ANSI C/C++ Compiler V7.10.3.6832/W32 for ARM       14/Dec/2015  19:06:11
 // Copyright 1999-2014 IAR Systems AB.
 //
 //    Cpu mode     =  thumb
@@ -57,7 +57,6 @@
 hal_InitWDG:
         PUSH     {R7,LR}
         BL       hal_InitIwdg
-        BL       hal_InitWwdg
         POP      {R0,PC}          ;; return
 
         SECTION `.text`:CODE:NOROOT(1)
@@ -68,8 +67,7 @@ hal_InitIwdg:
         BL       IWDG_WriteAccessCmd
         MOVS     R0,#+3
         BL       IWDG_SetPrescaler
-        MOVS     R0,#+156
-        LSLS     R0,R0,#+1        ;; #+312
+        LDR      R0,??DataTable0_1  ;; 0x4e2
         BL       IWDG_SetReload
         BL       IWDG_ReloadCounter
         BL       IWDG_Enable
@@ -80,6 +78,12 @@ hal_InitIwdg:
         DATA
 ??DataTable0:
         DC32     0x5555
+
+        SECTION `.text`:CODE:NOROOT(2)
+        SECTION_TYPE SHT_PROGBITS, 0
+        DATA
+??DataTable0_1:
+        DC32     0x4e2
 
         SECTION `.text`:CODE:NOROOT(1)
         THUMB
@@ -112,9 +116,9 @@ hal_InitWwdg:
 
         END
 // 
-// 86 bytes in section .text
+// 84 bytes in section .text
 // 
-// 86 bytes of CODE memory
+// 84 bytes of CODE memory
 //
 //Errors: none
 //Warnings: none

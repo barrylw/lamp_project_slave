@@ -608,7 +608,7 @@
         </option>
         <option>
           <name>OOCOutputFile</name>
-          <state>slaveAPPnoprintf.bin</state>
+          <state>slaveAPPnoprintf11.bin</state>
         </option>
         <option>
           <name>OOCCommandLineProducer</name>

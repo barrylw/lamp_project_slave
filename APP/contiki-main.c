@@ -291,6 +291,7 @@ int main()
     /*执行完所有needspoll为1的进程及处理完所有队列，详情见3.2*/
     do
     {
+       FEED_IWDG;
     }
     while (process_run() > 0);
   }

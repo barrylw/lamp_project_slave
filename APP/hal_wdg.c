@@ -31,7 +31,7 @@
 void hal_InitWDG(void)
 {
   hal_InitIwdg();
-  hal_InitWwdg();
+  //hal_InitWwdg();
 }
 
 /**
