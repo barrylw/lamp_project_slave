@@ -1,84 +1,84 @@
 ###############################################################################
 #
-# IAR ELF Linker V7.10.3.6832/W32 for ARM                 14/Dec/2015  00:41:32
+# IAR ELF Linker V7.10.3.6832/W32 for ARM                 14/Dec/2015  14:26:06
 # Copyright 2007-2014 IAR Systems AB.
 #
-#    Output file  =  G:\git_hub_lamp\lamp_slave_git\Debug\Exe\SlaverNode.out
-#    Map file     =  G:\git_hub_lamp\lamp_slave_git\Debug\List\SlaverNode.map
+#    Output file  =  F:\cloneSlave\lamp_project_slave\Debug\Exe\SlaverNode.out
+#    Map file     =  F:\cloneSlave\lamp_project_slave\Debug\List\SlaverNode.map
 #    Command line =  
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\APL.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\apl_debug.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\autostart.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\checkpoint.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\clock.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\common.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\compower.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\contiki-main.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\crc16.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ctimer.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\elfloader.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\energest.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\etimer.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\gpio_per.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_falsh.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_GDflash.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_led.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_memory.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_nvic.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_radio.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_rcc.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_timer.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_uart.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\hal_wdg.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ifft.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\list.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\memb.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\mmem.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\os_cpu_a.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\PHY.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\print-stats.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\process.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\procinit.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\profile.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\random.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\ringbuf.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\rtimer.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\settings.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\startup_stm32f030.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stimer.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_adc.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_cec.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_comp.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_crc.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_dac.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_dbgmcu.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_dma.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_exti.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_flash.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_gpio.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_i2c.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_it.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_iwdg.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_misc.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_pwr.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_rcc.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_rtc.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_spi.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_syscfg.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_tim.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_usart.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\stm32f0xx_wwdg.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\sx1276-Fsk.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\sx1276-FskMisc.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\sx1276-LoRa.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\sx1276-LoRaMisc.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\system_stm32f0xx.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\timer.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\timetable-aggregate.o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Obj\trickle-timer.o -o
-#        G:\git_hub_lamp\lamp_slave_git\Debug\Exe\SlaverNode.out --map
-#        G:\git_hub_lamp\lamp_slave_git\Debug\List\SlaverNode.map --config
-#        G:\git_hub_lamp\lamp_slave_git\SlaverNode.icf --entry
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\APL.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\apl_debug.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\autostart.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\checkpoint.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\clock.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\common.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\compower.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\contiki-main.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\crc16.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\ctimer.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\elfloader.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\energest.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\etimer.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\gpio_per.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\hal_falsh.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\hal_GDflash.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\hal_led.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\hal_memory.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\hal_nvic.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\hal_radio.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\hal_rcc.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\hal_timer.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\hal_uart.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\hal_wdg.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\ifft.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\list.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\memb.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\mmem.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\os_cpu_a.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\PHY.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\print-stats.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\process.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\procinit.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\profile.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\random.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\ringbuf.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\rtimer.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\settings.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\startup_stm32f030.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stimer.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_adc.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_cec.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_comp.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_crc.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_dac.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_dbgmcu.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_dma.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_exti.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_flash.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_gpio.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_i2c.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_it.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_iwdg.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_misc.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_pwr.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_rcc.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_rtc.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_spi.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_syscfg.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_tim.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_usart.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\stm32f0xx_wwdg.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\sx1276-Fsk.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\sx1276-FskMisc.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\sx1276-LoRa.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\sx1276-LoRaMisc.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\system_stm32f0xx.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\timer.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\timetable-aggregate.o
+#        F:\cloneSlave\lamp_project_slave\Debug\Obj\trickle-timer.o -o
+#        F:\cloneSlave\lamp_project_slave\Debug\Exe\SlaverNode.out --map
+#        F:\cloneSlave\lamp_project_slave\Debug\List\SlaverNode.map --config
+#        F:\cloneSlave\lamp_project_slave\SlaverNode.icf --entry
 #        __iar_program_start --vfe
 #
 ###############################################################################
@@ -446,7 +446,7 @@ Copy (__iar_copy_init3)
     Module               ro code  ro data  rw data  rw data
                                                      (abs)
     ------               -------  -------  -------  -------
-G:\git_hub_lamp\lamp_slave_git\Debug\Obj: [1]
+F:\cloneSlave\lamp_project_slave\Debug\Obj: [1]
     APL.o                  1 574      496      321
     PHY.o                     48       12
     apl_debug.o            2 336      968
@@ -1079,7 +1079,7 @@ write_finish_debug      0x08007ce3   0x2e  Code  Gb  APL.o [1]
 write_update_flash      0x08007cbd   0x26  Code  Gb  APL.o [1]
 
 
-[1] = G:\git_hub_lamp\lamp_slave_git\Debug\Obj
+[1] = F:\cloneSlave\lamp_project_slave\Debug\Obj
 [2] = command line
 [3] = dl6M_tln.a
 [4] = m6M_tl.a
