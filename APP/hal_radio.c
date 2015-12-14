@@ -67,12 +67,12 @@ u8 bordcast_addr[6] = {0x99, 0x99, 0x99, 0x99, 0x99, 0x99};
 
 
 u8 cmd_broadcast[4] = {0x01, 0x00, 0x00, 0x69}; //广播灯控
-u8 cmd_update[4]    = {0x01, 0x00, 0x00, 0x6A}; //升级
 u8 read_version[4]  = {0x02, 0x00, 0x00, 0x6A}; //读版本号
 u8 cmd_read_data[4] = {0x0F, 0x00, 0x00, 0x61}; //读数据，读所有数据
 u8 cmd_op_light[4]  = {0x01, 0x00, 0x00, 0x60}; //写操作，开关，调光
-u8 cmd_read_uid[4]  = {0x0F, 0x00, 0x00, 0x60}; //广播点名
-
+u8 cmd_update[4]    = {0x01, 0x00, 0x00, 0x6A}; //升级
+u8 cmd_read_uid[4]  = {0x02, 0x00, 0x00, 0x6A}; //广播点名
+u8 cmd_set_uid[4]   = {0x03, 0x00, 0x00, 0x6A}; //无线设置UID
 
 void  analyze_645_packet(u8 * buf)
 {
@@ -299,12 +299,13 @@ void apl_ProcessRadioCmd()
                     else if ((cmp(cmd_read_uid, &g_RF_LoRa.rf_DataBuffer[DATA_MARK_645_POINT] , 4) == 1)  && (cmp(bordcast_addr, &g_RF_LoRa.rf_DataBuffer[ADDR_645_POINT] , 6) == 1) )
                     {
                           g_RF_LoRa.rf_DataBuffer[0] = 0x68;
-                          MemCpy(&g_RF_LoRa.rf_DataBuffer[1], local_addr, 6);
+                          MemSet(&g_RF_LoRa.rf_DataBuffer[1], 0x99, 6);
                           g_RF_LoRa.rf_DataBuffer[7]  = 0x68;
                           g_RF_LoRa.rf_DataBuffer[8]  = 0x81;//c
-                          g_RF_LoRa.rf_DataBuffer[9]  = 4; //L
+                          g_RF_LoRa.rf_DataBuffer[9]  = 4 + 6; //L
                           MemCpy(&g_RF_LoRa.rf_DataBuffer[10], cmd_read_uid, 4);
-                          
+                          MemCpy(&g_RF_LoRa.rf_DataBuffer[14], local_addr, 6);
+                       
                           for (u8 i = 0; i < g_RF_LoRa.rf_DataBuffer[9]; i++)
                           {
                             g_RF_LoRa.rf_DataBuffer[10 + i] += 0x33;

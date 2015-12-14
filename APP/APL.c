@@ -57,7 +57,8 @@ st_APL_frame        apl_frame;
 //static u8           apl_buf[255];
 ST_UPDATE st_update;
 
-
+static u8 update_success[] = "update success\r\n";
+static u8 update_failed[]  = "updte failed\r\n";
 /* Private function prototypes -----------------------------------------------*/
 /* Private functions ---------------------------------------------------------*/
 
@@ -158,55 +159,31 @@ PROCESS_THREAD(apl_update_process, ev, data)
                 {
                     if (st_update.version == st_update_packet.version)  //1、是否与正在升级版本相同，
                     {
-                        //重复帧不处理
-                        if (check_update_packect_state( st_update_packet.current_packet_No) == 1)
+                        //先存当前收到的帧，再判断是否有缓存的帧，有的话，再处理缓存的帧
+                        if (proceess_packet(&st_update_packet, &st_update) == true)
                         {
+                          //升级数据正确，马上升级或者等待升级命令再升级
                            #ifdef PRINTF_DEBUG
-                            printf("the same packet\r\n");
+                           printf("update data OK, start update\r\n");
                            #endif
-                            
-                           //检测升级是否完成
-                           if (check_update_state(st_update.total_packets) == true)
-                           {
-                               //升级数据正确，马上升级或者等待升级命令再升级
-                               #ifdef PRINTF_DEBUG
-                               printf("update data OK, start update\r\n");
-                               #endif
-                               etimer_set(&update_timer, 500);
-                               PROCESS_WAIT_EVENT_UNTIL((ev == PROCESS_EVENT_TIMER) && ((struct etimer *)data == &update_timer));
-                              
-                              SoftReset();
-                              break;
-                           }
-                           break;
+                           etimer_set(&update_timer, 500);
+                           PROCESS_WAIT_EVENT_UNTIL((ev == PROCESS_EVENT_TIMER) && ((struct etimer *)data == &update_timer));
+                          
+                          SoftReset();
+                          break;
                         }
-                        else//save
+                        
+                        if (update_buf_full == true)
                         {
-                            //先存当前收到的帧，再判断是否有缓存的帧，有的话，再处理缓存的帧
-                            if (proceess_packet(&st_update_packet, &st_update) == true)
-                            {
-                              //升级数据正确，马上升级或者等待升级命令再升级
-                               #ifdef PRINTF_DEBUG
-                               printf("update data OK, start update\r\n");
-                               #endif
-                               etimer_set(&update_timer, 500);
-                               PROCESS_WAIT_EVENT_UNTIL((ev == PROCESS_EVENT_TIMER) && ((struct etimer *)data == &update_timer));
-                              
-                              SoftReset();
-                              break;
-                            }
-                            
-                            if (update_buf_full == true)
-                            {
-                              update_buf_full = false;
-                              get_packet_info(g_updateBuffer, &st_update_packet);
-                              continue;
-                            }
-                            else
-                            {
-                              break;
-                            }
+                          update_buf_full = false;
+                          get_packet_info(g_updateBuffer, &st_update_packet);
+                          continue;
                         }
+                        else
+                        {
+                          break;
+                        }
+                      
                     }
                     else
                     {
@@ -242,7 +219,14 @@ PROCESS_THREAD(apl_update_process, ev, data)
 //允许接收后，判断，存储
 bool proceess_packet(ST_update_packet_info * current_ptr, ST_UPDATE * flash_ptr)
 {
-    
+    if (check_update_packect_state( current_ptr->current_packet_No) == 1)
+    {
+         #ifdef PRINTF_DEBUG
+         printf("the same packet\r\n");
+         #endif
+         return false;
+    }
+       
     if (current_ptr->current_packet_No < (flash_ptr->total_packets) )
     {
        //收到数据包长度错误,丢弃不管
@@ -557,16 +541,12 @@ void init_update(void)
     break;
     
     case UPDATE_FAILED:
- #ifdef PRINTF_DEBUG
-      printf("update failed\r\n");
- #endif
+      hal_DebugDMATx(update_failed, sizeof(update_failed));
       reset_update_params();
     break;
 
     case UPDATE_SUCCESS:
-#ifdef PRINTF_DEBUG
-    printf("update successful\r\n");
- #endif
+      hal_DebugDMATx(update_success, sizeof(update_success));
       reset_update_params();
     break;
 
